@@ -368,6 +368,11 @@ export class Game {
           this.audioManager.setSFXVolume(Math.max(0, this.audioManager.getSFXVolume() - 0.1));
           this.showAudioFeedback(`Volume: ${Math.round(this.audioManager.getSFXVolume() * 100)}%`);
           break;
+        case 'KeyB': // B for background music (debug)
+          e.preventDefault();
+          this.audioManager.forceStartMusic();
+          this.showAudioFeedback('Force starting background music');
+          break;
       }
     });
     

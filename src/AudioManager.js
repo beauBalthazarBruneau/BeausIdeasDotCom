@@ -25,26 +25,61 @@ export class AudioManager {
     const unlockAudio = () => {
       if (this.audioContextUnlocked) return;
       
-      // Create and play a silent audio to unlock the context
-      const silent = new Howl({
-        src: ['data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='],
-        volume: 0,
-        onend: () => {
-          this.audioContextUnlocked = true;
-          console.log('Audio context unlocked!');
-          
-          // Play any pending sounds
-          this.pendingSounds.forEach(callback => callback());
-          this.pendingSounds = [];
-          
-          // Start background music if not muted
-          if (!this.muted && this.music) {
-            console.log('Starting background music...');
+      console.log('Attempting to unlock audio context...');
+      
+      // Try to unlock audio context by playing any sound
+      const unlock = () => {
+        this.audioContextUnlocked = true;
+        console.log('Audio context unlocked!');
+        
+        // Play any pending sounds
+        this.pendingSounds.forEach(callback => callback());
+        this.pendingSounds = [];
+        
+        // Start background music if not muted
+        if (!this.muted && this.music) {
+          console.log('Starting background music...');
+          setTimeout(() => {
             this.music.play();
-          }
+          }, 100); // Small delay to ensure context is ready
         }
-      });
-      silent.play();
+      };
+      
+      // Create and immediately try to play a silent sound
+      try {
+        const silent = new Howl({
+          src: ['data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='],
+          volume: 0,
+          onplay: unlock,
+          onend: unlock,
+          onloaderror: (id, error) => {
+            console.warn('Silent audio failed to load:', error);
+            // Fallback: just mark as unlocked anyway
+            unlock();
+          }
+        });
+        
+        const playPromise = silent.play();
+        
+        // Handle play promise if it exists (modern browsers)
+        if (playPromise && typeof playPromise.then === 'function') {
+          playPromise.then(() => {
+            console.log('Silent audio played successfully');
+            unlock();
+          }).catch((error) => {
+            console.warn('Silent audio play failed:', error);
+            // Still unlock since user interacted
+            unlock();
+          });
+        } else {
+          // Older browsers or immediate play
+          setTimeout(unlock, 50);
+        }
+      } catch (error) {
+        console.warn('Audio unlock failed:', error);
+        // Still unlock since user interacted
+        unlock();
+      }
       
       // Remove listeners
       document.removeEventListener('click', unlockAudio);
@@ -323,12 +358,35 @@ export class AudioManager {
 
   // Music control
   startBackgroundMusic() {
-    if (!this.music || this.muted) return;
+    if (!this.music || this.muted) {
+      console.log('Cannot start music:', !this.music ? 'music not loaded' : 'audio is muted');
+      return;
+    }
+    
+    console.log('startBackgroundMusic called, context unlocked:', this.audioContextUnlocked);
     
     if (this.audioContextUnlocked) {
-      this.music.play();
+      console.log('Playing music now...');
+      const playPromise = this.music.play();
+      if (playPromise && typeof playPromise.then === 'function') {
+        playPromise.then(() => {
+          console.log('Music play promise resolved');
+        }).catch((error) => {
+          console.error('Music play promise rejected:', error);
+        });
+      }
     } else {
+      console.log('Adding music to pending sounds...');
       this.pendingSounds.push(() => this.music.play());
+    }
+  }
+
+  // Force start music (for debugging)
+  forceStartMusic() {
+    console.log('Force starting music...');
+    if (this.music) {
+      this.audioContextUnlocked = true; // Force unlock
+      this.music.play();
     }
   }
 
