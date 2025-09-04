@@ -114,6 +114,13 @@ export class ParticleSystem {
       this.particles.push(particle);
     }
   }
+  
+  // Generic method to create a single particle (used by checkpoints and other systems)
+  createParticle(x, y, options = {}) {
+    const particle = new Particle(x, y, options);
+    this.particles.push(particle);
+    return particle;
+  }
 
   // Environmental particle effects
   createFloatingDust(x, y, width = 100) {

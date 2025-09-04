@@ -124,6 +124,10 @@ export class AudioManager {
     this.loadSoundEffect('death', this.generateToneDataURL(165, 0.5, 0.4, 'sawtooth'));
     this.loadSoundEffect('respawn', this.generateToneDataURL(880, 0.3, 0.3, 'sine'));
     
+    // Checkpoint sound effects
+    this.loadSoundEffect('checkpointActivate', this.generateCheckpointActivateDataURL());
+    this.loadSoundEffect('checkpointComplete', this.generateCheckpointCompleteDataURL());
+    
     this.initialized = true;
   }
 
@@ -302,6 +306,163 @@ export class AudioManager {
     }
     return 'data:audio/wav;base64,' + btoa(binary);
   }
+  
+  // Generate checkpoint activation sound - ascending chimes
+  generateCheckpointActivateDataURL() {
+    const sampleRate = 44100;
+    const duration = 0.6; // 600ms
+    const samples = sampleRate * duration;
+    const buffer = new ArrayBuffer(44 + samples * 2);
+    const view = new DataView(buffer);
+    
+    // WAV header
+    const writeString = (offset, string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
+    };
+    
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + samples * 2, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    writeString(36, 'data');
+    view.setUint32(40, samples * 2, true);
+    
+    // Generate ascending chime sound
+    const chimeFreqs = [523.25, 659.25, 783.99]; // C5, E5, G5 (C major triad)
+    const noteDuration = duration / 3; // Each note plays for 200ms
+    
+    for (let i = 0; i < samples; i++) {
+      const t = i / sampleRate;
+      const noteIndex = Math.floor(t / noteDuration);
+      const noteTime = (t % noteDuration) / noteDuration;
+      
+      let sample = 0;
+      
+      if (noteIndex < chimeFreqs.length) {
+        const freq = chimeFreqs[noteIndex];
+        
+        // Create a bell-like sound with harmonics
+        sample += Math.sin(2 * Math.PI * freq * t) * 0.6; // Fundamental
+        sample += Math.sin(2 * Math.PI * freq * 2 * t) * 0.2; // Second harmonic
+        sample += Math.sin(2 * Math.PI * freq * 3 * t) * 0.1; // Third harmonic
+        
+        // Apply envelope for bell-like decay
+        const envelope = Math.exp(-noteTime * 3) * (1 - noteTime * 0.5);
+        sample *= envelope * 0.4; // Overall volume
+      }
+      
+      // Convert to 16-bit PCM
+      const intSample = Math.max(-32768, Math.min(32767, sample * 32767));
+      view.setInt16(44 + i * 2, intSample, true);
+    }
+    
+    // Convert to data URL
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return 'data:audio/wav;base64,' + btoa(binary);
+  }
+  
+  // Generate checkpoint completion sound - triumphant fanfare
+  generateCheckpointCompleteDataURL() {
+    const sampleRate = 44100;
+    const duration = 1.2; // 1.2 seconds
+    const samples = sampleRate * duration;
+    const buffer = new ArrayBuffer(44 + samples * 2);
+    const view = new DataView(buffer);
+    
+    // WAV header
+    const writeString = (offset, string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
+    };
+    
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + samples * 2, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    writeString(36, 'data');
+    view.setUint32(40, samples * 2, true);
+    
+    // Generate triumphant fanfare: C-E-G-C progression with flourish
+    const melody = [
+      { freq: 523.25, duration: 0.2 }, // C5
+      { freq: 659.25, duration: 0.2 }, // E5
+      { freq: 783.99, duration: 0.2 }, // G5
+      { freq: 1046.5, duration: 0.6 }, // C6 - longer final note
+    ];
+    
+    for (let i = 0; i < samples; i++) {
+      const t = i / sampleRate;
+      let sample = 0;
+      
+      // Find which note we're currently playing
+      let currentTime = 0;
+      let currentNote = null;
+      
+      for (const note of melody) {
+        if (t >= currentTime && t < currentTime + note.duration) {
+          currentNote = note;
+          break;
+        }
+        currentTime += note.duration;
+      }
+      
+      if (currentNote) {
+        const noteTime = t - currentTime;
+        const noteProgress = noteTime / currentNote.duration;
+        
+        // Create rich harmonic content for fanfare
+        sample += Math.sin(2 * Math.PI * currentNote.freq * t) * 0.5; // Fundamental
+        sample += Math.sin(2 * Math.PI * currentNote.freq * 2 * t) * 0.3; // Octave
+        sample += Math.sin(2 * Math.PI * currentNote.freq * 1.5 * t) * 0.2; // Fifth
+        
+        // Add some sparkle with higher harmonics
+        sample += Math.sin(2 * Math.PI * currentNote.freq * 4 * t) * 0.1;
+        
+        // Envelope for each note
+        let envelope;
+        if (currentNote.duration > 0.4) { // Final note
+          envelope = Math.exp(-noteProgress * 1.5) * (1 - noteProgress * 0.3);
+        } else {
+          envelope = Math.exp(-noteProgress * 2) * (1 - noteProgress * 0.5);
+        }
+        
+        sample *= envelope * 0.6; // Overall volume
+      }
+      
+      // Convert to 16-bit PCM
+      const intSample = Math.max(-32768, Math.min(32767, sample * 32767));
+      view.setInt16(44 + i * 2, intSample, true);
+    }
+    
+    // Convert to data URL
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return 'data:audio/wav;base64,' + btoa(binary);
+  }
 
   // Public methods for playing sounds
   playSound(soundName, options = {}) {
@@ -354,6 +515,15 @@ export class AudioManager {
 
   playRespawn() {
     this.playSound('respawn');
+  }
+  
+  // Checkpoint sound methods
+  playCheckpointActivate() {
+    this.playSound('checkpointActivate');
+  }
+  
+  playCheckpointComplete() {
+    this.playSound('checkpointComplete');
   }
 
   // Music control

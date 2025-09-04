@@ -6,6 +6,9 @@ import { ParticleSystem, Particle } from './ParticleSystem.js';
 import { Level } from './Level.js';
 import { Background } from './Background.js';
 import { AudioManager } from './AudioManager.js';
+import { Checkpoint } from './Checkpoint.js';
+import { Collectible } from './Collectible.js';
+import { ProjectManager, CheckpointStateManager } from './ProjectData.js';
 import { gsap } from 'gsap';
 
 export class Game {
@@ -43,6 +46,11 @@ export class Game {
     
     // Initialize audio manager
     this.audioManager = new AudioManager();
+    
+    // Initialize checkpoint system
+    this.checkpointStateManager = new CheckpointStateManager();
+    this.checkpoints = [];
+    this.createCheckpoints();
     
     // Set up camera boundaries based on level
     this.camera.setBoundaries(0, this.level.getDimensions().width, -200, this.level.getDimensions().groundLevel);
@@ -122,6 +130,41 @@ export class Game {
       this.background.resize(this.canvas);
     }
   }
+  
+  // Create checkpoint entities from project data
+  createCheckpoints() {
+    const projects = ProjectManager.getProjectsForCheckpoints();
+    console.log('Creating checkpoints for', projects.length, 'projects');
+    
+    projects.forEach(projectData => {
+      const checkpoint = new Checkpoint(
+        projectData.position.x,
+        projectData.position.y,
+        projectData,
+        this.physics,
+        this.particleSystem,
+        this.audioManager,
+        this.camera
+      );
+      
+      // Restore checkpoint state from persistent storage
+      const savedState = this.checkpointStateManager.getState(projectData.id);
+      if (savedState !== 'inactive') {
+        checkpoint.state = savedState;
+        // Update visual state without triggering effects
+        if (savedState === 'active') {
+          checkpoint.glowIntensity = 1;
+        } else if (savedState === 'completed') {
+          checkpoint.glowIntensity = 1.5;
+          checkpoint.scale = 1.1;
+        }
+      }
+      
+      this.checkpoints.push(checkpoint);
+    });
+    
+    console.log('Created', this.checkpoints.length, 'checkpoints');
+  }
 
   gameLoop(currentTime) {
     // Calculate delta time
@@ -161,6 +204,9 @@ export class Game {
     
     // Draw level platforms
     this.level.draw(this.ctx);
+    
+    // Draw checkpoints
+    this.checkpoints.forEach(checkpoint => checkpoint.draw(this.ctx));
     
     // Draw particles behind player
     this.particleSystem.draw(this.ctx);
@@ -426,6 +472,23 @@ export class Game {
     
     // Update background (for animated elements like clouds)
     this.background.update(deltaTime);
+    
+    // Update checkpoints and handle collisions
+    this.checkpoints.forEach(checkpoint => {
+      checkpoint.update(deltaTime);
+      
+      // Check for player hitting mystery box from below
+      checkpoint.checkPlayerCollision(this.player);
+      
+      // Check for player collecting spawned collectible
+      checkpoint.checkCollectibleCollection(this.player);
+      
+      // Sync state with state manager
+      const currentState = this.checkpointStateManager.getState(checkpoint.id);
+      if (currentState !== checkpoint.state) {
+        this.checkpointStateManager.setState(checkpoint.id, checkpoint.state);
+      }
+    });
     
     // Check for death (falling off the world)
     this.checkPlayerDeath();

@@ -61,6 +61,12 @@ export class Player {
             if (playerBottom >= platformTop - 5 && this.body.velocity.y >= 0) {
               this.isGrounded = true;
             }
+          } else if (otherBody.label === 'checkpoint') {
+            // Handle checkpoint collision
+            const checkpoint = otherBody.checkpointRef;
+            if (checkpoint && checkpoint.onPlayerCollision) {
+              checkpoint.onPlayerCollision();
+            }
           }
         }
       }

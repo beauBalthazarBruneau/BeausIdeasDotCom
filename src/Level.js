@@ -17,10 +17,9 @@ export class Level {
       // Starting area - tutorial/intro platforms
       startingArea: {
         platforms: [
-          { id: 'start-ground', x: 200, y: this.groundLevel, width: 400, height: 60, type: 'grass' },
-          { id: 'start-platform1', x: 450, y: this.groundLevel - 120, width: 200, height: 40, type: 'stone' },
+          { id: 'start-ground', x: 400, y: this.groundLevel, width: 800, height: 60, type: 'grass' },
         ],
-        checkpoint: { x: 300, y: this.groundLevel - 100 }
+        checkpoint: { x: 400, y: this.groundLevel - 100 }
       },
       
       // First project area
