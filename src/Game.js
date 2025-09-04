@@ -2,6 +2,7 @@ import { InputHandler } from './InputHandler.js';
 import { Camera } from './Camera.js';
 import { Physics } from './Physics.js';
 import { Player } from './Player.js';
+import { ParticleSystem } from './ParticleSystem.js';
 
 export class Game {
   constructor(canvas) {
@@ -20,9 +21,10 @@ export class Game {
     this.inputHandler = new InputHandler();
     this.physics = new Physics(canvas, { debug: this.debugMode });
     this.camera = new Camera(canvas);
+    this.particleSystem = new ParticleSystem();
     
     // Create player
-    this.player = new Player(100, 300, this.physics);
+    this.player = new Player(100, 300, this.physics, this.particleSystem);
     
     // Setup debug toggle
     this.setupDebugToggle();
@@ -127,6 +129,9 @@ export class Game {
     // Update player
     this.player.update(deltaTime, this.inputHandler);
     
+    // Update particle system
+    this.particleSystem.update(deltaTime);
+    
     // Update camera to follow player
     this.camera.follow(this.player);
     this.camera.update();
@@ -142,6 +147,9 @@ export class Game {
     
     // Draw world (platforms will be drawn by physics debug or custom renderer)
     this.drawWorld();
+    
+    // Draw particles behind player
+    this.particleSystem.draw(this.ctx);
     
     // Draw player
     this.player.draw(this.ctx);
@@ -199,7 +207,7 @@ export class Game {
     // Draw simple UI elements
     this.ctx.fillStyle = 'white';
     this.ctx.font = '16px monospace';
-    this.ctx.fillText('Arrow Keys/WASD: Move | Space/Up: Jump | F1: Debug', 10, 30);
+    this.ctx.fillText('Arrow Keys/WASD: Move | Space/Up: Double Jump | F1: Debug', 10, 30);
     
     if (this.debugMode) {
       this.ctx.fillText('Debug Mode ON', 10, 50);
@@ -217,6 +225,7 @@ export class Game {
       <div class="debug-line">Velocity X: ${this.player.body.velocity.x.toFixed(3)}</div>
       <div class="debug-line">Velocity Y: ${this.player.body.velocity.y.toFixed(3)}</div>
       <div class="debug-line">Grounded: ${this.player.isGrounded}</div>
+      <div class="debug-line">Jumps: ${this.player.jumpsRemaining}/${this.player.maxJumps}</div>
       <div class="debug-line">Animation: ${this.player.animationState}</div>
       <div class="debug-line">Frame: ${this.player.animationFrame}</div>
       <div class="debug-line">Camera X: ${Math.round(this.camera.x)}</div>

@@ -1,8 +1,9 @@
 import { Bodies, Body } from 'matter-js';
 
 export class Player {
-  constructor(x, y, physics) {
+  constructor(x, y, physics, particleSystem = null) {
     this.physics = physics;
+    this.particleSystem = particleSystem;
     this.width = 32;
     this.height = 48;
     
@@ -19,10 +20,14 @@ export class Player {
     
     // Movement properties
     this.speed = 0.02;
-    this.jumpForce = -0.015;
+    this.jumpVelocity = -7.5; // Reduced by half from -15
     this.isGrounded = false;
     this.jumpCooldown = 0;
     this.maxJumpCooldown = 200; // ms
+    
+    // Double jump properties
+    this.jumpsRemaining = 2;
+    this.maxJumps = 2;
     
     // Animation properties
     this.facing = 1; // 1 for right, -1 for left
@@ -109,10 +114,23 @@ export class Player {
       });
     }
     
-    // Jumping
+    // Jumping (now with double jump!)
     if ((inputHandler.isPressed('up') || inputHandler.isPressed('space')) && 
-        this.isGrounded && this.jumpCooldown <= 0) {
-      Body.setVelocity(this.body, { x: currentVelocity.x, y: -15 });
+        this.jumpsRemaining > 0 && this.jumpCooldown <= 0) {
+      Body.setVelocity(this.body, { x: currentVelocity.x, y: this.jumpVelocity });
+      
+      // Create particle effects
+      if (this.particleSystem) {
+        if (this.jumpsRemaining === 2) {
+          // First jump from ground - create dust cloud at feet level
+          this.particleSystem.createJumpDust(this.body.position.x, this.body.position.y + this.height/2 - 5, this.facing);
+        } else {
+          // Double jump in air - create puff effect
+          this.particleSystem.createDoubleJumpPuff(this.body.position.x, this.body.position.y);
+        }
+      }
+      
+      this.jumpsRemaining--;
       this.isGrounded = false;
       this.jumpCooldown = this.maxJumpCooldown;
       this.animationState = 'jumping';
@@ -167,6 +185,7 @@ export class Player {
             this.body.position.x >= groundLeft &&
             this.body.position.x <= groundRight) {
           this.isGrounded = true;
+          this.jumpsRemaining = this.maxJumps; // Reset jumps when landing
           return;
         }
       }
