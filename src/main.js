@@ -6,18 +6,19 @@ let game;
 function initGame() {
   const canvas = document.getElementById('game-canvas');
   if (!canvas) {
-    console.error('Game canvas not found!');
+    console.error('❌ Game canvas not found!');
     return;
   }
   
-  // Create and start the game
-  game = new Game(canvas);
-  
-  console.log('🎮 Portfolio Mario Game Initialized!');
-  console.log('Controls:');
-  console.log('  Arrow Keys or WASD - Move');
-  console.log('  Space or Up Arrow - Jump');
-  console.log('  F1 - Toggle Debug Mode');
+  try {
+    // Create and start the game
+    game = new Game(canvas);
+    
+    console.log('🎮 Portfolio Mario Game Initialized!');
+    console.log('Controls: Arrow Keys/WASD to move, Space/Up to jump, F1 for debug');
+  } catch (error) {
+    console.error('❌ Error initializing game:', error);
+  }
 }
 
 // Wait for DOM to be fully loaded

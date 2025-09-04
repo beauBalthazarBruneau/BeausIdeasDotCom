@@ -18,7 +18,7 @@ export class Player {
     this.physics.addBody('player', this.body);
     
     // Movement properties
-    this.speed = 0.008;
+    this.speed = 0.02;
     this.jumpForce = -0.015;
     this.isGrounded = false;
     this.jumpCooldown = 0;
@@ -51,9 +51,9 @@ export class Player {
           if (otherBody.label === 'ground') {
             // Check if player is landing on top of ground
             const playerBottom = this.body.position.y + this.height / 2;
-            const groundTop = otherBody.position.y - otherBody.bounds.max.y + otherBody.bounds.min.y;
+            const groundTop = otherBody.position.y - 30; // Using known ground height/2
             
-            if (playerBottom <= groundTop + 10) {
+            if (playerBottom >= groundTop - 5 && this.body.velocity.y >= 0) {
               this.isGrounded = true;
             }
           }
@@ -79,37 +79,44 @@ export class Player {
   }
 
   handleInput(inputHandler) {
-    let velocityX = this.body.velocity.x;
-    let velocityY = this.body.velocity.y;
+    const currentVelocity = this.body.velocity;
     
-    // Horizontal movement
+    // Horizontal movement using forces
     if (inputHandler.isPressed('left')) {
-      velocityX = Math.max(velocityX - this.speed, -0.01);
+      Body.applyForce(this.body, this.body.position, { x: -0.001, y: 0 });
       this.facing = -1;
       this.animationState = this.isGrounded ? 'walking' : 'jumping';
     } else if (inputHandler.isPressed('right')) {
-      velocityX = Math.min(velocityX + this.speed, 0.01);
+      Body.applyForce(this.body, this.body.position, { x: 0.001, y: 0 });
       this.facing = 1;
       this.animationState = this.isGrounded ? 'walking' : 'jumping';
     } else {
       // Apply friction when no input
-      velocityX *= 0.8;
+      Body.setVelocity(this.body, { 
+        x: currentVelocity.x * 0.8, 
+        y: currentVelocity.y 
+      });
       if (this.isGrounded) {
         this.animationState = 'idle';
       }
     }
     
+    // Limit horizontal velocity
+    if (Math.abs(currentVelocity.x) > 5) {
+      Body.setVelocity(this.body, { 
+        x: Math.sign(currentVelocity.x) * 5, 
+        y: currentVelocity.y 
+      });
+    }
+    
     // Jumping
     if ((inputHandler.isPressed('up') || inputHandler.isPressed('space')) && 
         this.isGrounded && this.jumpCooldown <= 0) {
-      velocityY = this.jumpForce;
+      Body.setVelocity(this.body, { x: currentVelocity.x, y: -15 });
       this.isGrounded = false;
       this.jumpCooldown = this.maxJumpCooldown;
       this.animationState = 'jumping';
     }
-    
-    // Apply velocity
-    Body.setVelocity(this.body, { x: velocityX, y: velocityY });
   }
 
   updateAnimation(deltaTime) {
@@ -137,11 +144,35 @@ export class Player {
   }
 
   checkGrounded() {
-    // Simple ground check - if velocity is very small and position is stable
-    if (Math.abs(this.body.velocity.y) < 0.001 && this.body.position.y > 100) {
-      // Additional check could be done here with raycasting
-      // For now, this simple check will work
-    } else if (this.body.velocity.y > 0.001) {
+    // Simple ground check - if velocity is very small and near a platform
+    if (Math.abs(this.body.velocity.y) < 0.1) {
+      // Check if player is near any ground platform
+      const playerBottom = this.body.position.y + this.height / 2;
+      
+      // Check against all ground platforms
+      const ground1 = this.physics.getBody('ground1');
+      const ground2 = this.physics.getBody('ground2');
+      const ground3 = this.physics.getBody('ground3');
+      
+      const grounds = [ground1, ground2, ground3].filter(g => g);
+      
+      for (let ground of grounds) {
+        const groundTop = ground.position.y - 30;
+        const groundLeft = ground.position.x - (ground === ground2 ? 150 : 200);
+        const groundRight = ground.position.x + (ground === ground2 ? 150 : 200);
+        
+        // Check if player is on this platform
+        if (playerBottom >= groundTop - 10 && 
+            playerBottom <= groundTop + 10 &&
+            this.body.position.x >= groundLeft &&
+            this.body.position.x <= groundRight) {
+          this.isGrounded = true;
+          return;
+        }
+      }
+    }
+    
+    if (this.body.velocity.y > 0.1) {
       this.isGrounded = false;
     }
   }

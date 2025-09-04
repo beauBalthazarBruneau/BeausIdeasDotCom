@@ -8,6 +8,8 @@ export class InputHandler {
       d: false // debug mode toggle
     };
 
+    this.previousKeys = { ...this.keys }; // Initialize previousKeys
+
     this.keyMap = {
       'ArrowLeft': 'left',
       'KeyA': 'left',

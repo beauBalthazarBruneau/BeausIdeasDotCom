@@ -5,6 +5,9 @@ export class Physics {
     this.canvas = canvas;
     this.debugMode = options.debug || false;
     
+    // Store bodies for collision detection (initialize first!)
+    this.bodies = new Map();
+    
     // Create engine
     this.engine = Engine.create();
     this.world = this.engine.world;
@@ -20,26 +23,11 @@ export class Physics {
     
     // Ground platform for testing
     this.createGround();
-    
-    // Store bodies for collision detection
-    this.bodies = new Map();
   }
 
   setupDebugRenderer() {
-    this.render = Render.create({
-      canvas: this.canvas,
-      engine: this.engine,
-      options: {
-        width: this.canvas.width,
-        height: this.canvas.height,
-        wireframes: true,
-        background: 'transparent',
-        wireframeBackground: 'transparent',
-        showVelocity: true,
-        showAngleIndicator: true,
-        showDebug: true
-      }
-    });
+    // Disabled for now to avoid recursive call issues
+    console.log('Debug renderer would be created here');
   }
 
   createGround() {

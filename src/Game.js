@@ -42,17 +42,17 @@ export class Game {
   }
 
   resizeCanvas() {
-    const rect = this.canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
+    // Get viewport dimensions
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
     
-    this.canvas.width = rect.width * dpr;
-    this.canvas.height = rect.height * dpr;
+    // Set canvas to full viewport
+    this.canvas.width = viewportWidth;
+    this.canvas.height = viewportHeight;
     
-    this.ctx.scale(dpr, dpr);
-    
-    // Update CSS size
-    this.canvas.style.width = rect.width + 'px';
-    this.canvas.style.height = rect.height + 'px';
+    // Update CSS size to match
+    this.canvas.style.width = viewportWidth + 'px';
+    this.canvas.style.height = viewportHeight + 'px';
   }
 
   setupDebugToggle() {
@@ -97,8 +97,11 @@ export class Game {
     this.lastTime = currentTime;
     this.gameTime += this.deltaTime;
     
+    // Cap delta time to prevent issues
+    const cappedDelta = Math.min(this.deltaTime, 16.667); // Cap at 16.667ms (60 FPS)
+    
     // Update
-    this.update(this.deltaTime);
+    this.update(cappedDelta);
     
     // Render
     this.render();
