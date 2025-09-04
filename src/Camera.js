@@ -1,3 +1,5 @@
+import { gsap } from 'gsap';
+
 export class Camera {
   constructor(canvas) {
     this.canvas = canvas;
@@ -6,6 +8,11 @@ export class Camera {
     this.targetX = 0;
     this.targetY = 0;
     this.smoothing = 0.1;
+    
+    // Screen shake properties
+    this.shakeX = 0;
+    this.shakeY = 0;
+    this.isShaking = false;
     
     // Camera boundaries
     this.minX = 0;
@@ -36,7 +43,8 @@ export class Camera {
 
   apply(ctx) {
     ctx.save();
-    ctx.translate(-this.x, -this.y);
+    // Apply camera position with screen shake offset
+    ctx.translate(-this.x + this.shakeX, -this.y + this.shakeY);
   }
 
   restore(ctx) {
@@ -71,5 +79,91 @@ export class Camera {
              x > this.x + this.canvas.width ||
              y + height < this.y ||
              y > this.y + this.canvas.height);
+  }
+
+  // Screen shake effects
+  shake(intensity = 10, duration = 0.3) {
+    if (this.isShaking) {
+      // Kill existing shake animation
+      gsap.killTweensOf(this);
+    }
+    
+    this.isShaking = true;
+    
+    // Create shake animation with GSAP
+    gsap.to(this, {
+      duration: duration,
+      shakeX: `random(-${intensity}, ${intensity})`,
+      shakeY: `random(-${intensity}, ${intensity})`,
+      ease: "power2.out",
+      repeat: Math.floor(duration * 10), // Higher frequency for more shake
+      yoyo: true,
+      onComplete: () => {
+        this.stopShake();
+      }
+    });
+  }
+
+  // Light shake for small impacts
+  lightShake() {
+    this.shake(3, 0.15);
+  }
+
+  // Medium shake for jumps and landings
+  mediumShake() {
+    this.shake(6, 0.25);
+  }
+
+  // Heavy shake for deaths and big impacts
+  heavyShake() {
+    this.shake(12, 0.4);
+  }
+
+  // Directional shake (for specific impact directions)
+  shakeDirection(directionX, directionY, intensity = 8, duration = 0.2) {
+    if (this.isShaking) {
+      gsap.killTweensOf(this);
+    }
+    
+    this.isShaking = true;
+    
+    // Normalize direction
+    const length = Math.sqrt(directionX * directionX + directionY * directionY);
+    if (length > 0) {
+      directionX /= length;
+      directionY /= length;
+    }
+    
+    // Apply shake in specific direction
+    const shakeX = directionX * intensity;
+    const shakeY = directionY * intensity;
+    
+    gsap.to(this, {
+      duration: duration,
+      shakeX: shakeX,
+      shakeY: shakeY,
+      ease: "power2.out",
+      yoyo: true,
+      repeat: Math.floor(duration * 8),
+      onComplete: () => {
+        this.stopShake();
+      }
+    });
+  }
+
+  // Stop shake immediately
+  stopShake() {
+    this.isShaking = false;
+    this.shakeX = 0;
+    this.shakeY = 0;
+    gsap.killTweensOf(this);
+  }
+
+  // Update camera boundaries (call this when level loads)
+  setBoundaries(minX, maxX, minY, maxY) {
+    this.minX = minX;
+    this.maxX = maxX;
+    this.minY = minY;
+    this.maxY = maxY;
   }
 }

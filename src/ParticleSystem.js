@@ -60,6 +60,9 @@ export class Particle {
 export class ParticleSystem {
   constructor() {
     this.particles = [];
+    this.environmentalParticles = [];
+    this.lastEnvironmentalSpawn = 0;
+    this.environmentalSpawnRate = 2000; // milliseconds between spawns
   }
 
   // Create a dust cloud effect for jumping
@@ -112,12 +115,130 @@ export class ParticleSystem {
     }
   }
 
-  update(deltaTime) {
+  // Environmental particle effects
+  createFloatingDust(x, y, width = 100) {
+    const numParticles = 3;
+    
+    for (let i = 0; i < numParticles; i++) {
+      const particle = new Particle(
+        x + (Math.random() - 0.5) * width,
+        y + (Math.random() - 0.5) * 50,
+        {
+          vx: (Math.random() - 0.5) * 0.5, // Very slow horizontal movement
+          vy: -0.2 + Math.random() * -0.3, // Slow upward drift
+          life: 8000 + Math.random() * 4000, // Long-lasting 8-12 seconds
+          size: 1 + Math.random() * 2, // Small particles
+          color: '#F5F5DC', // Beige dust
+          gravity: -0.001, // Negative gravity for floating effect
+          friction: 0.999, // Almost no friction
+          fadeOut: true
+        }
+      );
+      
+      this.environmentalParticles.push(particle);
+    }
+  }
+
+  // Magic sparkles for floating platforms
+  createMagicSparkles(x, y, width = 160) {
+    const numParticles = 2;
+    
+    for (let i = 0; i < numParticles; i++) {
+      const particle = new Particle(
+        x + (Math.random() - 0.5) * width,
+        y + (Math.random() - 0.5) * 30,
+        {
+          vx: (Math.random() - 0.5) * 1, // Gentle floating
+          vy: -0.3 + Math.random() * -0.5, // Upward drift
+          life: 3000 + Math.random() * 2000, // 3-5 seconds
+          size: 2 + Math.random() * 3, // Small to medium
+          color: '#E6E6FA', // Lavender sparkle
+          gravity: -0.002, // Float upward
+          friction: 0.998,
+          fadeOut: true
+        }
+      );
+      
+      this.environmentalParticles.push(particle);
+    }
+  }
+
+  // Wind effect particles
+  createWindEffect(x, y, direction = 1) {
+    const numParticles = 4;
+    
+    for (let i = 0; i < numParticles; i++) {
+      const particle = new Particle(
+        x + (Math.random() - 0.5) * 200,
+        y + (Math.random() - 0.5) * 100,
+        {
+          vx: direction * (2 + Math.random() * 3), // Wind direction
+          vy: (Math.random() - 0.5) * 0.5, // Slight vertical variation
+          life: 4000 + Math.random() * 3000, // 4-7 seconds
+          size: 1 + Math.random() * 1.5, // Very small
+          color: '#F0F8FF', // Alice blue (very light)
+          gravity: 0,
+          friction: 0.999,
+          fadeOut: true
+        }
+      );
+      
+      this.environmentalParticles.push(particle);
+    }
+  }
+
+  // Spawn environmental particles based on camera position
+  spawnEnvironmentalParticles(cameraX, cameraY, levelWidth, gameTime) {
+    // Only spawn every so often
+    if (gameTime - this.lastEnvironmentalSpawn < this.environmentalSpawnRate) {
+      return;
+    }
+    
+    this.lastEnvironmentalSpawn = gameTime;
+    
+    // Spawn floating dust across the visible area
+    const visibleStartX = cameraX - 100;
+    const visibleEndX = cameraX + 1000;
+    const numAreas = 3;
+    
+    for (let i = 0; i < numAreas; i++) {
+      const x = visibleStartX + (visibleEndX - visibleStartX) * Math.random();
+      const y = cameraY + 200 + Math.random() * 400; // Middle to lower area
+      
+      // Randomly choose effect type
+      const rand = Math.random();
+      if (rand < 0.6) {
+        this.createFloatingDust(x, y);
+      } else if (rand < 0.8) {
+        this.createWindEffect(x, y, Math.random() > 0.5 ? 1 : -1);
+      } else {
+        // Only create magic sparkles near floating platforms (approximate positions)
+        if (x > 900 && x < 1100) { // Near floating platform areas
+          this.createMagicSparkles(x, y - 100);
+        }
+      }
+    }
+  }
+
+  update(deltaTime, camera = null, levelWidth = 3000, gameTime = 0) {
     // Update all particles and remove dead ones
     this.particles = this.particles.filter(particle => particle.update(deltaTime));
+    this.environmentalParticles = this.environmentalParticles.filter(particle => particle.update(deltaTime));
+    
+    // Spawn environmental particles if camera is provided
+    if (camera) {
+      this.spawnEnvironmentalParticles(camera.x, camera.y, levelWidth, gameTime);
+    }
+    
+    // Limit environmental particles to prevent performance issues
+    if (this.environmentalParticles.length > 50) {
+      this.environmentalParticles = this.environmentalParticles.slice(-50);
+    }
   }
 
   draw(ctx) {
+    // Draw environmental particles behind action particles
+    this.environmentalParticles.forEach(particle => particle.draw(ctx));
     this.particles.forEach(particle => particle.draw(ctx));
   }
 
