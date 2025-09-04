@@ -1,0 +1,196 @@
+import { Bodies, Body } from 'matter-js';
+
+export class Player {
+  constructor(x, y, physics) {
+    this.physics = physics;
+    this.width = 32;
+    this.height = 48;
+    
+    // Create physics body
+    this.body = Bodies.rectangle(x, y, this.width, this.height, {
+      label: 'player',
+      friction: 0.001,
+      frictionAir: 0.01,
+      restitution: 0.1
+    });
+    
+    // Add to physics world
+    this.physics.addBody('player', this.body);
+    
+    // Movement properties
+    this.speed = 0.008;
+    this.jumpForce = -0.015;
+    this.isGrounded = false;
+    this.jumpCooldown = 0;
+    this.maxJumpCooldown = 200; // ms
+    
+    // Animation properties
+    this.facing = 1; // 1 for right, -1 for left
+    this.animationState = 'idle'; // idle, walking, jumping
+    this.animationFrame = 0;
+    this.animationSpeed = 0.15;
+    this.animationTimer = 0;
+    
+    // For drawing simple rectangle (will be replaced with sprites later)
+    this.color = '#FF6B6B';
+    
+    // Setup collision detection
+    this.setupCollisions();
+  }
+
+  setupCollisions() {
+    this.physics.onCollisionStart((event) => {
+      const pairs = event.pairs;
+      
+      for (let pair of pairs) {
+        const { bodyA, bodyB } = pair;
+        
+        if (bodyA === this.body || bodyB === this.body) {
+          const otherBody = bodyA === this.body ? bodyB : bodyA;
+          
+          if (otherBody.label === 'ground') {
+            // Check if player is landing on top of ground
+            const playerBottom = this.body.position.y + this.height / 2;
+            const groundTop = otherBody.position.y - otherBody.bounds.max.y + otherBody.bounds.min.y;
+            
+            if (playerBottom <= groundTop + 10) {
+              this.isGrounded = true;
+            }
+          }
+        }
+      }
+    });
+  }
+
+  update(deltaTime, inputHandler) {
+    // Update jump cooldown
+    if (this.jumpCooldown > 0) {
+      this.jumpCooldown -= deltaTime;
+    }
+    
+    // Handle input
+    this.handleInput(inputHandler);
+    
+    // Update animation
+    this.updateAnimation(deltaTime);
+    
+    // Check if still grounded (simple ground check)
+    this.checkGrounded();
+  }
+
+  handleInput(inputHandler) {
+    let velocityX = this.body.velocity.x;
+    let velocityY = this.body.velocity.y;
+    
+    // Horizontal movement
+    if (inputHandler.isPressed('left')) {
+      velocityX = Math.max(velocityX - this.speed, -0.01);
+      this.facing = -1;
+      this.animationState = this.isGrounded ? 'walking' : 'jumping';
+    } else if (inputHandler.isPressed('right')) {
+      velocityX = Math.min(velocityX + this.speed, 0.01);
+      this.facing = 1;
+      this.animationState = this.isGrounded ? 'walking' : 'jumping';
+    } else {
+      // Apply friction when no input
+      velocityX *= 0.8;
+      if (this.isGrounded) {
+        this.animationState = 'idle';
+      }
+    }
+    
+    // Jumping
+    if ((inputHandler.isPressed('up') || inputHandler.isPressed('space')) && 
+        this.isGrounded && this.jumpCooldown <= 0) {
+      velocityY = this.jumpForce;
+      this.isGrounded = false;
+      this.jumpCooldown = this.maxJumpCooldown;
+      this.animationState = 'jumping';
+    }
+    
+    // Apply velocity
+    Body.setVelocity(this.body, { x: velocityX, y: velocityY });
+  }
+
+  updateAnimation(deltaTime) {
+    this.animationTimer += deltaTime;
+    
+    if (this.animationTimer >= this.animationSpeed * 1000) {
+      this.animationFrame++;
+      this.animationTimer = 0;
+      
+      // Reset frame based on animation type
+      const maxFrames = this.getMaxFrames();
+      if (this.animationFrame >= maxFrames) {
+        this.animationFrame = 0;
+      }
+    }
+  }
+
+  getMaxFrames() {
+    switch (this.animationState) {
+      case 'idle': return 4;
+      case 'walking': return 6;
+      case 'jumping': return 1;
+      default: return 1;
+    }
+  }
+
+  checkGrounded() {
+    // Simple ground check - if velocity is very small and position is stable
+    if (Math.abs(this.body.velocity.y) < 0.001 && this.body.position.y > 100) {
+      // Additional check could be done here with raycasting
+      // For now, this simple check will work
+    } else if (this.body.velocity.y > 0.001) {
+      this.isGrounded = false;
+    }
+  }
+
+  draw(ctx) {
+    const pos = this.body.position;
+    
+    ctx.save();
+    
+    // Draw player as rectangle for now (sprites will be added later)
+    ctx.fillStyle = this.color;
+    
+    // Apply facing direction
+    if (this.facing === -1) {
+      ctx.scale(-1, 1);
+      ctx.fillRect(-pos.x - this.width/2, pos.y - this.height/2, this.width, this.height);
+    } else {
+      ctx.fillRect(pos.x - this.width/2, pos.y - this.height/2, this.width, this.height);
+    }
+    
+    // Draw simple face
+    ctx.fillStyle = 'white';
+    const eyeSize = 4;
+    const eyeOffsetX = this.facing === 1 ? 8 : -8;
+    const eyeOffsetY = -10;
+    
+    if (this.facing === -1) {
+      ctx.fillRect(-pos.x + eyeOffsetX, pos.y + eyeOffsetY, eyeSize, eyeSize);
+      ctx.fillRect(-pos.x + eyeOffsetX + 10, pos.y + eyeOffsetY, eyeSize, eyeSize);
+    } else {
+      ctx.fillRect(pos.x + eyeOffsetX, pos.y + eyeOffsetY, eyeSize, eyeSize);
+      ctx.fillRect(pos.x + eyeOffsetX + 10, pos.y + eyeOffsetY, eyeSize, eyeSize);
+    }
+    
+    ctx.restore();
+  }
+
+  // Get position for camera following
+  get x() {
+    return this.body.position.x;
+  }
+
+  get y() {
+    return this.body.position.y;
+  }
+
+  // Reset player position
+  setPosition(x, y) {
+    Body.setPosition(this.body, { x, y });
+    Body.setVelocity(this.body, { x: 0, y: 0 });
+  }
+}
