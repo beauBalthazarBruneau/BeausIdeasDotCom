@@ -147,31 +147,6 @@ export class Game {
     requestAnimationFrame(this.gameLoop);
   }
 
-  update(deltaTime) {
-    if (this.state !== 'playing') return;
-    
-    // Update input handler
-    this.inputHandler.update();
-    
-    // Update physics
-    this.physics.update(deltaTime);
-    
-    // Update player
-    this.player.update(deltaTime, this.inputHandler);
-    
-    // Update particle system with enhanced environmental effects
-    this.particleSystem.update(deltaTime, this.camera, this.level.getDimensions().width, this.gameTime);
-    
-    // Update background (for animated elements like clouds)
-    this.background.update(deltaTime);
-    
-    // Check for death (falling off the world)
-    this.checkPlayerDeath();
-    
-    // Update camera to follow player
-    this.camera.follow(this.player);
-    this.camera.update();
-  }
 
   render() {
     // Clear canvas with temporary solid color (will be replaced by background)
@@ -201,16 +176,6 @@ export class Game {
   }
 
 
-  drawUI() {
-    // Draw simple UI elements
-    this.ctx.fillStyle = 'white';
-    this.ctx.font = '16px monospace';
-    this.ctx.fillText('Arrow Keys/WASD: Move | Space/Up: Double Jump | F1: Debug', 10, 30);
-    
-    if (this.debugMode) {
-      this.ctx.fillText('Debug Mode ON', 10, 50);
-    }
-  }
 
   checkPlayerDeath() {
     // Check if player has fallen off the world
@@ -219,26 +184,6 @@ export class Game {
     }
   }
 
-  respawnPlayer() {
-    console.log('Player died! Respawning...');
-    
-    // Increment respawn counter
-    this.respawnCount++;
-    
-    // Create death particle effect
-    if (this.particleSystem) {
-      this.createDeathEffect(this.player.x, this.player.y);
-    }
-    
-    // Reset player position and state
-    this.player.respawn(this.spawnPoint.x, this.spawnPoint.y);
-    
-    // Reset camera to follow respawned player smoothly
-    this.camera.x = 0;
-    this.camera.y = 0;
-    this.camera.targetX = 0;
-    this.camera.targetY = 0;
-  }
 
   createDeathEffect(x, y) {
     // Create a burst of particles at death location
@@ -268,30 +213,61 @@ export class Game {
     const debugInfo = document.getElementById('debug-info');
     const fps = Math.round(1000 / this.deltaTime);
     
+    // Get audio status
+    const sfxVolume = Math.round(this.audioManager.getSFXVolume() * 100);
+    const musicVolume = Math.round(this.audioManager.getMusicVolume() * 100);
+    const audioUnlocked = this.audioManager.audioContextUnlocked ? '✓' : '✗';
+    const musicPlaying = this.audioManager.music && this.audioManager.music.playing() ? '♪' : '•';
+    
+    // Get particle counts
+    const actionParticles = this.particleSystem.particles.length;
+    const envParticles = this.particleSystem.environmentalParticles.length;
+    
     debugInfo.innerHTML = `
-      <div class="debug-line">FPS: ${fps}</div>
-      <div class="debug-line">Player X: ${Math.round(this.player.x)}</div>
-      <div class="debug-line">Player Y: ${Math.round(this.player.y)}</div>
-      <div class="debug-line">Velocity X: ${this.player.body.velocity.x.toFixed(3)}</div>
-      <div class="debug-line">Velocity Y: ${this.player.body.velocity.y.toFixed(3)}</div>
-      <div class="debug-line">Grounded: ${this.player.isGrounded}</div>
-      <div class="debug-line">Jumps: ${this.player.jumpsRemaining}/${this.player.maxJumps}</div>
-      <div class="debug-line">Deaths: ${this.respawnCount}</div>
-      <div class="debug-line">Animation: ${this.player.animationState}</div>
-      <div class="debug-line">Frame: ${this.player.animationFrame}</div>
-      <div class="debug-line">Camera X: ${Math.round(this.camera.x)}</div>
-      <div class="debug-line">Camera Y: ${Math.round(this.camera.y)}</div>
+      <div class="debug-section">
+        <div class="debug-title">🎮 GAME INFO</div>
+        <div class="debug-line">FPS: ${fps}</div>
+        <div class="debug-line">Deaths: ${this.respawnCount}</div>
+        <div class="debug-line">Game Time: ${Math.round(this.gameTime / 1000)}s</div>
+      </div>
+      
+      <div class="debug-section">
+        <div class="debug-title">🏃 PLAYER</div>
+        <div class="debug-line">Position: ${Math.round(this.player.x)}, ${Math.round(this.player.y)}</div>
+        <div class="debug-line">Velocity: ${Math.round(this.player.body.velocity.x)}, ${Math.round(this.player.body.velocity.y)}</div>
+        <div class="debug-line">Grounded: ${this.player.isGrounded ? '✓' : '✗'}</div>
+        <div class="debug-line">Jumps: ${this.player.jumpsRemaining}/${this.player.maxJumps}</div>
+        <div class="debug-line">Animation: ${this.player.animationState} (${this.player.animationFrame})</div>
+      </div>
+      
+      <div class="debug-section">
+        <div class="debug-title">📷 CAMERA</div>
+        <div class="debug-line">Position: ${Math.round(this.camera.x)}, ${Math.round(this.camera.y)}</div>
+        <div class="debug-line">Shaking: ${this.camera.isShaking ? '📳' : '•'}</div>
+      </div>
+      
+      <div class="debug-section">
+        <div class="debug-title">🎵 AUDIO</div>
+        <div class="debug-line">Context: ${audioUnlocked} | Music: ${musicPlaying}</div>
+        <div class="debug-line">SFX Vol: ${sfxVolume}% | Music Vol: ${musicVolume}%</div>
+        <div class="debug-line">Muted: ${this.audioManager.isMuted() ? '🔇' : '🔊'}</div>
+      </div>
+      
+      <div class="debug-section">
+        <div class="debug-title">✨ PARTICLES</div>
+        <div class="debug-line">Action: ${actionParticles} | Environment: ${envParticles}</div>
+        <div class="debug-line">Total: ${actionParticles + envParticles}</div>
+      </div>
+      
+      <div class="debug-section">
+        <div class="debug-title">🎮 CONTROLS</div>
+        <div class="debug-line">M: Toggle Mute | +/-: Volume</div>
+        <div class="debug-line">B: Force Music | F1: Debug</div>
+        <div class="debug-line">Space: Jump | WASD: Move</div>
+      </div>
     `;
   }
 
-  // Public methods for game control
-  pause() {
-    this.state = 'paused';
-  }
-
-  resume() {
-    this.state = 'playing';
-  }
 
   reset() {
     // Reset player position
