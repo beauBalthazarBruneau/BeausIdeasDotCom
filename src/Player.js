@@ -243,4 +243,22 @@ export class Player {
     Body.setPosition(this.body, { x, y });
     Body.setVelocity(this.body, { x: 0, y: 0 });
   }
+
+  // Respawn player at specific position with full state reset
+  respawn(x, y) {
+    // Reset position and velocity
+    Body.setPosition(this.body, { x, y });
+    Body.setVelocity(this.body, { x: 0, y: 0 });
+    
+    // Reset player state
+    this.isGrounded = false;
+    this.jumpsRemaining = this.maxJumps;
+    this.jumpCooldown = 0;
+    
+    // Reset animation
+    this.animationState = 'idle';
+    this.animationFrame = 0;
+    this.animationTimer = 0;
+    this.facing = 1;
+  }
 }

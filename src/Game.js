@@ -2,7 +2,7 @@ import { InputHandler } from './InputHandler.js';
 import { Camera } from './Camera.js';
 import { Physics } from './Physics.js';
 import { Player } from './Player.js';
-import { ParticleSystem } from './ParticleSystem.js';
+import { ParticleSystem, Particle } from './ParticleSystem.js';
 
 export class Game {
   constructor(canvas) {
@@ -23,8 +23,13 @@ export class Game {
     this.camera = new Camera(canvas);
     this.particleSystem = new ParticleSystem();
     
+    // Spawn point and death system
+    this.spawnPoint = { x: 100, y: 300 };
+    this.deathY = 800; // Y position considered "fallen off the world"
+    this.respawnCount = 0;
+    
     // Create player
-    this.player = new Player(100, 300, this.physics, this.particleSystem);
+    this.player = new Player(this.spawnPoint.x, this.spawnPoint.y, this.physics, this.particleSystem);
     
     // Setup debug toggle
     this.setupDebugToggle();
@@ -132,6 +137,9 @@ export class Game {
     // Update particle system
     this.particleSystem.update(deltaTime);
     
+    // Check for death (falling off the world)
+    this.checkPlayerDeath();
+    
     // Update camera to follow player
     this.camera.follow(this.player);
     this.camera.update();
@@ -214,6 +222,58 @@ export class Game {
     }
   }
 
+  checkPlayerDeath() {
+    // Check if player has fallen off the world
+    if (this.player.y > this.deathY) {
+      this.respawnPlayer();
+    }
+  }
+
+  respawnPlayer() {
+    console.log('Player died! Respawning...');
+    
+    // Increment respawn counter
+    this.respawnCount++;
+    
+    // Create death particle effect
+    if (this.particleSystem) {
+      this.createDeathEffect(this.player.x, this.player.y);
+    }
+    
+    // Reset player position and state
+    this.player.respawn(this.spawnPoint.x, this.spawnPoint.y);
+    
+    // Reset camera to follow respawned player smoothly
+    this.camera.x = 0;
+    this.camera.y = 0;
+    this.camera.targetX = 0;
+    this.camera.targetY = 0;
+  }
+
+  createDeathEffect(x, y) {
+    // Create a burst of particles at death location
+    const numParticles = 15;
+    
+    for (let i = 0; i < numParticles; i++) {
+      const angle = (Math.PI * 2 * i) / numParticles;
+      const speed = 4 + Math.random() * 6;
+      const size = 3 + Math.random() * 5;
+      
+      const particle = new Particle(x, y, {
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 2, // Slight upward bias
+        life: 800 + Math.random() * 400, // 800-1200ms
+        size: size,
+        color: '#FF4444', // Red death particles
+        gravity: 0.1,
+        friction: 0.98,
+        fadeOut: true
+      });
+      
+      this.particleSystem.particles.push(particle);
+    }
+  }
+
   updateDebugInfo() {
     const debugInfo = document.getElementById('debug-info');
     const fps = Math.round(1000 / this.deltaTime);
@@ -226,6 +286,7 @@ export class Game {
       <div class="debug-line">Velocity Y: ${this.player.body.velocity.y.toFixed(3)}</div>
       <div class="debug-line">Grounded: ${this.player.isGrounded}</div>
       <div class="debug-line">Jumps: ${this.player.jumpsRemaining}/${this.player.maxJumps}</div>
+      <div class="debug-line">Deaths: ${this.respawnCount}</div>
       <div class="debug-line">Animation: ${this.player.animationState}</div>
       <div class="debug-line">Frame: ${this.player.animationFrame}</div>
       <div class="debug-line">Camera X: ${Math.round(this.camera.x)}</div>
