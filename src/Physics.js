@@ -20,9 +20,6 @@ export class Physics {
     if (this.debugMode) {
       this.setupDebugRenderer();
     }
-    
-    // Ground platform for testing
-    this.createGround();
   }
 
   setupDebugRenderer() {
@@ -30,43 +27,6 @@ export class Physics {
     console.log('Debug renderer would be created here');
   }
 
-  createGround() {
-    // Create ground platforms
-    const ground1 = Bodies.rectangle(200, 550, 400, 60, { 
-      isStatic: true,
-      label: 'ground'
-    });
-    
-    const ground2 = Bodies.rectangle(800, 450, 300, 60, { 
-      isStatic: true,
-      label: 'ground'
-    });
-
-    const ground3 = Bodies.rectangle(1200, 350, 400, 60, { 
-      isStatic: true,
-      label: 'ground'
-    });
-
-    // Add walls to prevent player from falling off world
-    const leftWall = Bodies.rectangle(-50, 300, 100, 1000, { 
-      isStatic: true,
-      label: 'wall'
-    });
-    
-    const rightWall = Bodies.rectangle(2050, 300, 100, 1000, { 
-      isStatic: true,
-      label: 'wall'
-    });
-
-    World.add(this.world, [ground1, ground2, ground3, leftWall, rightWall]);
-    
-    // Store platforms
-    this.bodies.set('ground1', ground1);
-    this.bodies.set('ground2', ground2);
-    this.bodies.set('ground3', ground3);
-    this.bodies.set('leftWall', leftWall);
-    this.bodies.set('rightWall', rightWall);
-  }
 
   addBody(id, body) {
     World.add(this.world, body);

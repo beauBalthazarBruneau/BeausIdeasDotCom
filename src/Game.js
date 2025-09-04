@@ -3,6 +3,8 @@ import { Camera } from './Camera.js';
 import { Physics } from './Physics.js';
 import { Player } from './Player.js';
 import { ParticleSystem, Particle } from './ParticleSystem.js';
+import { Level } from './Level.js';
+import { Background } from './Background.js';
 
 export class Game {
   constructor(canvas) {
@@ -23,12 +25,18 @@ export class Game {
     this.camera = new Camera(canvas);
     this.particleSystem = new ParticleSystem();
     
-    // Spawn point and death system
-    this.spawnPoint = { x: 100, y: 300 };
-    this.deathY = 800; // Y position considered "fallen off the world"
+    // Create level first (defines spawn point and platforms)
+    this.level = new Level(this.physics);
+    
+    // Create background with parallax layers
+    this.background = new Background(canvas, this.level.getDimensions().width);
+    
+    // Set spawn point and death system from level
+    this.spawnPoint = this.level.getSpawnPoint();
+    this.deathY = this.level.getDimensions().groundLevel + 200; // Below ground level
     this.respawnCount = 0;
     
-    // Create player
+    // Create player at level spawn point
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y, this.physics, this.particleSystem);
     
     // Setup debug toggle
@@ -96,6 +104,9 @@ export class Game {
   handleResize() {
     this.resizeCanvas();
     this.camera.resize(this.canvas.width, this.canvas.height);
+    if (this.background) {
+      this.background.resize(this.canvas);
+    }
   }
 
   gameLoop(currentTime) {
@@ -137,6 +148,9 @@ export class Game {
     // Update particle system
     this.particleSystem.update(deltaTime);
     
+    // Update background (for animated elements like clouds)
+    this.background.update(deltaTime);
+    
     // Check for death (falling off the world)
     this.checkPlayerDeath();
     
@@ -146,15 +160,18 @@ export class Game {
   }
 
   render() {
-    // Clear canvas
-    this.ctx.fillStyle = '#87CEEB'; // Sky blue background
+    // Clear canvas with temporary solid color (will be replaced by background)
+    this.ctx.fillStyle = '#87CEEB';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     
-    // Apply camera transform
+    // Draw parallax background layers (before camera transform)
+    this.background.draw(this.ctx, this.camera);
+    
+    // Apply camera transform for world objects
     this.camera.apply(this.ctx);
     
-    // Draw world (platforms will be drawn by physics debug or custom renderer)
-    this.drawWorld();
+    // Draw level platforms
+    this.level.draw(this.ctx);
     
     // Draw particles behind player
     this.particleSystem.draw(this.ctx);
@@ -169,47 +186,6 @@ export class Game {
     this.drawUI();
   }
 
-  drawWorld() {
-    // Draw platforms manually (since we're not using sprites yet)
-    this.ctx.fillStyle = '#8B4513'; // Brown color for platforms
-    
-    // Get platform bodies from physics
-    const ground1 = this.physics.getBody('ground1');
-    const ground2 = this.physics.getBody('ground2');
-    const ground3 = this.physics.getBody('ground3');
-    
-    if (ground1) {
-      const pos = ground1.position;
-      this.ctx.fillRect(pos.x - 200, pos.y - 30, 400, 60);
-    }
-    
-    if (ground2) {
-      const pos = ground2.position;
-      this.ctx.fillRect(pos.x - 150, pos.y - 30, 300, 60);
-    }
-    
-    if (ground3) {
-      const pos = ground3.position;
-      this.ctx.fillRect(pos.x - 200, pos.y - 30, 400, 60);
-    }
-    
-    // Add some visual details
-    this.ctx.fillStyle = '#228B22'; // Green grass on top
-    if (ground1) {
-      const pos = ground1.position;
-      this.ctx.fillRect(pos.x - 200, pos.y - 35, 400, 10);
-    }
-    
-    if (ground2) {
-      const pos = ground2.position;
-      this.ctx.fillRect(pos.x - 150, pos.y - 35, 300, 10);
-    }
-    
-    if (ground3) {
-      const pos = ground3.position;
-      this.ctx.fillRect(pos.x - 200, pos.y - 35, 400, 10);
-    }
-  }
 
   drawUI() {
     // Draw simple UI elements

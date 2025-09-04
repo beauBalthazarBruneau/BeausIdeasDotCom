@@ -53,12 +53,12 @@ export class Player {
         if (bodyA === this.body || bodyB === this.body) {
           const otherBody = bodyA === this.body ? bodyB : bodyA;
           
-          if (otherBody.label === 'ground') {
-            // Check if player is landing on top of ground
+          if (otherBody.label === 'platform') {
+            // Check if player is landing on top of platform
             const playerBottom = this.body.position.y + this.height / 2;
-            const groundTop = otherBody.position.y - 30; // Using known ground height/2
+            const platformTop = otherBody.position.y - otherBody.bounds.max.y + otherBody.position.y;
             
-            if (playerBottom >= groundTop - 5 && this.body.velocity.y >= 0) {
+            if (playerBottom >= platformTop - 5 && this.body.velocity.y >= 0) {
               this.isGrounded = true;
             }
           }
@@ -162,37 +162,14 @@ export class Player {
   }
 
   checkGrounded() {
-    // Simple ground check - if velocity is very small and near a platform
-    if (Math.abs(this.body.velocity.y) < 0.1) {
-      // Check if player is near any ground platform
-      const playerBottom = this.body.position.y + this.height / 2;
-      
-      // Check against all ground platforms
-      const ground1 = this.physics.getBody('ground1');
-      const ground2 = this.physics.getBody('ground2');
-      const ground3 = this.physics.getBody('ground3');
-      
-      const grounds = [ground1, ground2, ground3].filter(g => g);
-      
-      for (let ground of grounds) {
-        const groundTop = ground.position.y - 30;
-        const groundLeft = ground.position.x - (ground === ground2 ? 150 : 200);
-        const groundRight = ground.position.x + (ground === ground2 ? 150 : 200);
-        
-        // Check if player is on this platform
-        if (playerBottom >= groundTop - 10 && 
-            playerBottom <= groundTop + 10 &&
-            this.body.position.x >= groundLeft &&
-            this.body.position.x <= groundRight) {
-          this.isGrounded = true;
-          this.jumpsRemaining = this.maxJumps; // Reset jumps when landing
-          return;
-        }
-      }
-    }
-    
+    // If player is falling, they're not grounded
     if (this.body.velocity.y > 0.1) {
       this.isGrounded = false;
+    }
+    
+    // If grounded and velocity is stable, reset jumps
+    if (this.isGrounded && Math.abs(this.body.velocity.y) < 0.1) {
+      this.jumpsRemaining = this.maxJumps;
     }
   }
 
