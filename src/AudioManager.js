@@ -39,6 +39,7 @@ export class AudioManager {
           
           // Start background music if not muted
           if (!this.muted && this.music) {
+            console.log('Starting background music...');
             this.music.play();
           }
         }
@@ -63,7 +64,7 @@ export class AudioManager {
     
     // Background music - simple ambient loop (placeholder)
     this.music = new Howl({
-      src: [this.generateToneDataURL(220, 2, 0.1, 'sine')], // A3 note, 2 seconds, low volume
+      src: [this.generateAmbientMusicDataURL()], // Generate a more pleasant ambient music
       loop: true,
       volume: this.musicVolume,
       autoplay: false, // Don't autoplay due to browser policies
@@ -72,6 +73,12 @@ export class AudioManager {
       },
       onloaderror: (id, error) => {
         console.warn('Failed to load background music:', error);
+      },
+      onplay: () => {
+        console.log('Background music started playing');
+      },
+      onpause: () => {
+        console.log('Background music paused');
       }
     });
     
@@ -154,6 +161,98 @@ export class AudioManager {
       // Apply envelope and volume
       const envelope = Math.max(0, 1 - (t / duration));
       sample *= volume * envelope;
+      
+      // Convert to 16-bit PCM
+      const intSample = Math.max(-32768, Math.min(32767, sample * 32767));
+      view.setInt16(44 + i * 2, intSample, true);
+    }
+    
+    // Convert to data URL
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return 'data:audio/wav;base64,' + btoa(binary);
+  }
+
+  // Generate more pleasant ambient music with multiple harmonies
+  generateAmbientMusicDataURL() {
+    const sampleRate = 44100;
+    const duration = 4; // 4 seconds for a loop
+    const samples = sampleRate * duration;
+    const buffer = new ArrayBuffer(44 + samples * 2);
+    const view = new DataView(buffer);
+    
+    // WAV header
+    const writeString = (offset, string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
+    };
+    
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + samples * 2, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    writeString(36, 'data');
+    view.setUint32(40, samples * 2, true);
+    
+    // Generate ambient music with harmonies
+    // C major chord progression: C - F - G - C (peaceful and soothing)
+    const chordFreqs = [
+      [261.63, 329.63, 392.00], // C major (C-E-G)
+      [174.61, 220.00, 261.63], // F major (F-A-C)
+      [196.00, 246.94, 293.66], // G major (G-B-D)
+      [261.63, 329.63, 392.00]  // C major (C-E-G)
+    ];
+    
+    for (let i = 0; i < samples; i++) {
+      const t = i / sampleRate;
+      const chordIndex = Math.floor((t / duration) * 4) % 4;
+      const chordProgress = ((t / duration) * 4) % 1;
+      
+      let sample = 0;
+      
+      // Add each note in the chord with slight detuning for richness
+      chordFreqs[chordIndex].forEach((freq, index) => {
+        const detune = 1 + (Math.sin(t * 0.5) * 0.002); // Very slight vibrato
+        const noteFreq = freq * detune;
+        
+        // Use different waveforms for different voices
+        let noteSample;
+        switch (index) {
+          case 0: // Bass note - sine wave
+            noteSample = Math.sin(2 * Math.PI * noteFreq * t);
+            break;
+          case 1: // Mid note - triangle wave (softer)
+            noteSample = (2 / Math.PI) * Math.asin(Math.sin(2 * Math.PI * noteFreq * t));
+            break;
+          case 2: // High note - sine with harmonics
+            noteSample = Math.sin(2 * Math.PI * noteFreq * t) * 0.7 + 
+                        Math.sin(2 * Math.PI * noteFreq * 2 * t) * 0.2;
+            break;
+          default:
+            noteSample = Math.sin(2 * Math.PI * noteFreq * t);
+        }
+        
+        // Volume envelope for smooth transitions between chords
+        const envelope = 0.5 + 0.5 * Math.cos(2 * Math.PI * chordProgress);
+        const noteVolume = (index === 0 ? 0.15 : 0.08) * envelope; // Bass louder
+        
+        sample += noteSample * noteVolume;
+      });
+      
+      // Apply overall volume and smooth out any harsh transitions
+      const overallVolume = 0.3; // Quiet background music
+      sample *= overallVolume;
       
       // Convert to 16-bit PCM
       const intSample = Math.max(-32768, Math.min(32767, sample * 32767));
