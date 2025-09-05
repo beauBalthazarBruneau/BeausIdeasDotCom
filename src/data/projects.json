@@ -1,0 +1,100 @@
+{
+  "worlds": {
+    "Vibe Coding": {
+      "id": "vibe-coding",
+      "name": "Vibe Coding World",
+      "description": "Explore software development, automation, and technical innovation projects",
+      "theme_color": "#00D4FF",
+      "projects": [
+        {
+          "id": "slack-bot",
+          "title": "Slack Bot",
+          "subtitle": "An intelligent Slack bot for team productivity and automation",
+          "image": "/images/projects/slack-bot/hero.jpg",
+          "description": "An intelligent Slack bot designed to enhance team productivity through automation and smart integrations.\n\nKey features:\n• Automated task management and reminders\n• Integration with popular development tools\n• Custom slash commands and interactive components\n• Team analytics and reporting\n• Smart notification management\n\nBuilt with Node.js and the Slack API to provide seamless team collaboration enhancement.",
+          "collectible": "mystery-box",
+          "position": { "x": 280, "y": 430 }
+        },
+        {
+          "id": "movie-party",
+          "title": "Movie Party",
+          "subtitle": "A social movie-watching platform for synchronized viewing experiences",
+          "image": "/images/projects/movie-party/room.jpg",
+          "description": "A social platform that enables friends to watch movies together remotely with perfect synchronization.\n\nCore features:\n• Synchronized video playbook across devices\n• Real-time chat during movies\n• Room creation and invitation system\n• Support for multiple video sources\n• User profiles and watch history\n• Mobile and desktop compatibility\n\nBuilt with modern web technologies to create seamless shared viewing experiences.",
+          "collectible": "star",
+          "position": { "x": 380, "y": 430 }
+        },
+        {
+          "id": "goofy-atl-skate",
+          "title": "GOOFY ATL Skate App",
+          "subtitle": "A mobile app for the Atlanta skateboarding community",
+          "image": "/images/projects/goofy-atl/map.jpg",
+          "description": "A mobile application connecting the Atlanta skateboarding community with local spots, events, and fellow skaters.\n\nCommunity features:\n• Interactive map of skate spots\n• Event creation and discovery\n• Photo and video sharing\n• Skater profiles and connections\n• Spot reviews and ratings\n• Push notifications for events\n\nBuilt with React Native to serve both iOS and Android users in the Atlanta skateboarding scene.",
+          "collectible": "coin",
+          "position": { "x": 480, "y": 430 }
+        },
+        {
+          "id": "sacco",
+          "title": "Sacco",
+          "subtitle": "A financial management platform for savings and credit cooperatives",
+          "image": "/images/projects/sacco/dashboard.jpg",
+          "description": "A comprehensive financial management platform designed specifically for savings and credit cooperatives (SACCOs).\n\nFinancial features:\n• Member account management\n• Loan processing and tracking\n• Savings account administration\n• Financial reporting and analytics\n• Mobile banking integration\n• Regulatory compliance tools\n\nBuilt to modernize and streamline SACCO operations while maintaining security and regulatory compliance.",
+          "collectible": "gem",
+          "position": { "x": 780, "y": 430 }
+        }
+      ]
+    },
+    "healthcare": {
+      "id": "healthcare",
+      "name": "Healthcare World",
+      "description": "Medical technology and clinical research innovation platforms",
+      "theme_color": "#FF5722",
+      "projects": [
+        {
+          "id": "clinical-trial-tech",
+          "title": "Clinical Trial Tech Landscape",
+          "subtitle": "Interactive visualization of the clinical trial technology ecosystem",
+          "image": "/images/projects/clinical-tech/network.jpg",
+          "description": "An interactive platform mapping the complex landscape of clinical trial technologies and their relationships.\n\nVisualization features:\n• Interactive network diagrams\n• Company and technology profiles\n• Market trend analysis\n• Investment tracking\n• Regulatory compliance mapping\n• API for data integration\n\nDesigned to help professionals navigate the complex clinical trial technology ecosystem.",
+          "collectible": "trophy",
+          "position": { "x": 680, "y": 430 }
+        },
+        {
+          "id": "laymens-lab",
+          "title": "Laymen's Lab",
+          "subtitle": "Educational platform making complex topics accessible to everyone",
+          "image": "/images/projects/laymens-lab/course.jpg",
+          "description": "An educational platform designed to break down complex topics into digestible, easy-to-understand content for everyone.\n\nEducational features:\n• Interactive learning modules\n• Visual explanations and animations\n• Progress tracking and achievements\n• Community discussion forums\n• Expert-reviewed content\n• Multilingual support\n\nBuilt to democratize education and make learning accessible regardless of background or experience level.",
+          "collectible": "book",
+          "position": { "x": 580, "y": 430 }
+        }
+      ]
+    },
+    "georgia-tech": {
+      "id": "georgia-tech",
+      "name": "Georgia Tech World",
+      "description": "Academic projects and research from Georgia Institute of Technology",
+      "theme_color": "#B3A369",
+      "projects": [
+        {
+          "id": "Diploma",
+          "title": "Bachelor's degree of Biomedical Engineering",
+          "subtitle": "and certificate of Entrepreneurship",
+          "image": "/images/projects/diploma/diploma.jpg",
+          "description": "My degree from Georgia Tech. With a mixed bag of experiences, lessons, and successes and failures.",
+          "collectible": "diploma",
+          "position": { "x": 680, "y": 430 }
+        },
+        {
+          "id": "atGeorgiaTech",
+          "title": "Content Creator for Georgia Tech Social Media",
+          "subtitle": "across snapchat + instagram",
+          "image": "/images/projects/github/github.jpg",
+          "description": "Portfolio of my favorite content that I created for Georgia Tech's Instagram, Snapchat, and TikTok.",
+          "collectible": "iphone",
+          "position": { "x": 580, "y": 430 }
+        }
+      ]
+    }
+  }
+}

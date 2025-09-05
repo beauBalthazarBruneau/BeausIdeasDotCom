@@ -1,86 +1,137 @@
-# Portfolio Mario Game
+# 🎮 Portfolio Mario Game
 
-A 2D Mario-style platformer game built with JavaScript that serves as an interactive portfolio website. Users navigate through levels to discover portfolio projects at various checkpoints.
+A Mario-style platformer game that serves as an interactive portfolio showcase, built with a professional, scalable architecture.
 
-## 🎮 Current Implementation (PER-5)
+## ✨ Features
+- 🏃‍♂️ **Physics-based movement** with Matter.js double jump mechanics
+- 🎯 **Interactive checkpoints** linked to portfolio projects  
+- 💎 **Collectible system** with different collectible types per world
+- 🌍 **Multiple themed worlds** (Tech, Entertainment, Sports, Education, Healthcare, Finance, Georgia Tech)
+- 🎨 **Parallax backgrounds** with environmental particle effects
+- 🎵 **Immersive audio** with sound effects and background music
+- 🐛 **Advanced debug mode** with comprehensive game state monitoring
+- 📱 **Responsive design** ready for mobile optimization
+- 🚀 **Performance optimized** with code splitting and asset optimization
 
-This implements the **Core Game Foundation & Player Movement** ticket with the following features:
+## 🏗️ Architecture
 
-### ✅ Completed Features
-
-- **Vite Project Setup**: Hot reloading development environment
-- **HTML5 Canvas**: Responsive canvas that fills the viewport without scroll bars
-- **Matter.js Physics Engine**: Complete physics world with gravity and collision detection
-- **Player Character**: 
-  - Physics-based movement with Matter.js body
-  - Arrow key and WASD controls
-  - Jumping with cooldown system
-  - Facing direction changes
-- **Camera System**: Smooth camera that follows the player with boundaries
-- **Animation System**: Player state animations (idle, walking, jumping) with frame timing
-- **Game Loop**: 60 FPS targeting with requestAnimationFrame
-- **Modular Architecture**: Clean separation with Player, Camera, InputHandler, Physics, and Game classes
-- **Debug Mode**: F1 toggles physics debug rendering and performance info
-- **Basic World**: Multi-platform level with visual grass details
-
-### 🎯 Controls
-
-- **Arrow Keys** or **WASD** - Move left/right and jump
-- **Space** or **Up Arrow** - Jump
-- **F1** - Toggle debug mode
-
-### 🏗️ Architecture
+This project follows a professional, scalable architecture:
 
 ```
 src/
-├── Game.js         - Main game class with game loop and rendering
-├── Player.js       - Player character with physics and animations  
-├── Camera.js       - Camera system that follows the player
-├── InputHandler.js - Keyboard input management
-├── Physics.js      - Matter.js physics world management
-└── main.js         - Game initialization
+├── 🎮 core/           # Reusable game engine (Physics, Camera, Input, Game)
+├── 🎯 entities/       # Game objects (Player, Checkpoints, Collectibles)
+├── ⚙️  systems/        # Services (Audio, Particles, Background)
+├── 🌍 world/          # Level and world management
+├── 🖥️  ui/            # User interface components and screens
+├── 📊 managers/       # Data and state management
+├── 📂 data/           # Configuration and project data
+├── 🔧 utils/          # Utility functions (math, storage, animation)
+└── 📋 constants/      # Game configuration and constants
 ```
 
-## 🚀 Getting Started
+### Key Benefits:
+- ✅ **Separation of concerns** - each folder has a clear purpose
+- ✅ **Scalable** - easy to add new features without refactoring
+- ✅ **Maintainable** - find and modify code quickly
+- ✅ **Team-friendly** - clear ownership boundaries
+- ✅ **Enterprise-ready** - professional structure for complex applications
 
+## 🚀 Development
+
+### Quick Start
 ```bash
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
-
-# Build for production
-npm run build
 ```
 
-## 🔧 Development
+### Build for Production
+```bash
+npm run build
+npm run preview
+```
 
-The game uses:
-- **Vite** - Build tool and dev server
-- **Matter.js** - 2D physics engine
-- **HTML5 Canvas** - Rendering
-- **ES6 Modules** - Modern JavaScript architecture
+### Path Aliases
+The project includes Vite path aliases for clean imports:
+```javascript
+import { Player } from '@entities';
+import { GAME, PLAYER } from '@constants';
+import { lerp, clamp } from '@utils';
+```
 
-## 📋 Next Steps
+## 🎮 Game Controls
+- **Arrow Keys / WASD**: Move Mario
+- **Space / Up Arrow**: Jump (double jump available)
+- **F1**: Toggle comprehensive debug mode
+- **M**: Toggle audio mute
+- **+/-**: Adjust volume
+- **B**: Force start background music (debug)
 
-This completes **PER-5: Core Game Foundation & Player Movement**. The next tickets to implement are:
+## 🌍 Portfolio Integration
 
-1. **PER-6**: Level Design & World Environment
-2. **PER-7**: Audio System & Visual Polish  
-3. **PER-8**: Interactive Project Checkpoints
-4. **PER-9**: Complete Portfolio Modal System
-5. **PER-10**: Production Optimization & Cross-Device Support
+The game features a world-based portfolio system:
+- **7 themed worlds** each representing different project categories
+- **Mystery box checkpoints** that spawn collectibles when hit
+- **Collectible types** vary by world (mystery-box, star, coin, book, trophy, gem)
+- **Project data structure** supports title, subtitle, image, and description
+- **Progress tracking** with persistent localStorage saves
 
-## 🎨 Technical Highlights
+## 🛠️ Technical Features
 
-- **Physics-Based Movement**: Realistic player physics with friction and air resistance
-- **Smooth Camera**: Interpolated camera following with configurable boundaries
-- **Performance Optimized**: 60 FPS game loop with delta time calculations
-- **Responsive Design**: Canvas automatically scales to viewport size
-- **Debug Tools**: Toggle-able physics visualization and performance metrics
-- **Modular Code**: Clean separation of concerns for easy expansion
+### Performance
+- **Code splitting** - separate chunks for core, entities, systems
+- **Asset optimization** - inline small assets, optimize large ones
+- **60 FPS targeting** with delta time normalization
+- **Efficient particle system** with environmental and action particles
 
----
+### Developer Experience
+- **Hot reload** during development
+- **Source maps** for debugging
+- **Comprehensive constants** - no magic numbers
+- **Utility functions** for common game math and operations
+- **Type-safe data structures** with clear interfaces
 
-*This game will eventually feature interactive checkpoints that showcase portfolio projects in a Mario-style adventure!*
+### Audio System
+- **Howler.js integration** for cross-browser audio
+- **Multiple audio types** (SFX, music) with independent volume controls
+- **Audio context management** with proper browser policy handling
+- **Fade effects** and audio state persistence
+
+### Physics & Animation
+- **Matter.js physics** with optimized collision detection
+- **GSAP animations** for smooth UI transitions and effects
+- **Custom easing functions** and animation utilities
+- **Screen shake** system with multiple intensity levels
+- **Particle effects** for environmental atmosphere and feedback
+
+## 📝 Adding New Features
+
+### New Game Entity
+1. Create in `src/entities/NewEntity.js`
+2. Export from `src/entities/index.js`
+3. Import in Game.js: `import { NewEntity } from '@entities';`
+
+### New Game System
+1. Create in `src/systems/NewSystem.js`
+2. Export from `src/systems/index.js`
+3. Initialize in Game constructor
+
+### New UI Component
+1. Create in `src/ui/components/NewComponent.js`
+2. Export from `src/ui/index.js`
+3. Use with clean imports: `import { NewComponent } from '@ui';`
+
+## 🎯 Next Steps
+
+Ready for advanced features:
+- 📱 **Mobile responsiveness** and touch controls
+- 🏆 **Achievement system** with unlock conditions
+- 💾 **Cloud save integration** for progress sync
+- 🎨 **Theme customization** per world
+- 🔊 **Advanced audio** with positional sound
+- 🌟 **Particle effects** expansion
+- 📊 **Analytics integration** for gameplay metrics
+
+## 📜 License
+
+MIT License - feel free to use this architecture for your own projects!

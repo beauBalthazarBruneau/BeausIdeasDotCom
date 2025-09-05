@@ -1,4 +1,4 @@
-import { Game } from './Game.js';
+import { Game } from './core/Game.js';
 
 // Initialize the game when DOM is loaded
 let game;

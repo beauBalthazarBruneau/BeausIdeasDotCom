@@ -2,15 +2,15 @@
 import { InputHandler } from './InputHandler.js';
 import { Camera } from './Camera.js';
 import { Physics } from './Physics.js';
-import { Player } from './Player.js';
-import { ParticleSystem, Particle } from './ParticleSystem.js';
-import { Level } from './Level.js';
-import { Background } from './Background.js';
-import { AudioManager } from './AudioManager.js';
-import { Checkpoint } from './Checkpoint.js';
-import { Collectible } from './Collectible.js';
-import { ProjectManager, CheckpointStateManager } from './ProjectData.js';
-import { UI } from './UI.js';
+import { Player } from '../entities/Player.js';
+import { ParticleSystem, Particle } from '../systems/ParticleSystem.js';
+import { Level } from '../world/Level.js';
+import { Background } from '../systems/Background.js';
+import { AudioManager } from '../systems/AudioManager.js';
+import { Checkpoint } from '../entities/Checkpoint.js';
+import { Collectible } from '../entities/Collectible.js';
+import { ProjectManager, CheckpointStateManager } from '../managers/ProjectData.js';
+import { UI } from '../ui/UI.js';
 import { gsap } from 'gsap';
 
 export class Game {
