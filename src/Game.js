@@ -1,3 +1,4 @@
+// Portfolio Mario game main class
 import { InputHandler } from './InputHandler.js';
 import { Camera } from './Camera.js';
 import { Physics } from './Physics.js';
@@ -9,6 +10,7 @@ import { AudioManager } from './AudioManager.js';
 import { Checkpoint } from './Checkpoint.js';
 import { Collectible } from './Collectible.js';
 import { ProjectManager, CheckpointStateManager } from './ProjectData.js';
+import { UI } from './UI.js';
 import { gsap } from 'gsap';
 
 export class Game {
@@ -51,6 +53,9 @@ export class Game {
     this.checkpointStateManager = new CheckpointStateManager();
     this.checkpoints = [];
     this.createCheckpoints();
+    
+    // Initialize UI system
+    this.ui = new UI(canvas, this.audioManager, this.checkpointStateManager);
     
     // Set up camera boundaries based on level
     this.camera.setBoundaries(0, this.level.getDimensions().width, -200, this.level.getDimensions().groundLevel);
@@ -116,10 +121,16 @@ export class Game {
     this.physics.toggleDebug();
     
     const debugInfo = document.getElementById('debug-info');
-    if (this.debugMode) {
-      debugInfo.classList.add('visible');
+    if (debugInfo) {
+      if (this.debugMode) {
+        debugInfo.classList.add('visible');
+        console.log('Debug mode ON');
+      } else {
+        debugInfo.classList.remove('visible');
+        console.log('Debug mode OFF');
+      }
     } else {
-      debugInfo.classList.remove('visible');
+      console.warn('Debug info element not found!');
     }
   }
 

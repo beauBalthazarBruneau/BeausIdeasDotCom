@@ -5,6 +5,7 @@ export class Level {
     this.physics = physics;
     this.platforms = new Map();
     this.boundaries = new Map();
+    this.decorativeElements = [];
     this.checkpointAreas = [];
     
     // Level dimensions
@@ -12,68 +13,79 @@ export class Level {
     this.height = 1200; // Total level height
     this.groundLevel = 600; // Base ground level
     
-    // Level data - designed for portfolio navigation with 5 checkpoint areas
+    // Level progression data designed for portfolio navigation
     this.levelData = {
-      // Starting area - tutorial/intro platforms
+      // Starting area - tutorial/intro with basic ground
       startingArea: {
         platforms: [
-          { id: 'start-ground', x: 400, y: this.groundLevel, width: 800, height: 60, type: 'grass' },
+          { id: 'start-ground', x: 0, y: this.groundLevel, width: 600, height: 60, type: 'grass' },
         ],
-        checkpoint: { x: 400, y: this.groundLevel - 100 }
+        decorations: [
+          { type: 'tree', x: 50, y: this.groundLevel - 60 },
+          { type: 'bush', x: 450, y: this.groundLevel - 30 }
+        ]
       },
       
-      // First project area
-      project1Area: {
+      // Mystery box area - where all project checkpoints are located
+      mysteryBoxArea: {
         platforms: [
-          { id: 'p1-ground', x: 700, y: this.groundLevel, width: 300, height: 60, type: 'grass' },
-          { id: 'p1-platform1', x: 800, y: this.groundLevel - 140, width: 180, height: 40, type: 'checkpoint' },
-          { id: 'p1-platform2', x: 900, y: this.groundLevel - 260, width: 160, height: 30, type: 'floating' },
+          { id: 'mystery-ground', x: 600, y: this.groundLevel, width: 1000, height: 60, type: 'grass' },
         ],
-        checkpoint: { x: 800, y: this.groundLevel - 200 }
+        decorations: [
+          { type: 'pillar', x: 150, y: this.groundLevel - 150 },
+          { type: 'pillar', x: 850, y: this.groundLevel - 150 }
+        ]
       },
       
-      // Second project area - elevated section
-      project2Area: {
+      // Elevated section - jumping challenges
+      elevatedSection: {
         platforms: [
-          { id: 'p2-platform1', x: 1100, y: this.groundLevel - 80, width: 200, height: 40, type: 'stone' },
-          { id: 'p2-platform2', x: 1200, y: this.groundLevel - 200, width: 220, height: 40, type: 'checkpoint' },
-          { id: 'p2-platform3', x: 1350, y: this.groundLevel - 320, width: 180, height: 30, type: 'floating' },
+          { id: 'elevated-ground', x: 1700, y: this.groundLevel, width: 500, height: 60, type: 'grass' },
         ],
-        checkpoint: { x: 1200, y: this.groundLevel - 260 }
+        decorations: [
+          { type: 'cloud', x: 1800, y: this.groundLevel - 300 },
+          { type: 'cloud', x: 2000, y: this.groundLevel - 320 }
+        ]
       },
       
-      // Third project area - challenging jumps
-      project3Area: {
+      // Canyon crossing - challenging platforming
+      canyonCrossing: {
         platforms: [
-          { id: 'p3-ground', x: 1600, y: this.groundLevel + 40, width: 280, height: 80, type: 'grass' },
-          { id: 'p3-platform1', x: 1750, y: this.groundLevel - 100, width: 160, height: 40, type: 'stone' },
-          { id: 'p3-checkpoint', x: 1850, y: this.groundLevel - 240, width: 200, height: 40, type: 'checkpoint' },
+          { id: 'canyon-ground', x: 2300, y: this.groundLevel, width: 400, height: 60, type: 'grass' },
         ],
-        checkpoint: { x: 1850, y: this.groundLevel - 300 }
+        decorations: [
+          { type: 'bridge_support', x: 2400, y: this.groundLevel + 50 },
+          { type: 'bridge_support', x: 2600, y: this.groundLevel + 50 }
+        ]
       },
       
-      // Fourth project area - final approach
-      project4Area: {
+      // Victory area - final destination
+      victoryArea: {
         platforms: [
-          { id: 'p4-platform1', x: 2100, y: this.groundLevel - 60, width: 200, height: 50, type: 'stone' },
-          { id: 'p4-platform2', x: 2250, y: this.groundLevel - 180, width: 180, height: 40, type: 'floating' },
-          { id: 'p4-checkpoint', x: 2400, y: this.groundLevel - 120, width: 240, height: 50, type: 'checkpoint' },
+          { id: 'victory-ground', x: 2800, y: this.groundLevel, width: 400, height: 60, type: 'victory' },
         ],
-        checkpoint: { x: 2400, y: this.groundLevel - 180 }
-      },
-      
-      // End area - victory platform
-      endArea: {
-        platforms: [
-          { id: 'end-ground', x: 2750, y: this.groundLevel, width: 400, height: 60, type: 'grass' },
-          { id: 'end-victory', x: 2750, y: this.groundLevel - 140, width: 300, height: 40, type: 'victory' },
-        ],
-        checkpoint: { x: 2750, y: this.groundLevel - 200 }
+        decorations: [
+          { type: 'flag', x: 2950, y: this.groundLevel - 180 },
+          { type: 'tree', x: 2750, y: this.groundLevel - 60 },
+          { type: 'tree', x: 3050, y: this.groundLevel - 60 }
+        ]
       }
     };
     
     this.createLevel();
     this.createBoundaries();
+    this.createDecorations();
+  }
+
+  createDecorations() {
+    // Create decorative elements from level data
+    Object.values(this.levelData).forEach(area => {
+      if (area.decorations) {
+        area.decorations.forEach(decoration => {
+          this.decorativeElements.push(decoration);
+        });
+      }
+    });
   }
 
   createLevel() {
@@ -153,6 +165,9 @@ export class Level {
   }
 
   draw(ctx) {
+    // First draw decorative background elements (so platforms appear on top)
+    this.drawDecorations(ctx, 'background');
+    
     // Draw platforms with different styles based on type
     this.platforms.forEach((platform, id) => {
       const { body, data } = platform;
@@ -171,6 +186,45 @@ export class Level {
       this.drawPlatformDetails(ctx, pos, width, height, type);
       
       ctx.restore();
+    });
+    
+    // Draw foreground decorative elements (on top of platforms)
+    this.drawDecorations(ctx, 'foreground');
+  }
+  
+  drawDecorations(ctx, layer) {
+    this.decorativeElements.forEach(decoration => {
+      const { type, x, y } = decoration;
+      
+      // Check if the decoration should be drawn in the current layer
+      const isBackground = ['cloud', 'bridge_support', 'distant_mountain'].includes(type);
+      
+      if ((layer === 'background' && isBackground) || (layer === 'foreground' && !isBackground)) {
+        ctx.save();
+        
+        switch (type) {
+          case 'tree':
+            this.drawTree(ctx, x, y);
+            break;
+          case 'bush':
+            this.drawBush(ctx, x, y);
+            break;
+          case 'cloud':
+            this.drawCloud(ctx, x, y);
+            break;
+          case 'pillar':
+            this.drawPillar(ctx, x, y);
+            break;
+          case 'bridge_support':
+            this.drawBridgeSupport(ctx, x, y);
+            break;
+          case 'flag':
+            this.drawFlag(ctx, x, y);
+            break;
+        }
+        
+        ctx.restore();
+      }
     });
   }
 
@@ -319,6 +373,139 @@ export class Level {
   // Get spawn point (start of level)
   getSpawnPoint() {
     return { x: 200, y: this.groundLevel - 100 };
+  }
+  
+  // Decoration drawing methods
+  drawTree(ctx, x, y) {
+    // Tree trunk
+    ctx.fillStyle = '#8B4513'; // Brown trunk
+    ctx.fillRect(x - 8, y, 16, 60);
+    
+    // Tree foliage (multiple circles for fuller look)
+    ctx.fillStyle = '#228B22'; // Forest green
+    ctx.beginPath();
+    ctx.arc(x, y - 10, 25, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(x - 15, y - 5, 20, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(x + 15, y - 5, 20, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(x, y - 30, 22, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  
+  drawBush(ctx, x, y) {
+    // Small bush with multiple bumps
+    ctx.fillStyle = '#32CD32'; // Lime green
+    
+    ctx.beginPath();
+    ctx.arc(x - 10, y, 12, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(x, y - 5, 15, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(x + 12, y, 10, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  
+  drawCloud(ctx, x, y) {
+    ctx.fillStyle = '#F0F8FF'; // Alice blue
+    ctx.globalAlpha = 0.8;
+    
+    // Multiple circles to form cloud shape
+    ctx.beginPath();
+    ctx.arc(x, y, 30, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(x - 25, y + 5, 25, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(x + 25, y + 5, 25, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(x - 10, y - 15, 20, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(x + 15, y - 10, 18, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.globalAlpha = 1.0;
+  }
+  
+  drawPillar(ctx, x, y) {
+    // Stone pillar
+    ctx.fillStyle = '#708090'; // Slate gray
+    ctx.fillRect(x - 12, y, 24, 150);
+    
+    // Pillar base
+    ctx.fillStyle = '#2F4F4F'; // Dark slate gray
+    ctx.fillRect(x - 16, y + 140, 32, 20);
+    
+    // Pillar capital
+    ctx.fillRect(x - 16, y - 10, 32, 20);
+    
+    // Add some texture lines
+    ctx.strokeStyle = '#2F4F4F';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let i = 0; i < 5; i++) {
+      const lineY = y + 30 + (i * 25);
+      ctx.moveTo(x - 12, lineY);
+      ctx.lineTo(x + 12, lineY);
+    }
+    ctx.stroke();
+  }
+  
+  drawBridgeSupport(ctx, x, y) {
+    // Vertical support beam
+    ctx.fillStyle = '#8B4513'; // Brown wood
+    ctx.fillRect(x - 6, y - 100, 12, 100);
+    
+    // Diagonal braces
+    ctx.strokeStyle = '#8B4513';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(x - 20, y);
+    ctx.lineTo(x, y - 60);
+    ctx.lineTo(x + 20, y);
+    ctx.stroke();
+  }
+  
+  drawFlag(ctx, x, y) {
+    // Flag pole
+    ctx.fillStyle = '#8B4513'; // Brown pole
+    ctx.fillRect(x - 3, y, 6, 120);
+    
+    // Flag
+    ctx.fillStyle = '#FF0000'; // Red flag
+    ctx.fillRect(x + 3, y, 40, 25);
+    
+    // Flag details
+    ctx.fillStyle = '#FFFFFF'; // White star
+    ctx.beginPath();
+    ctx.arc(x + 23, y + 12, 6, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Flag wave effect (simple triangle)
+    ctx.fillStyle = '#FF0000';
+    ctx.beginPath();
+    ctx.moveTo(x + 43, y);
+    ctx.lineTo(x + 50, y + 12);
+    ctx.lineTo(x + 43, y + 25);
+    ctx.fill();
   }
 
   destroy() {

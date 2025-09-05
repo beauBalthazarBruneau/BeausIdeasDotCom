@@ -44,7 +44,7 @@ Built with Node.js and the Slack API to provide seamless team collaboration enha
       'Bot conversation design',
       'Webhook and event handling'
     ],
-    position: { x: 280, y: 450 }
+    position: { x: 280, y: 430 }
   },
   
   {
@@ -90,7 +90,7 @@ Built with modern web technologies to create seamless shared viewing experiences
       'Socket.io for event synchronization',
       'Media streaming optimization'
     ],
-    position: { x: 380, y: 450 }
+    position: { x: 380, y: 430 }
   },
   
   {
@@ -136,7 +136,7 @@ Built with React Native to serve both iOS and Android users in the Atlanta skate
       'Google Maps API integration',
       'Firebase real-time features'
     ],
-    position: { x: 480, y: 450 }
+    position: { x: 480, y: 430 }
   },
   
   {
@@ -182,7 +182,7 @@ Built to democratize education and make learning accessible regardless of backgr
       'Vue.js advanced patterns',
       'Django content management'
     ],
-    position: { x: 580, y: 450 }
+    position: { x: 580, y: 430 }
   },
   
   {
@@ -228,7 +228,7 @@ Designed to help professionals navigate the complex clinical trial technology ec
       'Graph theory applications',
       'Healthcare industry insights'
     ],
-    position: { x: 680, y: 450 }
+    position: { x: 680, y: 430 }
   },
   
   {
@@ -274,7 +274,7 @@ Built to modernize and streamline SACCO operations while maintaining security an
       'Security best practices',
       'Compliance and audit trails'
     ],
-    position: { x: 780, y: 450 }
+    position: { x: 780, y: 430 }
   }
 ];
 

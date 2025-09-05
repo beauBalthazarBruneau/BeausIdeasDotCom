@@ -53,20 +53,53 @@ export class Player {
         if (bodyA === this.body || bodyB === this.body) {
           const otherBody = bodyA === this.body ? bodyB : bodyA;
           
-          if (otherBody.label === 'platform') {
-            // Check if player is landing on top of platform
+          // Check for platforms AND checkpoints as valid ground
+          if (otherBody.label === 'platform' || otherBody.label === 'checkpoint') {
+            // Improved ground detection - check if player is on top of surface
             const playerBottom = this.body.position.y + this.height / 2;
-            const platformTop = otherBody.position.y - otherBody.bounds.max.y + otherBody.position.y;
+            const playerTop = this.body.position.y - this.height / 2;
+            const surfaceTop = otherBody.position.y - (otherBody.bounds.max.y - otherBody.bounds.min.y) / 2;
+            const surfaceBottom = otherBody.position.y + (otherBody.bounds.max.y - otherBody.bounds.min.y) / 2;
             
-            if (playerBottom >= platformTop - 5 && this.body.velocity.y >= 0) {
+            // Check if player is landing on top (with some tolerance)
+            if (playerBottom <= surfaceTop + 10 && playerTop < surfaceTop && this.body.velocity.y >= -1) {
               this.isGrounded = true;
+              this.jumpsRemaining = this.maxJumps; // Reset jumps immediately when grounded
+              console.log(`Player grounded on ${otherBody.label}`);
             }
-          } else if (otherBody.label === 'checkpoint') {
-            // Handle checkpoint collision
-            const checkpoint = otherBody.checkpointRef;
-            if (checkpoint && checkpoint.onPlayerCollision) {
-              checkpoint.onPlayerCollision();
+            
+            // Special handling for checkpoint collision from below (hitting mystery box)
+            if (otherBody.label === 'checkpoint') {
+              const playerCenter = this.body.position.y;
+              const checkpointCenter = otherBody.position.y;
+              
+              // If player hits checkpoint from below (player center is below checkpoint center)
+              if (playerCenter > checkpointCenter + 10 && this.body.velocity.y < 0) {
+                const checkpoint = otherBody.gameObject;
+                if (checkpoint && checkpoint.onHitFromBelow) {
+                  checkpoint.onHitFromBelow(this);
+                }
+              }
             }
+          }
+        }
+      }
+    });
+    
+    // Also listen for collision end to detect when leaving ground
+    this.physics.onCollisionEnd((event) => {
+      const pairs = event.pairs;
+      
+      for (let pair of pairs) {
+        const { bodyA, bodyB } = pair;
+        
+        if (bodyA === this.body || bodyB === this.body) {
+          const otherBody = bodyA === this.body ? bodyB : bodyA;
+          
+          // Check for leaving platforms OR checkpoints
+          if (otherBody.label === 'platform' || otherBody.label === 'checkpoint') {
+            // Check if we're no longer in contact with any solid surfaces
+            this.checkGroundedStatus();
           }
         }
       }
@@ -177,6 +210,16 @@ export class Player {
     if (this.isGrounded && Math.abs(this.body.velocity.y) < 0.1) {
       this.jumpsRemaining = this.maxJumps;
     }
+  }
+  
+  checkGroundedStatus() {
+    // This method checks if the player is still touching ground after collision ends
+    // For now, we'll set a small delay to check if player is falling
+    setTimeout(() => {
+      if (this.body.velocity.y > 0.5) {
+        this.isGrounded = false;
+      }
+    }, 50);
   }
 
   draw(ctx) {

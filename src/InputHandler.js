@@ -1,3 +1,4 @@
+// Input handler for portfolio Mario game
 export class InputHandler {
   constructor() {
     this.keys = {

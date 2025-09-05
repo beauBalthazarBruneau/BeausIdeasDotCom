@@ -206,24 +206,77 @@ export class ParticleSystem {
     // Spawn floating dust across the visible area
     const visibleStartX = cameraX - 100;
     const visibleEndX = cameraX + 1000;
-    const numAreas = 3;
+    const numAreas = 4;
     
     for (let i = 0; i < numAreas; i++) {
       const x = visibleStartX + (visibleEndX - visibleStartX) * Math.random();
       const y = cameraY + 200 + Math.random() * 400; // Middle to lower area
       
-      // Randomly choose effect type
+      // Randomly choose effect type based on location
       const rand = Math.random();
-      if (rand < 0.6) {
-        this.createFloatingDust(x, y);
-      } else if (rand < 0.8) {
-        this.createWindEffect(x, y, Math.random() > 0.5 ? 1 : -1);
-      } else {
-        // Only create magic sparkles near floating platforms (approximate positions)
-        if (x > 900 && x < 1100) { // Near floating platform areas
+      
+      if (x < 600) {
+        // Starting area - gentle dust and occasional sparkles
+        if (rand < 0.7) {
+          this.createFloatingDust(x, y);
+        } else {
+          this.createMagicSparkles(x, y - 50);
+        }
+      } else if (x >= 200 && x <= 1000) {
+        // Mystery box area - more magical effects
+        if (rand < 0.4) {
+          this.createFloatingDust(x, y);
+        } else if (rand < 0.7) {
           this.createMagicSparkles(x, y - 100);
+        } else {
+          this.createWindEffect(x, y, Math.random() > 0.5 ? 1 : -1);
+        }
+      } else if (x > 1100 && x < 1600) {
+        // Elevated section - wind and floating effects
+        if (rand < 0.5) {
+          this.createWindEffect(x, y - 100, Math.random() > 0.5 ? 1 : -1);
+        } else if (rand < 0.8) {
+          this.createFloatingDust(x, y);
+        } else {
+          this.createMagicSparkles(x, y - 150);
+        }
+      } else {
+        // Victory area - triumphant sparkles
+        if (rand < 0.6) {
+          this.createMagicSparkles(x, y - 50);
+        } else {
+          this.createFloatingDust(x, y);
         }
       }
+    }
+    
+    // Occasionally create special atmospheric effects
+    if (Math.random() < 0.1) { // 10% chance
+      this.createAtmosphericBeam(cameraX + Math.random() * 800, cameraY + 100);
+    }
+  }
+  
+  // Create atmospheric light beam effect
+  createAtmosphericBeam(x, y) {
+    const numParticles = 12;
+    
+    for (let i = 0; i < numParticles; i++) {
+      const particle = new Particle(
+        x + (Math.random() - 0.5) * 30,
+        y - Math.random() * 200, // Start higher up
+        {
+          vx: (Math.random() - 0.5) * 0.3, // Minimal horizontal movement
+          vy: 0.8 + Math.random() * 0.4, // Downward drift like sunbeam
+          life: 6000 + Math.random() * 3000, // 6-9 seconds
+          size: 2 + Math.random() * 4, // Medium particles
+          color: '#FFFACD', // Lemon chiffon (warm light)
+          gravity: 0.001, // Very slight downward pull
+          friction: 0.999,
+          fadeOut: true
+        }
+      );
+      
+      this.environmentalParticles.push(particle);
     }
   }
 

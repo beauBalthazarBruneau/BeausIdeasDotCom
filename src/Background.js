@@ -293,12 +293,25 @@ export class Background {
     this.layers[0].elements.forEach(element => {
       if (element.type === 'cloud') {
         element.x += 0.01 * deltaTime; // Very slow cloud movement
+        // Add subtle vertical bobbing
+        element.bobOffset = (element.bobOffset || 0) + deltaTime * 0.0005;
+        element.originalY = element.originalY || element.y;
+        element.y = element.originalY + Math.sin(element.bobOffset) * 3;
+        
         // Wrap clouds around
         if (element.x > this.levelWidth + 100) {
           element.x = -100;
         }
       }
     });
+    
+    // Add atmospheric particles (floating dust motes)
+    this.updateAtmosphericEffects(deltaTime);
+  }
+  
+  updateAtmosphericEffects(deltaTime) {
+    // This could be expanded with floating particles, light rays, etc.
+    // For now, we'll let the existing ParticleSystem handle environmental particles
   }
 
   // Resize handler
