@@ -5,6 +5,7 @@ import { Physics } from './Physics.js';
 import { Player } from '../entities/Player.js';
 import { ParticleSystem, Particle } from '../systems/ParticleSystem.js';
 import { Level } from '../world/Level.js';
+import { WorldTransitionManager } from '../world/WorldTransitionManager.js';
 import { Background } from '../systems/Background.js';
 import { AudioManager } from '../systems/AudioManager.js';
 import { Checkpoint } from '../entities/Checkpoint.js';
@@ -32,10 +33,14 @@ export class Game {
     this.camera = new Camera(canvas);
     this.particleSystem = new ParticleSystem();
     
-    // Create level first (defines spawn point and platforms)
+    // Initialize world transition system
+    this.worldTransitionManager = new WorldTransitionManager(this);
+    this.doors = []; // Array to track doors in current world
+    
+    // Initialize with fallback level for now (will be replaced by world system)
     this.level = new Level(this.physics);
     
-    // Create background with parallax layers
+    // Create background with parallax layers (will update when world changes)
     this.background = new Background(canvas, this.level.getDimensions().width);
     
     // Set spawn point and death system from level
@@ -45,6 +50,9 @@ export class Game {
     
     // Create player at level spawn point
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y, this.physics, this.particleSystem);
+    
+    // Initialize main hub after setup
+    this.initializeMainHub();
     
     // Initialize audio manager
     this.audioManager = new AudioManager();
@@ -142,6 +150,12 @@ export class Game {
     }
   }
   
+  // Initialize main hub world
+  async initializeMainHub() {
+    console.log('Initializing main hub world');
+    this.level = await this.worldTransitionManager.transitionToMainHub({ x: 100, y: 300 });
+  }
+  
   // Create checkpoint entities from project data
   createCheckpoints() {
     const projects = ProjectManager.getProjectsForCheckpoints();
@@ -213,11 +227,21 @@ export class Game {
     // Apply camera transform for world objects
     this.camera.apply(this.ctx);
     
-    // Draw level platforms
-    this.level.draw(this.ctx);
+    // Draw level platforms (use current world if available)
+    const currentWorld = this.worldTransitionManager.getCurrentWorldInstance();
+    if (currentWorld) {
+      currentWorld.draw(this.ctx);
+    } else {
+      this.level.draw(this.ctx);
+    }
     
     // Draw checkpoints
     this.checkpoints.forEach(checkpoint => checkpoint.draw(this.ctx));
+    
+    // Draw doors
+    if (this.doors && this.doors.length > 0) {
+      this.doors.forEach(door => door.draw(this.ctx));
+    }
     
     // Draw particles behind player
     this.particleSystem.draw(this.ctx);
@@ -479,7 +503,9 @@ export class Game {
     }
     
     // Update particle system with enhanced environmental effects
-    this.particleSystem.update(deltaTime, this.camera, this.level.getDimensions().width, this.gameTime);
+    const currentWorld = this.worldTransitionManager.getCurrentWorldInstance();
+    const worldWidth = currentWorld ? currentWorld.getDimensions().width : this.level.getDimensions().width;
+    this.particleSystem.update(deltaTime, this.camera, worldWidth, this.gameTime);
     
     // Update background (for animated elements like clouds)
     this.background.update(deltaTime);
@@ -500,6 +526,14 @@ export class Game {
         this.checkpointStateManager.setState(checkpoint.id, checkpoint.state);
       }
     });
+    
+    // Update doors
+    if (this.doors && this.doors.length > 0) {
+      this.doors.forEach(door => door.update(deltaTime));
+    }
+    
+    // Check for door collisions (world transitions)
+    this.worldTransitionManager.checkDoorCollisions(this.player);
     
     // Check for death (falling off the world)
     this.checkPlayerDeath();
