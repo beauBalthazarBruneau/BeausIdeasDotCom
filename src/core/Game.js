@@ -26,6 +26,17 @@ export class Game {
     this.state = 'playing'; // playing, paused
     this.debugMode = false;
     
+    // Game statistics
+    this.respawnCount = 0;
+    this.startTime = Date.now();
+    
+    // Simple game state tracking
+    this.gameState = {
+      playerStartPosition: { x: 100, y: 300 },
+      initialGameTime: 0,
+      initialRespawnCount: 0
+    };
+    
     // Initialize game systems
     this.setupCanvas();
     this.inputHandler = new InputHandler();
@@ -46,7 +57,6 @@ export class Game {
     // Set spawn point and death system from level
     this.spawnPoint = this.level.getSpawnPoint();
     this.deathY = this.level.getDimensions().groundLevel + 200; // Below ground level
-    this.respawnCount = 0;
     
     // Create player at level spawn point
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y, this.physics, this.particleSystem);
@@ -123,6 +133,15 @@ export class Game {
     document.addEventListener('keyup', (e) => {
       if (e.code === 'F1') {
         debugPressed = false;
+      }
+    });
+    
+    // Set up global click handler for debug reset button
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.id === 'reset-mystery-boxes-btn') {
+        e.preventDefault();
+        console.log('Reset button clicked!');
+        this.resetGameState();
       }
     });
   }
@@ -346,6 +365,9 @@ Good luck, and have fun exploring!`,
     const actionParticles = this.particleSystem.particles.length;
     const envParticles = this.particleSystem.environmentalParticles.length;
     
+    // Get mystery box stats
+    const mysteryBoxStats = this.mysteryBoxStateManager.getStats();
+    
     debugInfo.innerHTML = `
       <div class="debug-section">
         <div class="debug-title">🎮 GAME INFO</div>
@@ -383,10 +405,29 @@ Good luck, and have fun exploring!`,
       </div>
       
       <div class="debug-section">
+        <div class="debug-title">🎁 MYSTERY BOXES</div>
+        <div class="debug-line">Completed: ${mysteryBoxStats.completed}/${mysteryBoxStats.total} (${Math.round(mysteryBoxStats.completionPercentage)}%)</div>
+        <div class="debug-line">Hit: ${mysteryBoxStats.hit} | Inactive: ${mysteryBoxStats.inactive}</div>
+        <div class="debug-line">
+          <button id="reset-mystery-boxes-btn" style="
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            cursor: pointer;
+            margin-top: 2px;
+          ">Complete Game Reset</button>
+        </div>
+      </div>
+      
+      <div class="debug-section">
         <div class="debug-title">🎮 CONTROLS</div>
         <div class="debug-line">M: Toggle Mute | +/-: Volume</div>
         <div class="debug-line">B: Force Music | F1: Debug</div>
         <div class="debug-line">Space: Jump | WASD: Move</div>
+        <div class="debug-line">R: Complete Game Reset</div>
       </div>
     `;
   }
@@ -471,6 +512,12 @@ Good luck, and have fun exploring!`,
           e.preventDefault();
           this.audioManager.forceStartMusic();
           this.showAudioFeedback('Force starting background music');
+          break;
+        case 'KeyR': // R for reset mystery boxes (debug)
+          if (this.debugMode) { // Only allow in debug mode
+            e.preventDefault();
+            this.resetAllMysteryBoxes();
+          }
           break;
       }
     });
@@ -643,6 +690,69 @@ Good luck, and have fun exploring!`,
   resume() {
     this.state = 'playing';
     this.audioManager.onGameResume();
+  }
+
+  // Reset all mystery boxes to their initial unopened state
+  resetAllMysteryBoxes() {
+    this.resetGameState();
+  }
+  
+  // Comprehensive game state reset
+  resetGameState() {
+    console.log('Resetting all game state...');
+    
+    // Reset game statistics
+    this.gameTime = 0;
+    this.startTime = Date.now();
+    this.respawnCount = 0;
+    
+    // Reset player position
+    this.player.setPosition(this.spawnPoint.x, this.spawnPoint.y);
+    this.player.respawn(this.spawnPoint.x, this.spawnPoint.y);
+    
+    // Reset camera
+    this.camera.x = 0;
+    this.camera.y = 0;
+    this.camera.targetX = 0;
+    this.camera.targetY = 0;
+    this.camera.stopShake();
+    this.camera.setZoom(1.0); // Reset zoom
+    
+    // Clear particles
+    this.particleSystem.particles = [];
+    this.particleSystem.environmentalParticles = [];
+    
+    // Reset mystery box state manager (clears localStorage)
+    this.mysteryBoxStateManager.resetAll();
+    
+    // Reset all currently loaded mystery boxes in memory
+    this.mysteryBoxes.forEach(mysteryBox => {
+      mysteryBox.setState('inactive');
+      
+      // Clean up any spawned collectibles
+      if (mysteryBox.collectible) {
+        mysteryBox.collectible.destroy();
+        mysteryBox.collectible = null;
+        mysteryBox.collectibleSpawned = false;
+      }
+      
+      // Reset mystery box properties
+      mysteryBox.hasBeenHit = false;
+      mysteryBox.questionMarkVisible = true;
+      mysteryBox.currentColor = mysteryBox.baseColor;
+    });
+    
+    // Clear all cached worlds and reset world manager
+    this.worldTransitionManager.clearAllWorlds();
+    
+    // Return to main hub
+    this.worldTransitionManager.currentWorldId = 'main-hub';
+    this.initializeMainHub();
+    
+    // Show feedback
+    this.showAudioFeedback('Complete game reset!');
+    
+    console.log('Game state reset complete');
   }
 
   destroy() {

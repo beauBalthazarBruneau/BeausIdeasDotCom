@@ -30,12 +30,25 @@ export class Camera {
     // Viewport offset to center player
     this.offsetX = this.canvas.width / 2;
     this.offsetY = this.canvas.height / 2;
+    
+    // Modal mode - when modal is shown, position player using world coordinates
+    this.modalMode = false;
   }
 
   follow(target) {
-    // Calculate target camera position (center target in viewport)
-    this.targetX = target.x - this.offsetX;
-    this.targetY = target.y - this.offsetY;
+    if (this.modalMode) {
+      // Modal mode: Position player at specific screen coordinates (column 2, row 2)
+      const targetScreenX = this.canvas.width / 3;      // Column 2 center (W/3)
+      const targetScreenY = (2 * this.canvas.height) / 3; // Row 2 center (2H/3)
+      
+      // Calculate camera position so player appears at those screen coordinates
+      this.targetX = target.x - targetScreenX;
+      this.targetY = target.y - targetScreenY;
+    } else {
+      // Normal mode: Center player in viewport
+      this.targetX = target.x - this.offsetX;
+      this.targetY = target.y - this.offsetY;
+    }
     
     // Apply boundaries
     this.targetX = Math.max(this.minX, Math.min(this.maxX - this.canvas.width, this.targetX));
@@ -231,5 +244,35 @@ export class Camera {
     this.maxX = maxX;
     this.minY = minY;
     this.maxY = maxY;
+  }
+  
+  // Enter modal mode - position player in left half of screen
+  enterModalMode() {
+    this.modalMode = true;
+    console.log('Camera entering modal mode - centering player in left half');
+  }
+  
+  // Exit modal mode - return to normal centering
+  exitModalMode() {
+    this.modalMode = false;
+    console.log('Camera exiting modal mode - returning to normal centering');
+  }
+  
+  // Combined zoom and modal positioning for showing modal
+  zoomToPlayerWithModal(zoomLevel, duration = 0.8) {
+    // Enter modal mode first
+    this.enterModalMode();
+    
+    // Then zoom
+    this.zoomToPlayer(zoomLevel, duration);
+  }
+  
+  // Combined zoom out and exit modal mode for hiding modal
+  zoomOutFromModal(duration = 0.5) {
+    // Exit modal mode
+    this.exitModalMode();
+    
+    // Then zoom out
+    this.zoomOut(duration);
   }
 }

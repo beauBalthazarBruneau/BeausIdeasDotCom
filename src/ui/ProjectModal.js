@@ -42,11 +42,11 @@ export class ProjectModal {
       height: 90vh;
       overflow-y: auto;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
-      border: 2px solid #FFD700;
+      border: 2px solid #666;
       position: fixed;
       top: 5vh;
       right: 2.5%;
-      font-family: 'Arial', sans-serif;
+      font-family: monospace;
       color: white;
       transform: translateX(100%);
       opacity: 0;
@@ -61,7 +61,7 @@ export class ProjectModal {
         background: none;
         border: none;
         font-size: 24px;
-        color: #FFD700;
+        color: #aaa;
         cursor: pointer;
         font-weight: bold;
         transition: color 0.3s ease;
@@ -69,10 +69,11 @@ export class ProjectModal {
       
       <div id="modal-content">
         <h2 id="project-title" style="
-          color: #FFD700;
+          color: #ccc;
           font-size: 24px;
           margin: 0 0 10px 0;
           text-align: center;
+          font-family: monospace;
         "></h2>
         
         <div id="project-subtitle" style="
@@ -103,7 +104,7 @@ export class ProjectModal {
         <div id="project-technologies" style="
           margin-bottom: 20px;
         ">
-          <h4 style="color: #FFD700; margin-bottom: 10px;">Technologies:</h4>
+          <h4 style="color: #bbb; margin-bottom: 10px; font-family: monospace;">Technologies:</h4>
           <div id="tech-tags" style="
             display: flex;
             flex-wrap: wrap;
@@ -169,9 +170,10 @@ export class ProjectModal {
     this.isVisible = true;
     this.modalElement.style.display = 'block';
     
-    // Zoom camera on player if game reference is provided
+    // Pause the game and zoom camera on player and enter modal mode if game reference is provided
     if (game && game.camera && game.player) {
-      game.camera.zoomToPlayer(1.5, 0.8); // 1.5x zoom, 0.8s duration
+      game.pause(); // Pause game updates and input
+      game.camera.zoomToPlayerWithModal(1.5, 0.8); // 1.5x zoom, 0.8s duration, positioned in left half
     }
     
     // Animate in - slide from right
@@ -197,9 +199,10 @@ export class ProjectModal {
   hide(game = null) {
     if (!this.isVisible) return;
     
-    // Zoom camera back out if game reference is provided
+    // Resume game and zoom camera back out and exit modal mode if game reference is provided
     if (game && game.camera) {
-      game.camera.zoomOut(0.5); // 0.5s duration to zoom back out
+      game.resume(); // Resume game updates and input
+      game.camera.zoomOutFromModal(0.5); // 0.5s duration to zoom back out and exit modal mode
     }
     
     // Animate out - slide to right
@@ -249,13 +252,14 @@ export class ProjectModal {
       technologies.forEach(tech => {
         const tag = document.createElement('span');
         tag.style.cssText = `
-          background: linear-gradient(135deg, #FFD700, #FFA500);
-          color: #000;
+          background: linear-gradient(135deg, #666, #888);
+          color: #fff;
           padding: 4px 12px;
           border-radius: 15px;
           font-size: 12px;
           font-weight: bold;
           text-transform: uppercase;
+          font-family: monospace;
         `;
         tag.textContent = tech;
         techContainer.appendChild(tag);

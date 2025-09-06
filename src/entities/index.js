@@ -4,3 +4,4 @@
 export { Player } from './Player.js';
 export { MysteryBox } from './MysteryBox.js';
 export { Collectible } from './Collectible.js';
+export { Door } from './Door.js';

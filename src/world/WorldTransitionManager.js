@@ -299,6 +299,15 @@ export class WorldTransitionManager {
            rect1.y + rect1.height > rect2.y;
   }
   
+  // Clear all cached worlds (useful for resets)
+  clearAllWorlds() {
+    console.log('Clearing all cached worlds');
+    this.worlds.clear();
+    this.playerPositions.clear();
+    // Reset to main hub defaults
+    this.playerPositions.set('main-hub', { x: 100, y: 300 });
+  }
+  
   // Cleanup
   destroy() {
     this.clearCurrentWorld();

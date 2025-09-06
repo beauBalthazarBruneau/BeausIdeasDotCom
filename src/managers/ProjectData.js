@@ -83,11 +83,10 @@ export class ProjectManager {
   }
 }
 
-// Mystery box state management
+// Simplified mystery box state management (in-memory only)
 export class MysteryBoxStateManager {
   constructor() {
     this.states = new Map();
-    this.loadFromLocalStorage();
   }
   
   // Get the state of a mystery box
@@ -99,36 +98,24 @@ export class MysteryBoxStateManager {
   setState(mysteryBoxId, state) {
     if (['inactive', 'hit', 'completed'].includes(state)) {
       this.states.set(mysteryBoxId, state);
-      this.saveToLocalStorage();
     }
-  }
-  
-  // Check if a mystery box is in a specific state
-  isState(mysteryBoxId, state) {
-    return this.getState(mysteryBoxId) === state;
-  }
-  
-  // Get all mystery boxes in a specific state
-  getMysteryBoxesByState(state) {
-    const result = [];
-    this.states.forEach((mysteryBoxState, id) => {
-      if (mysteryBoxState === state) {
-        result.push(id);
-      }
-    });
-    return result;
   }
   
   // Get completion statistics
   getStats() {
-    const inactive = this.getMysteryBoxesByState('inactive').length;
-    const hit = this.getMysteryBoxesByState('hit').length;
-    const completed = this.getMysteryBoxesByState('completed').length;
-    const total = ProjectData.length;
+    let inactive = 0, hit = 0, completed = 0;
+    
+    this.states.forEach((state) => {
+      if (state === 'inactive') inactive++;
+      else if (state === 'hit') hit++;
+      else if (state === 'completed') completed++;
+    });
+    
+    const total = Math.max(this.states.size, 1); // At minimum 1 (tutorial)
     
     return {
       inactive,
-      hit,
+      hit, 
       completed,
       total,
       completionPercentage: total > 0 ? (completed / total) * 100 : 0
@@ -138,30 +125,5 @@ export class MysteryBoxStateManager {
   // Reset all mystery box states
   resetAll() {
     this.states.clear();
-    this.saveToLocalStorage();
-  }
-  
-  // Save state to localStorage for persistence
-  saveToLocalStorage() {
-    try {
-      const stateData = Object.fromEntries(this.states);
-      localStorage.setItem('portfolioMysteryBoxStates', JSON.stringify(stateData));
-    } catch (error) {
-      console.warn('Failed to save mystery box states to localStorage:', error);
-    }
-  }
-  
-  // Load state from localStorage
-  loadFromLocalStorage() {
-    try {
-      const saved = localStorage.getItem('portfolioMysteryBoxStates');
-      if (saved) {
-        const stateData = JSON.parse(saved);
-        this.states = new Map(Object.entries(stateData));
-      }
-    } catch (error) {
-      console.warn('Failed to load mystery box states from localStorage:', error);
-      this.states = new Map();
-    }
   }
 }
