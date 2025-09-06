@@ -159,32 +159,78 @@ export class Game {
     this.level = await this.worldTransitionManager.transitionToMainHub({ x: 100, y: 300 });
   }
   
-  // Create mystery box entities from project data
+  // Create tutorial mystery box
   createMysteryBoxes() {
-    const projects = ProjectManager.getProjectsForMysteryBoxes();
-    console.log('Creating mystery boxes for', projects.length, 'projects');
+    console.log('Creating tutorial mystery box');
     
-    projects.forEach(projectData => {
-      const mysteryBox = new MysteryBox(
-        projectData.position.x,
-        projectData.position.y,
-        this,
-        {
-          project: projectData,
-          audioManager: this.audioManager
-        }
-      );
-      
-      // Restore mystery box state from persistent storage
-      const savedState = this.mysteryBoxStateManager.getState(projectData.id);
-      if (savedState !== 'inactive') {
-        mysteryBox.setState(savedState);
+    // Tutorial "project" data
+    const tutorialData = {
+      id: 'tutorial',
+      title: 'Welcome to Mario Portfolio!',
+      description: 'Learn how to navigate this interactive portfolio game and discover my projects across different worlds.',
+      longDescription: `Welcome to my interactive portfolio! This is a Mario-style platformer where you can explore my projects across different themed worlds.
+
+🎮 **How to Play:**
+• Use ARROW KEYS or WASD to move
+• Press SPACE or UP ARROW to jump (double jump available!)
+• Hit mystery boxes from below by jumping underneath them
+• Collect the items that appear to learn about projects
+• Enter doors to explore different themed worlds
+
+🌟 **What You'll Find:**
+• **Georgia Tech World** - Academic and research projects
+• **Healthcare World** - Medical and health-related applications
+• **Vibe Coding World** - Personal coding projects and experiments
+
+Each world contains mystery boxes with detailed information about specific projects, including technologies used, challenges overcome, and links to live demos or repositories.
+
+🎯 **Goal:** Explore all the worlds and discover the full range of my technical skills and project experience!
+
+Good luck, and have fun exploring!`,
+      technologies: ['JavaScript', 'HTML5 Canvas', 'Matter.js Physics', 'GSAP Animations'],
+      status: 'Active',
+      category: 'Tutorial',
+      world: 'main-hub',
+      collectible: '🎓 Tutorial Complete',
+      links: {
+        demo: window.location.href,
+        github: '#'
+      },
+      features: [
+        'Interactive Mario-style platformer gameplay',
+        'Physics-based character movement and collisions',
+        'Multiple themed worlds to explore',
+        'Dynamic mystery box system for project discovery',
+        'Responsive design for various screen sizes'
+      ],
+      challenges: [
+        'Implementing smooth physics-based movement',
+        'Creating responsive canvas-based UI',
+        'Managing game state across multiple worlds',
+        'Optimizing performance for smooth 60fps gameplay'
+      ]
+    };
+    
+    // Create tutorial mystery box at the beginning of the main world
+    const tutorialBox = new MysteryBox(
+      250, // X position - near the start but after spawn
+      460, // Y position - on the ground level
+      this,
+      {
+        project: tutorialData,
+        audioManager: this.audioManager
       }
-      
-      this.mysteryBoxes.push(mysteryBox);
-    });
+    );
     
-    console.log('Created', this.mysteryBoxes.length, 'mystery boxes');
+    // Check if tutorial has been completed
+    const savedState = this.mysteryBoxStateManager.getState('tutorial');
+    if (savedState !== 'inactive') {
+      tutorialBox.setState(savedState);
+    }
+    
+    this.mysteryBoxes.push(tutorialBox);
+    
+    console.log('Created tutorial mystery box');
   }
 
   gameLoop(currentTime) {
