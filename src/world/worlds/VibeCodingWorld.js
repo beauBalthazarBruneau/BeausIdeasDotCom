@@ -42,44 +42,30 @@ export class VibeCodingWorld {
     
     this.createPlatform(groundPlatform);
     
-    // Create project showcase platforms at intervals
+    // Create mystery boxes for each project
+    this.createProjectMysteryBoxes();
+  }
+
+  async createProjectMysteryBoxes() {
+    const { MysteryBox } = await import('../../entities/MysteryBox.js');
+    
     this.projects.forEach((project, index) => {
-      const xPos = 300 + (index * 400); // Space projects 400px apart
+      const xPos = 300 + (index * 400);
       
-      // Project platform
-      const projectPlatform = {
-        id: `project-platform-${index}`,
-        x: xPos,
-        y: this.groundLevel - 100,
-        width: 200,
-        height: 20,
-        type: 'floating'
-      };
+      const mysteryBox = new MysteryBox(
+        xPos,
+        this.groundLevel - 100,
+        this.worldTransitionManager.game,
+        {
+          collectible: project.collectible,
+          audioManager: this.worldTransitionManager.game.audioManager,
+          project: project // Pass project data for modal display
+        }
+      );
       
-      this.createPlatform(projectPlatform);
-      
-      // Add decorative elements for each project
-      this.decorativeElements.push({
-        type: 'project-display',
-        x: xPos,
-        y: this.groundLevel - 150,
-        project: project
-      });
-      
-      // Add tech-themed decorations
-      if (index % 2 === 0) {
-        this.decorativeElements.push({
-          type: 'server-rack',
-          x: xPos + 100,
-          y: this.groundLevel - 60
-        });
-      } else {
-        this.decorativeElements.push({
-          type: 'code-screen',
-          x: xPos - 100,
-          y: this.groundLevel - 80
-        });
-      }
+      this.worldTransitionManager.game.mysteryBoxes = this.worldTransitionManager.game.mysteryBoxes || [];
+      this.worldTransitionManager.game.mysteryBoxes.push(mysteryBox);
+      this.physics.addBody(`mystery-box-${index}`, mysteryBox.body);
     });
   }
 

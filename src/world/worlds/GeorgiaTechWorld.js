@@ -39,42 +39,30 @@ export class GeorgiaTechWorld {
     
     this.createPlatform(groundPlatform);
     
-    // Create project showcase platforms
+    // Create mystery boxes for each project
+    this.createProjectMysteryBoxes();
+  }
+
+  async createProjectMysteryBoxes() {
+    const { MysteryBox } = await import('../../entities/MysteryBox.js');
+    
     this.projects.forEach((project, index) => {
       const xPos = 300 + (index * 400);
       
-      const projectPlatform = {
-        id: `project-platform-${index}`,
-        x: xPos,
-        y: this.groundLevel - 100,
-        width: 200,
-        height: 20,
-        type: 'academic-floating'
-      };
+      const mysteryBox = new MysteryBox(
+        xPos,
+        this.groundLevel - 100,
+        this.worldTransitionManager.game,
+        {
+          collectible: project.collectible,
+          audioManager: this.worldTransitionManager.game.audioManager,
+          project: project // Pass project data for modal display
+        }
+      );
       
-      this.createPlatform(projectPlatform);
-      
-      this.decorativeElements.push({
-        type: 'project-display',
-        x: xPos,
-        y: this.groundLevel - 150,
-        project: project
-      });
-      
-      // Academic-themed decorations
-      if (index % 2 === 0) {
-        this.decorativeElements.push({
-          type: 'lecture-podium',
-          x: xPos + 100,
-          y: this.groundLevel - 60
-        });
-      } else {
-        this.decorativeElements.push({
-          type: 'research-board',
-          x: xPos - 100,
-          y: this.groundLevel - 80
-        });
-      }
+      this.worldTransitionManager.game.mysteryBoxes = this.worldTransitionManager.game.mysteryBoxes || [];
+      this.worldTransitionManager.game.mysteryBoxes.push(mysteryBox);
+      this.physics.addBody(`mystery-box-${index}`, mysteryBox.body);
     });
   }
 

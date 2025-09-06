@@ -114,6 +114,9 @@ export class WorldTransitionManager {
     // Create entry doors for sub-worlds
     await this.createMainHubDoors();
     
+    // Recreate mystery boxes in main hub
+    this.game.createMysteryBoxes();
+    
     // Position player if provided
     if (this.game.player && spawnPosition) {
       this.game.player.setPosition(spawnPosition.x, spawnPosition.y);
@@ -173,13 +176,13 @@ export class WorldTransitionManager {
         this.currentWorld.destroy();
       }
       
-      // Clear checkpoints
-      this.game.checkpoints.forEach(checkpoint => {
-        if (checkpoint.body) {
-          this.game.physics.removeBody(checkpoint.id);
+      // Clear mystery boxes
+      this.game.mysteryBoxes.forEach(mysteryBox => {
+        if (mysteryBox.body) {
+          this.game.physics.removeBody(mysteryBox.id);
         }
       });
-      this.game.checkpoints = [];
+      this.game.mysteryBoxes = [];
       
       // Clear doors
       if (this.game.doors) {

@@ -53,8 +53,8 @@ export class Player {
         if (bodyA === this.body || bodyB === this.body) {
           const otherBody = bodyA === this.body ? bodyB : bodyA;
           
-          // Check for platforms AND checkpoints as valid ground
-          if (otherBody.label === 'platform' || otherBody.label === 'checkpoint') {
+          // Check for platforms AND mystery boxes as valid ground
+          if (otherBody.label === 'platform' || otherBody.label === 'mysteryBox') {
             // Improved ground detection - check if player is on top of surface
             const playerBottom = this.body.position.y + this.height / 2;
             const playerTop = this.body.position.y - this.height / 2;
@@ -68,16 +68,16 @@ export class Player {
               console.log(`Player grounded on ${otherBody.label}`);
             }
             
-            // Special handling for checkpoint collision from below (hitting mystery box)
-            if (otherBody.label === 'checkpoint') {
+            // Special handling for mystery box collision from below (hitting mystery box)
+            if (otherBody.label === 'mysteryBox') {
               const playerCenter = this.body.position.y;
-              const checkpointCenter = otherBody.position.y;
+              const mysteryBoxCenter = otherBody.position.y;
               
-              // If player hits checkpoint from below (player center is below checkpoint center)
-              if (playerCenter > checkpointCenter + 10 && this.body.velocity.y < 0) {
-                const checkpoint = otherBody.gameObject;
-                if (checkpoint && checkpoint.onHitFromBelow) {
-                  checkpoint.onHitFromBelow(this);
+              // If player hits mystery box from below (player center is below mystery box center)
+              if (playerCenter > mysteryBoxCenter + 10 && this.body.velocity.y < 0) {
+                const mysteryBox = otherBody.gameObject;
+                if (mysteryBox && mysteryBox.onHitFromBelow) {
+                  mysteryBox.onHitFromBelow(this);
                 }
               }
             }
@@ -96,8 +96,8 @@ export class Player {
         if (bodyA === this.body || bodyB === this.body) {
           const otherBody = bodyA === this.body ? bodyB : bodyA;
           
-          // Check for leaving platforms OR checkpoints
-          if (otherBody.label === 'platform' || otherBody.label === 'checkpoint') {
+          // Check for leaving platforms OR mystery boxes
+          if (otherBody.label === 'platform' || otherBody.label === 'mysteryBox') {
             // Check if we're no longer in contact with any solid surfaces
             this.checkGroundedStatus();
           }

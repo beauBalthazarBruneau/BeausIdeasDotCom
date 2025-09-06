@@ -8,10 +8,10 @@ import { Level } from '../world/Level.js';
 import { WorldTransitionManager } from '../world/WorldTransitionManager.js';
 import { Background } from '../systems/Background.js';
 import { AudioManager } from '../systems/AudioManager.js';
-import { Checkpoint } from '../entities/Checkpoint.js';
+import { MysteryBox } from '../entities/MysteryBox.js';
 import { Collectible } from '../entities/Collectible.js';
-import { ProjectManager, CheckpointStateManager } from '../managers/ProjectData.js';
-import { UI } from '../ui/UI.js';
+import { ProjectManager, MysteryBoxStateManager } from '../managers/ProjectData.js';
+import { UI, ProjectModal } from '../ui/index.js';
 import { gsap } from 'gsap';
 
 export class Game {
@@ -57,13 +57,16 @@ export class Game {
     // Initialize audio manager
     this.audioManager = new AudioManager();
     
-    // Initialize checkpoint system
-    this.checkpointStateManager = new CheckpointStateManager();
-    this.checkpoints = [];
-    this.createCheckpoints();
+    // Initialize mystery box system
+    this.mysteryBoxStateManager = new MysteryBoxStateManager();
+    this.mysteryBoxes = [];
+    this.createMysteryBoxes();
     
     // Initialize UI system
-    this.ui = new UI(canvas, this.audioManager, this.checkpointStateManager);
+    this.ui = new UI(canvas, this.audioManager, this.mysteryBoxStateManager);
+    
+    // Initialize project modal
+    this.projectModal = new ProjectModal();
     
     // Set up camera boundaries based on level
     this.camera.setBoundaries(0, this.level.getDimensions().width, -200, this.level.getDimensions().groundLevel);
@@ -156,39 +159,32 @@ export class Game {
     this.level = await this.worldTransitionManager.transitionToMainHub({ x: 100, y: 300 });
   }
   
-  // Create checkpoint entities from project data
-  createCheckpoints() {
-    const projects = ProjectManager.getProjectsForCheckpoints();
-    console.log('Creating checkpoints for', projects.length, 'projects');
+  // Create mystery box entities from project data
+  createMysteryBoxes() {
+    const projects = ProjectManager.getProjectsForMysteryBoxes();
+    console.log('Creating mystery boxes for', projects.length, 'projects');
     
     projects.forEach(projectData => {
-      const checkpoint = new Checkpoint(
+      const mysteryBox = new MysteryBox(
         projectData.position.x,
         projectData.position.y,
-        projectData,
-        this.physics,
-        this.particleSystem,
-        this.audioManager,
-        this.camera
+        this,
+        {
+          project: projectData,
+          audioManager: this.audioManager
+        }
       );
       
-      // Restore checkpoint state from persistent storage
-      const savedState = this.checkpointStateManager.getState(projectData.id);
+      // Restore mystery box state from persistent storage
+      const savedState = this.mysteryBoxStateManager.getState(projectData.id);
       if (savedState !== 'inactive') {
-        checkpoint.state = savedState;
-        // Update visual state without triggering effects
-        if (savedState === 'active') {
-          checkpoint.glowIntensity = 1;
-        } else if (savedState === 'completed') {
-          checkpoint.glowIntensity = 1.5;
-          checkpoint.scale = 1.1;
-        }
+        mysteryBox.setState(savedState);
       }
       
-      this.checkpoints.push(checkpoint);
+      this.mysteryBoxes.push(mysteryBox);
     });
     
-    console.log('Created', this.checkpoints.length, 'checkpoints');
+    console.log('Created', this.mysteryBoxes.length, 'mystery boxes');
   }
 
   gameLoop(currentTime) {
@@ -235,8 +231,8 @@ export class Game {
       this.level.draw(this.ctx);
     }
     
-    // Draw checkpoints
-    this.checkpoints.forEach(checkpoint => checkpoint.draw(this.ctx));
+    // Draw mystery boxes
+    this.mysteryBoxes.forEach(mysteryBox => mysteryBox.draw(this.ctx));
     
     // Draw doors
     if (this.doors && this.doors.length > 0) {
@@ -510,20 +506,20 @@ export class Game {
     // Update background (for animated elements like clouds)
     this.background.update(deltaTime);
     
-    // Update checkpoints and handle collisions
-    this.checkpoints.forEach(checkpoint => {
-      checkpoint.update(deltaTime);
+    // Update mystery boxes and handle collisions
+    this.mysteryBoxes.forEach(mysteryBox => {
+      mysteryBox.update(deltaTime);
       
       // Check for player hitting mystery box from below
-      checkpoint.checkPlayerCollision(this.player);
+      mysteryBox.checkPlayerCollision(this.player);
       
       // Check for player collecting spawned collectible
-      checkpoint.checkCollectibleCollection(this.player);
+      mysteryBox.checkCollectibleCollection(this.player);
       
       // Sync state with state manager
-      const currentState = this.checkpointStateManager.getState(checkpoint.id);
-      if (currentState !== checkpoint.state) {
-        this.checkpointStateManager.setState(checkpoint.id, checkpoint.state);
+      const currentState = this.mysteryBoxStateManager.getState(mysteryBox.id);
+      if (currentState !== mysteryBox.state) {
+        this.mysteryBoxStateManager.setState(mysteryBox.id, mysteryBox.state);
       }
     });
     

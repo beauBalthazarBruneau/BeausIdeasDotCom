@@ -1,5 +1,5 @@
 // Portfolio project data structure organized by worlds
-// Each world contains projects that will be linked to checkpoints in the game
+// Each world contains projects that will be linked to mystery boxes in the game
 
 import portfolioData from '../data/projects.json' assert { type: 'json' };
 
@@ -68,8 +68,8 @@ export class ProjectManager {
     return project ? project.position : null;
   }
   
-  static getProjectsForCheckpoints() {
-    // Return projects formatted for checkpoint creation
+  static getProjectsForMysteryBoxes() {
+    // Return projects formatted for mystery box creation
     return ProjectData.map(project => ({
       id: project.id,
       title: project.title,
@@ -83,36 +83,36 @@ export class ProjectManager {
   }
 }
 
-// Checkpoint state management
-export class CheckpointStateManager {
+// Mystery box state management
+export class MysteryBoxStateManager {
   constructor() {
     this.states = new Map();
     this.loadFromLocalStorage();
   }
   
-  // Get the state of a checkpoint
-  getState(checkpointId) {
-    return this.states.get(checkpointId) || 'inactive';
+  // Get the state of a mystery box
+  getState(mysteryBoxId) {
+    return this.states.get(mysteryBoxId) || 'inactive';
   }
   
-  // Set the state of a checkpoint
-  setState(checkpointId, state) {
-    if (['inactive', 'active', 'completed'].includes(state)) {
-      this.states.set(checkpointId, state);
+  // Set the state of a mystery box
+  setState(mysteryBoxId, state) {
+    if (['inactive', 'hit', 'completed'].includes(state)) {
+      this.states.set(mysteryBoxId, state);
       this.saveToLocalStorage();
     }
   }
   
-  // Check if a checkpoint is in a specific state
-  isState(checkpointId, state) {
-    return this.getState(checkpointId) === state;
+  // Check if a mystery box is in a specific state
+  isState(mysteryBoxId, state) {
+    return this.getState(mysteryBoxId) === state;
   }
   
-  // Get all checkpoints in a specific state
-  getCheckpointsByState(state) {
+  // Get all mystery boxes in a specific state
+  getMysteryBoxesByState(state) {
     const result = [];
-    this.states.forEach((checkpointState, id) => {
-      if (checkpointState === state) {
+    this.states.forEach((mysteryBoxState, id) => {
+      if (mysteryBoxState === state) {
         result.push(id);
       }
     });
@@ -121,21 +121,21 @@ export class CheckpointStateManager {
   
   // Get completion statistics
   getStats() {
-    const inactive = this.getCheckpointsByState('inactive').length;
-    const active = this.getCheckpointsByState('active').length;
-    const completed = this.getCheckpointsByState('completed').length;
+    const inactive = this.getMysteryBoxesByState('inactive').length;
+    const hit = this.getMysteryBoxesByState('hit').length;
+    const completed = this.getMysteryBoxesByState('completed').length;
     const total = ProjectData.length;
     
     return {
       inactive,
-      active,
+      hit,
       completed,
       total,
       completionPercentage: total > 0 ? (completed / total) * 100 : 0
     };
   }
   
-  // Reset all checkpoint states
+  // Reset all mystery box states
   resetAll() {
     this.states.clear();
     this.saveToLocalStorage();
@@ -145,22 +145,22 @@ export class CheckpointStateManager {
   saveToLocalStorage() {
     try {
       const stateData = Object.fromEntries(this.states);
-      localStorage.setItem('portfolioCheckpointStates', JSON.stringify(stateData));
+      localStorage.setItem('portfolioMysteryBoxStates', JSON.stringify(stateData));
     } catch (error) {
-      console.warn('Failed to save checkpoint states to localStorage:', error);
+      console.warn('Failed to save mystery box states to localStorage:', error);
     }
   }
   
   // Load state from localStorage
   loadFromLocalStorage() {
     try {
-      const saved = localStorage.getItem('portfolioCheckpointStates');
+      const saved = localStorage.getItem('portfolioMysteryBoxStates');
       if (saved) {
         const stateData = JSON.parse(saved);
         this.states = new Map(Object.entries(stateData));
       }
     } catch (error) {
-      console.warn('Failed to load checkpoint states from localStorage:', error);
+      console.warn('Failed to load mystery box states from localStorage:', error);
       this.states = new Map();
     }
   }

@@ -124,9 +124,9 @@ export class AudioManager {
     this.loadSoundEffect('death', this.generateToneDataURL(165, 0.5, 0.4, 'sawtooth'));
     this.loadSoundEffect('respawn', this.generateToneDataURL(880, 0.3, 0.3, 'sine'));
     
-    // Checkpoint sound effects
-    this.loadSoundEffect('checkpointActivate', this.generateCheckpointActivateDataURL());
-    this.loadSoundEffect('checkpointComplete', this.generateCheckpointCompleteDataURL());
+    // Mystery box sound effects
+    this.loadSoundEffect('mysteryBoxActivate', this.generateMysteryBoxActivateDataURL());
+    this.loadSoundEffect('mysteryBoxComplete', this.generateMysteryBoxCompleteDataURL());
     
     this.initialized = true;
   }
@@ -307,8 +307,8 @@ export class AudioManager {
     return 'data:audio/wav;base64,' + btoa(binary);
   }
   
-  // Generate checkpoint activation sound - ascending chimes
-  generateCheckpointActivateDataURL() {
+  // Generate mystery box activation sound - ascending chimes
+  generateMysteryBoxActivateDataURL() {
     const sampleRate = 44100;
     const duration = 0.6; // 600ms
     const samples = sampleRate * duration;
@@ -374,8 +374,8 @@ export class AudioManager {
     return 'data:audio/wav;base64,' + btoa(binary);
   }
   
-  // Generate checkpoint completion sound - triumphant fanfare
-  generateCheckpointCompleteDataURL() {
+  // Generate mystery box completion sound - triumphant fanfare
+  generateMysteryBoxCompleteDataURL() {
     const sampleRate = 44100;
     const duration = 1.2; // 1.2 seconds
     const samples = sampleRate * duration;
@@ -517,13 +517,13 @@ export class AudioManager {
     this.playSound('respawn');
   }
   
-  // Checkpoint sound methods
-  playCheckpointActivate() {
-    this.playSound('checkpointActivate');
+  // Mystery box sound methods
+  playMysteryBoxActivate() {
+    this.playSound('mysteryBoxActivate');
   }
   
-  playCheckpointComplete() {
-    this.playSound('checkpointComplete');
+  playMysteryBoxComplete() {
+    this.playSound('mysteryBoxComplete');
   }
 
   // Music control

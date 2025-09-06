@@ -4,10 +4,10 @@
 import { gsap } from 'gsap';
 
 export class UI {
-  constructor(canvas, audioManager, checkpointStateManager) {
+  constructor(canvas, audioManager, mysteryBoxStateManager) {
     this.canvas = canvas;
     this.audioManager = audioManager;
-    this.checkpointStateManager = checkpointStateManager;
+    this.mysteryBoxStateManager = mysteryBoxStateManager;
     
     this.elements = new Map();
     this.isSetup = false;

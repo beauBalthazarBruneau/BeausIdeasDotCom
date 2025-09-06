@@ -1,22 +1,23 @@
-// Checkpoint entity for the portfolio Mario game
+// MysteryBox entity for the portfolio Mario game
 // Represents mystery boxes that spawn collectibles when hit from below
 
 import { Bodies } from 'matter-js';
 import { gsap } from 'gsap';
 import { Collectible } from './Collectible.js';
 
-export class Checkpoint {
-  constructor(x, y, projectData, physics, particleSystem, audioManager, camera) {
+export class MysteryBox {
+  constructor(x, y, game, options = {}) {
     this.x = x;
     this.y = y;
-    this.projectData = projectData;
-    this.physics = physics;
-    this.particleSystem = particleSystem;
-    this.audioManager = audioManager;
-    this.camera = camera;
+    this.projectData = options.project;
+    this.physics = game.physics;
+    this.particleSystem = game.particleSystem;
+    this.audioManager = options.audioManager || game.audioManager;
+    this.camera = game.camera;
+    this.projectModal = game.projectModal;
     
-    // Checkpoint properties
-    this.id = projectData.id;
+    // Mystery box properties
+    this.id = this.projectData.id;
     this.width = 40;
     this.height = 40;
     
@@ -44,13 +45,13 @@ export class Checkpoint {
     // Create physics body as a static rectangle (solid, not sensor)
     this.body = Bodies.rectangle(x + this.width/2, y + this.height/2, this.width, this.height, {
       isStatic: true,
-      label: 'checkpoint'
+      label: 'mysteryBox'
     });
     
     // Add to physics world
     this.physics.addBody(this.id, this.body);
     
-    // Store reference to this checkpoint in the physics body
+    // Store reference to this mystery box in the physics body
     this.body.gameObject = this;
     
     console.log(`Created mystery box: ${this.projectData.title} at (${x}, ${y})`);
@@ -145,7 +146,7 @@ export class Checkpoint {
     this.questionMarkVisible = false;
     
     // Play hit sound
-    this.audioManager.playCheckpointActivate();
+    this.audioManager.playMysteryBoxActivate();
     
     // Camera shake
     this.camera.lightShake();
@@ -189,7 +190,8 @@ export class Checkpoint {
       this.physics,
       this.particleSystem,
       this.audioManager,
-      this.projectData
+      this.projectData,
+      this.projectModal
     );
     
     console.log(`Spawned collectible for ${this.projectData.title}`);
@@ -349,7 +351,7 @@ export class Checkpoint {
     }
   }
   
-  // Clean up physics body when checkpoint is destroyed
+  // Clean up physics body when mystery box is destroyed
   destroy() {
     if (this.body && this.physics) {
       this.physics.removeBody(this.id);
