@@ -14,6 +14,13 @@ export class Camera {
     this.shakeY = 0;
     this.isShaking = false;
     
+    // Zoom properties
+    this.zoom = 1;
+    this.targetZoom = 1;
+    this.baseZoom = 1;
+    this.zoomSmoothing = 0.08;
+    this.isZooming = false;
+    
     // Camera boundaries
     this.minX = 0;
     this.maxX = 2000; // Will be updated based on level size
@@ -39,10 +46,31 @@ export class Camera {
     // Smooth camera movement
     this.x += (this.targetX - this.x) * this.smoothing;
     this.y += (this.targetY - this.y) * this.smoothing;
+    
+    // Smooth zoom
+    if (this.isZooming) {
+      this.zoom += (this.targetZoom - this.zoom) * this.zoomSmoothing;
+      
+      // Stop zooming when close enough
+      if (Math.abs(this.targetZoom - this.zoom) < 0.01) {
+        this.zoom = this.targetZoom;
+        this.isZooming = false;
+      }
+    }
   }
 
   apply(ctx) {
     ctx.save();
+    
+    // Apply zoom from center of screen
+    const centerX = this.canvas.width / 2;
+    const centerY = this.canvas.height / 2;
+    
+    // Translate to center, scale, then translate back
+    ctx.translate(centerX, centerY);
+    ctx.scale(this.zoom, this.zoom);
+    ctx.translate(-centerX, -centerY);
+    
     // Apply camera position with screen shake offset
     ctx.translate(-this.x + this.shakeX, -this.y + this.shakeY);
   }
@@ -157,6 +185,44 @@ export class Camera {
     this.shakeX = 0;
     this.shakeY = 0;
     gsap.killTweensOf(this);
+  }
+
+  // Zoom to specific player with animation
+  zoomToPlayer(zoomLevel, duration = 1.0) {
+    this.targetZoom = zoomLevel;
+    this.isZooming = true;
+    
+    // Animate zoom with GSAP for smoother control
+    gsap.to(this, {
+      zoom: zoomLevel,
+      duration: duration,
+      ease: "power2.out",
+      onComplete: () => {
+        this.isZooming = false;
+      }
+    });
+  }
+  
+  // Zoom out to normal view
+  zoomOut(duration = 0.6) {
+    this.targetZoom = this.baseZoom;
+    this.isZooming = true;
+    
+    gsap.to(this, {
+      zoom: this.baseZoom,
+      duration: duration,
+      ease: "power2.out",
+      onComplete: () => {
+        this.isZooming = false;
+      }
+    });
+  }
+  
+  // Set zoom instantly without animation
+  setZoom(zoomLevel) {
+    this.zoom = zoomLevel;
+    this.targetZoom = zoomLevel;
+    this.isZooming = false;
   }
 
   // Update camera boundaries (call this when level loads)

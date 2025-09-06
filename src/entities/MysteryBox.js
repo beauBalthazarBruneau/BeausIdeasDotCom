@@ -9,6 +9,7 @@ export class MysteryBox {
   constructor(x, y, game, options = {}) {
     this.x = x;
     this.y = y;
+    this.game = game; // Store game reference
     this.projectData = options.project;
     this.physics = game.physics;
     this.particleSystem = game.particleSystem;
@@ -191,7 +192,8 @@ export class MysteryBox {
       this.particleSystem,
       this.audioManager,
       this.projectData,
-      this.projectModal
+      this.projectModal,
+      this.game
     );
     
     console.log(`Spawned collectible for ${this.projectData.title}`);

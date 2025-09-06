@@ -5,7 +5,7 @@ import { Bodies, Body, World } from 'matter-js';
 import { gsap } from 'gsap';
 
 export class Collectible {
-  constructor(x, y, physics, particleSystem, audioManager, projectData, projectModal) {
+  constructor(x, y, physics, particleSystem, audioManager, projectData, projectModal, game = null) {
     this.x = x;
     this.y = y;
     this.physics = physics;
@@ -13,6 +13,7 @@ export class Collectible {
     this.audioManager = audioManager;
     this.projectData = projectData;
     this.projectModal = projectModal;
+    this.game = game;
     
     // Visual properties
     this.width = 16;
@@ -107,9 +108,9 @@ export class Collectible {
     // Play collection sound
     this.audioManager.playMysteryBoxComplete();
     
-    // Show project modal
+    // Show project modal with zoom effect
     if (this.projectModal) {
-      this.projectModal.show(this.projectData);
+      this.projectModal.show(this.projectData, this.game);
     }
     
     // Create collection particles

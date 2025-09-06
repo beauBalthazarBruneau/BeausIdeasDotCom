@@ -24,12 +24,10 @@ export class ProjectModal {
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.8);
+      background: transparent;
       display: none;
-      justify-content: center;
-      align-items: center;
       z-index: 1000;
-      backdrop-filter: blur(5px);
+      pointer-events: none;
     `;
     
     // Create modal content
@@ -40,17 +38,19 @@ export class ProjectModal {
       background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
       border-radius: 15px;
       padding: 30px;
-      max-width: 600px;
-      width: 90%;
-      max-height: 80vh;
+      width: 45%;
+      height: 90vh;
       overflow-y: auto;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
       border: 2px solid #FFD700;
-      position: relative;
+      position: fixed;
+      top: 5vh;
+      right: 2.5%;
       font-family: 'Arial', sans-serif;
       color: white;
-      transform: scale(0.7) rotateX(45deg);
+      transform: translateX(100%);
       opacity: 0;
+      pointer-events: auto;
     `;
     
     modal.innerHTML = `
@@ -126,68 +126,93 @@ export class ProjectModal {
   }
   
   setupEventListeners() {
+    // Store current game reference for event handlers
+    let currentGame = null;
+    
     // Close modal when clicking overlay
     this.modalElement.addEventListener('click', (e) => {
       if (e.target === this.modalElement) {
-        this.hide();
+        this.hide(currentGame);
       }
     });
     
     // Close button
     document.getElementById('modal-close').addEventListener('click', () => {
-      this.hide();
+      this.hide(currentGame);
     });
     
     // Close with Escape key
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this.isVisible) {
-        this.hide();
+        this.hide(currentGame);
       }
     });
+    
+    // Store method to update game reference
+    this.updateGameReference = (game) => {
+      currentGame = game;
+    };
   }
   
-  show(projectData) {
+  show(projectData, game = null) {
     if (this.isVisible) return;
     
     this.currentProject = projectData;
+    this.currentGame = game; // Store game reference
     this.populateModal(projectData);
     
-    this.isVisible = true;
-    this.modalElement.style.display = 'flex';
+    // Update event handlers with current game reference
+    if (this.updateGameReference) {
+      this.updateGameReference(game);
+    }
     
-    // Animate in
+    this.isVisible = true;
+    this.modalElement.style.display = 'block';
+    
+    // Zoom camera on player if game reference is provided
+    if (game && game.camera && game.player) {
+      game.camera.zoomToPlayer(1.5, 0.8); // 1.5x zoom, 0.8s duration
+    }
+    
+    // Animate in - slide from right
     gsap.to(this.modal, {
-      scale: 1,
-      rotateX: 0,
+      x: 0,
       opacity: 1,
-      duration: 0.5,
-      ease: "back.out(1.7)"
+      duration: 0.6,
+      ease: "power3.out"
     });
     
     gsap.from('#modal-content > *', {
-      y: 30,
+      x: 50,
       opacity: 0,
-      duration: 0.6,
-      stagger: 0.1,
+      duration: 0.7,
+      stagger: 0.08,
       ease: "power2.out",
-      delay: 0.2
+      delay: 0.3
     });
     
     console.log('Showing project modal for:', projectData.title);
   }
   
-  hide() {
+  hide(game = null) {
     if (!this.isVisible) return;
     
+    // Zoom camera back out if game reference is provided
+    if (game && game.camera) {
+      game.camera.zoomOut(0.5); // 0.5s duration to zoom back out
+    }
+    
+    // Animate out - slide to right
     gsap.to(this.modal, {
-      scale: 0.7,
-      rotateX: -45,
+      x: '100%',
       opacity: 0,
-      duration: 0.3,
+      duration: 0.4,
       ease: "power2.in",
       onComplete: () => {
         this.modalElement.style.display = 'none';
         this.isVisible = false;
+        // Reset position for next time
+        gsap.set(this.modal, { x: '100%' });
       }
     });
     
