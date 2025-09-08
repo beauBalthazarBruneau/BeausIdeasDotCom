@@ -51,7 +51,6 @@ export default defineConfig({
           // Game entities chunk
           entities: [
             'src/entities/Player.js',
-            'src/entities/Checkpoint.js',
             'src/entities/Collectible.js',
           ],
 
