@@ -8,7 +8,7 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #87CEEB;
+  background-color: #87ceeb;
   font-family: 'Courier New', monospace;
 }
 
@@ -25,7 +25,7 @@ body {
   display: block;
   max-width: 100%;
   max-height: 100%;
-  background-color: #87CEEB;
+  background-color: #87ceeb;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;

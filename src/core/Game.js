@@ -10,7 +10,10 @@ import { Background } from '../systems/Background.js';
 import { AudioManager } from '../systems/AudioManager.js';
 import { MysteryBox } from '../entities/MysteryBox.js';
 import { Collectible } from '../entities/Collectible.js';
-import { ProjectManager, MysteryBoxStateManager } from '../managers/ProjectData.js';
+import {
+  ProjectManager,
+  MysteryBoxStateManager,
+} from '../managers/ProjectData.js';
 import { UI, ProjectModal } from '../ui/index.js';
 import { gsap } from 'gsap';
 
@@ -21,79 +24,89 @@ export class Game {
     this.lastTime = 0;
     this.gameTime = 0;
     this.deltaTime = 0;
-    
+
     // Game state
     this.state = 'playing'; // playing, paused
     this.debugMode = false;
-    
+
     // Game statistics
     this.respawnCount = 0;
     this.startTime = Date.now();
-    
+
     // Simple game state tracking
     this.gameState = {
       playerStartPosition: { x: 100, y: 300 },
       initialGameTime: 0,
-      initialRespawnCount: 0
+      initialRespawnCount: 0,
     };
-    
+
     // Initialize game systems
     this.setupCanvas();
     this.inputHandler = new InputHandler();
     this.physics = new Physics(canvas, { debug: this.debugMode });
     this.camera = new Camera(canvas);
     this.particleSystem = new ParticleSystem();
-    
+
     // Initialize world transition system
     this.worldTransitionManager = new WorldTransitionManager(this);
     this.doors = []; // Array to track doors in current world
-    
+
     // Initialize with fallback level for now (will be replaced by world system)
     this.level = new Level(this.physics);
-    
+
     // Create background with parallax layers (will update when world changes)
     this.background = new Background(canvas, this.level.getDimensions().width);
-    
+
     // Set spawn point and death system from level
     this.spawnPoint = this.level.getSpawnPoint();
     this.deathY = this.level.getDimensions().groundLevel + 200; // Below ground level
-    
+
     // Create player at level spawn point
-    this.player = new Player(this.spawnPoint.x, this.spawnPoint.y, this.physics, this.particleSystem);
-    
+    this.player = new Player(
+      this.spawnPoint.x,
+      this.spawnPoint.y,
+      this.physics,
+      this.particleSystem
+    );
+
     // Initialize main hub after setup
     this.initializeMainHub();
-    
+
     // Initialize audio manager
     this.audioManager = new AudioManager();
-    
+
     // Initialize mystery box system
     this.mysteryBoxStateManager = new MysteryBoxStateManager();
     this.mysteryBoxes = [];
     this.createMysteryBoxes();
-    
+
     // Initialize UI system
     this.ui = new UI(canvas, this.audioManager, this.mysteryBoxStateManager);
-    
+
     // Initialize project modal
     this.projectModal = new ProjectModal();
-    
+
     // Set up camera boundaries based on level
-    this.camera.setBoundaries(0, this.level.getDimensions().width, -200, this.level.getDimensions().groundLevel);
-    
+    this.camera.setBoundaries(
+      0,
+      this.level.getDimensions().width,
+      -200,
+      this.level.getDimensions().groundLevel
+    );
+
     // Setup player event listeners for audio and effects
     this.setupPlayerEvents();
-    
+
     // Setup debug toggle
     this.setupDebugToggle();
-    
+
     // Setup audio controls
     this.setupAudioControls();
-    
+
     // Start game loop
     this.gameLoop = this.gameLoop.bind(this);
     requestAnimationFrame(this.gameLoop);
-    
+
     // Handle resize
     this.handleResize();
     window.addEventListener('resize', () => this.handleResize());
@@ -108,11 +121,11 @@ export class Game {
     // Get viewport dimensions
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    
+
     // Set canvas to full viewport
     this.canvas.width = viewportWidth;
     this.canvas.height = viewportHeight;
-    
+
     // Update CSS size to match
     this.canvas.style.width = viewportWidth + 'px';
     this.canvas.style.height = viewportHeight + 'px';
@@ -121,7 +134,7 @@ export class Game {
   setupDebugToggle() {
     // Toggle debug mode with 'F1' key
     let debugPressed = false;
-    
+
     document.addEventListener('keydown', (e) => {
       if (e.code === 'F1' && !debugPressed) {
         e.preventDefault();
@@ -129,13 +142,13 @@ export class Game {
         this.toggleDebug();
       }
     });
-    
+
     document.addEventListener('keyup', (e) => {
       if (e.code === 'F1') {
         debugPressed = false;
       }
     });
-    
+
     // Set up global click handler for debug reset button
     document.addEventListener('click', (e) => {
       if (e.target && e.target.id === 'reset-mystery-boxes-btn') {
@@ -149,7 +162,7 @@ export class Game {
   toggleDebug() {
     this.debugMode = !this.debugMode;
     this.physics.toggleDebug();
-    
+
     const debugInfo = document.getElementById('debug-info');
     if (debugInfo) {
       if (this.debugMode) {
@@ -171,22 +184,26 @@ export class Game {
       this.background.resize(this.canvas);
     }
   }
-  
+
   // Initialize main hub world
   async initializeMainHub() {
     console.log('Initializing main hub world');
-    this.level = await this.worldTransitionManager.transitionToMainHub({ x: 100, y: 300 });
+    this.level = await this.worldTransitionManager.transitionToMainHub({
+      x: 100,
+      y: 300,
+    });
   }
-  
+
   // Create tutorial mystery box
   createMysteryBoxes() {
     console.log('Creating tutorial mystery box');
-    
+
     // Tutorial "project" data
     const tutorialData = {
       id: 'tutorial',
       title: 'Welcome to Mario Portfolio!',
-      description: 'Learn how to navigate this interactive portfolio game and discover my projects across different worlds.',
+      description:
+        'Learn how to navigate this interactive portfolio game and discover my projects across different worlds.',
       longDescription: `Welcome to my interactive portfolio! This is a Mario-style platformer where you can explore my projects across different themed worlds.
 
 🎮 **How to Play:**
@@ -206,30 +223,35 @@ Each world contains mystery boxes with detailed information about specific proje
 🎯 **Goal:** Explore all the worlds and discover the full range of my technical skills and project experience!
 
 Good luck, and have fun exploring!`,
-      technologies: ['JavaScript', 'HTML5 Canvas', 'Matter.js Physics', 'GSAP Animations'],
+      technologies: [
+        'JavaScript',
+        'HTML5 Canvas',
+        'Matter.js Physics',
+        'GSAP Animations',
+      ],
       status: 'Active',
       category: 'Tutorial',
       world: 'main-hub',
       collectible: '🎓 Tutorial Complete',
       links: {
         demo: window.location.href,
-        github: '#'
+        github: '#',
       },
       features: [
         'Interactive Mario-style platformer gameplay',
         'Physics-based character movement and collisions',
         'Multiple themed worlds to explore',
         'Dynamic mystery box system for project discovery',
-        'Responsive design for various screen sizes'
+        'Responsive design for various screen sizes',
       ],
       challenges: [
         'Implementing smooth physics-based movement',
         'Creating responsive canvas-based UI',
         'Managing game state across multiple worlds',
-        'Optimizing performance for smooth 60fps gameplay'
-      ]
+        'Optimizing performance for smooth 60fps gameplay',
+      ],
     };
-    
+
     // Create tutorial mystery box at the beginning of the main world
     const tutorialBox = new MysteryBox(
       250, // X position - near the start but after spawn
@@ -237,18 +259,18 @@ Good luck, and have fun exploring!`,
       this,
       {
         project: tutorialData,
-        audioManager: this.audioManager
+        audioManager: this.audioManager,
       }
     );
-    
+
     // Check if tutorial has been completed
     const savedState = this.mysteryBoxStateManager.getState('tutorial');
     if (savedState !== 'inactive') {
       tutorialBox.setState(savedState);
     }
-    
+
     this.mysteryBoxes.push(tutorialBox);
-    
+
     console.log('Created tutorial mystery box');
   }
 
@@ -257,37 +279,36 @@ Good luck, and have fun exploring!`,
     this.deltaTime = currentTime - this.lastTime;
     this.lastTime = currentTime;
     this.gameTime += this.deltaTime;
-    
+
     // Cap delta time to prevent issues
     const cappedDelta = Math.min(this.deltaTime, 16.667); // Cap at 16.667ms (60 FPS)
-    
+
     // Update
     this.update(cappedDelta);
-    
+
     // Render
     this.render();
-    
+
     // Update debug info
     if (this.debugMode) {
       this.updateDebugInfo();
     }
-    
+
     // Continue loop
     requestAnimationFrame(this.gameLoop);
   }
-
 
   render() {
     // Clear canvas with temporary solid color (will be replaced by background)
     this.ctx.fillStyle = '#87CEEB';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    
+
     // Draw parallax background layers (before camera transform)
     this.background.draw(this.ctx, this.camera);
-    
+
     // Apply camera transform for world objects
     this.camera.apply(this.ctx);
-    
+
     // Draw level platforms (use current world if available)
     const currentWorld = this.worldTransitionManager.getCurrentWorldInstance();
     if (currentWorld) {
@@ -295,29 +316,27 @@ Good luck, and have fun exploring!`,
     } else {
       this.level.draw(this.ctx);
     }
-    
+
     // Draw mystery boxes
-    this.mysteryBoxes.forEach(mysteryBox => mysteryBox.draw(this.ctx));
-    
+    this.mysteryBoxes.forEach((mysteryBox) => mysteryBox.draw(this.ctx));
+
     // Draw doors
     if (this.doors && this.doors.length > 0) {
-      this.doors.forEach(door => door.draw(this.ctx));
+      this.doors.forEach((door) => door.draw(this.ctx));
     }
-    
+
     // Draw particles behind player
     this.particleSystem.draw(this.ctx);
-    
+
     // Draw player
     this.player.draw(this.ctx);
-    
+
     // Restore camera transform
     this.camera.restore(this.ctx);
-    
+
     // Draw UI (after camera restore so it's in screen space)
     this.drawUI();
   }
-
-
 
   checkPlayerDeath() {
     // Check if player has fallen off the world
@@ -326,16 +345,15 @@ Good luck, and have fun exploring!`,
     }
   }
 
-
   createDeathEffect(x, y) {
     // Create a burst of particles at death location
     const numParticles = 15;
-    
+
     for (let i = 0; i < numParticles; i++) {
       const angle = (Math.PI * 2 * i) / numParticles;
       const speed = 4 + Math.random() * 6;
       const size = 3 + Math.random() * 5;
-      
+
       const particle = new Particle(x, y, {
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed - 2, // Slight upward bias
@@ -344,9 +362,9 @@ Good luck, and have fun exploring!`,
         color: '#FF4444', // Red death particles
         gravity: 0.1,
         friction: 0.98,
-        fadeOut: true
+        fadeOut: true,
       });
-      
+
       this.particleSystem.particles.push(particle);
     }
   }
@@ -354,20 +372,21 @@ Good luck, and have fun exploring!`,
   updateDebugInfo() {
     const debugInfo = document.getElementById('debug-info');
     const fps = Math.round(1000 / this.deltaTime);
-    
+
     // Get audio status
     const sfxVolume = Math.round(this.audioManager.getSFXVolume() * 100);
     const musicVolume = Math.round(this.audioManager.getMusicVolume() * 100);
     const audioUnlocked = this.audioManager.audioContextUnlocked ? '✓' : '✗';
-    const musicPlaying = this.audioManager.music && this.audioManager.music.playing() ? '♪' : '•';
-    
+    const musicPlaying =
+      this.audioManager.music && this.audioManager.music.playing() ? '♪' : '•';
+
     // Get particle counts
     const actionParticles = this.particleSystem.particles.length;
     const envParticles = this.particleSystem.environmentalParticles.length;
-    
+
     // Get mystery box stats
     const mysteryBoxStats = this.mysteryBoxStateManager.getStats();
-    
+
     debugInfo.innerHTML = `
       <div class="debug-section">
         <div class="debug-title">🎮 GAME INFO</div>
@@ -432,11 +451,10 @@ Good luck, and have fun exploring!`,
     `;
   }
 
-
   reset() {
     // Reset player position
     this.player.setPosition(100, 300);
-    
+
     // Reset camera
     this.camera.x = 0;
     this.camera.y = 0;
@@ -450,9 +468,9 @@ Good luck, and have fun exploring!`,
     this.prevPlayerState = {
       isGrounded: false,
       jumpsRemaining: 2,
-      animationState: 'idle'
+      animationState: 'idle',
     };
-    
+
     // We'll check these in the update loop since we don't have direct events
     this.playerEventChecks = true;
   }
@@ -462,9 +480,9 @@ Good luck, and have fun exploring!`,
     const currentState = {
       isGrounded: this.player.isGrounded,
       jumpsRemaining: this.player.jumpsRemaining,
-      animationState: this.player.animationState
+      animationState: this.player.animationState,
     };
-    
+
     // Detect jump
     if (currentState.jumpsRemaining < this.prevPlayerState.jumpsRemaining) {
       if (currentState.jumpsRemaining === 1) {
@@ -477,13 +495,13 @@ Good luck, and have fun exploring!`,
         this.camera.lightShake();
       }
     }
-    
+
     // Detect landing
     if (currentState.isGrounded && !this.prevPlayerState.isGrounded) {
       this.audioManager.playLand();
       this.camera.lightShake();
     }
-    
+
     this.prevPlayerState = { ...currentState };
   }
 
@@ -494,19 +512,29 @@ Good luck, and have fun exploring!`,
         case 'KeyM':
           e.preventDefault();
           this.audioManager.toggleMute();
-          this.showAudioFeedback(this.audioManager.isMuted() ? 'Audio Muted' : 'Audio Unmuted');
+          this.showAudioFeedback(
+            this.audioManager.isMuted() ? 'Audio Muted' : 'Audio Unmuted'
+          );
           break;
         case 'Equal': // + key
         case 'NumpadAdd':
           e.preventDefault();
-          this.audioManager.setSFXVolume(Math.min(1, this.audioManager.getSFXVolume() + 0.1));
-          this.showAudioFeedback(`Volume: ${Math.round(this.audioManager.getSFXVolume() * 100)}%`);
+          this.audioManager.setSFXVolume(
+            Math.min(1, this.audioManager.getSFXVolume() + 0.1)
+          );
+          this.showAudioFeedback(
+            `Volume: ${Math.round(this.audioManager.getSFXVolume() * 100)}%`
+          );
           break;
         case 'Minus':
         case 'NumpadSubtract':
           e.preventDefault();
-          this.audioManager.setSFXVolume(Math.max(0, this.audioManager.getSFXVolume() - 0.1));
-          this.showAudioFeedback(`Volume: ${Math.round(this.audioManager.getSFXVolume() * 100)}%`);
+          this.audioManager.setSFXVolume(
+            Math.max(0, this.audioManager.getSFXVolume() - 0.1)
+          );
+          this.showAudioFeedback(
+            `Volume: ${Math.round(this.audioManager.getSFXVolume() * 100)}%`
+          );
           break;
         case 'KeyB': // B for background music (debug)
           e.preventDefault();
@@ -514,14 +542,15 @@ Good luck, and have fun exploring!`,
           this.showAudioFeedback('Force starting background music');
           break;
         case 'KeyR': // R for reset mystery boxes (debug)
-          if (this.debugMode) { // Only allow in debug mode
+          if (this.debugMode) {
+            // Only allow in debug mode
             e.preventDefault();
             this.resetAllMysteryBoxes();
           }
           break;
       }
     });
-    
+
     // Start background music on first user interaction
     const startAudio = () => {
       this.audioManager.startBackgroundMusic();
@@ -550,15 +579,16 @@ Good luck, and have fun exploring!`,
       z-index: 1000;
       pointer-events: none;
     `;
-    
+
     document.body.appendChild(feedback);
-    
+
     // Animate in
-    gsap.fromTo(feedback, 
+    gsap.fromTo(
+      feedback,
       { opacity: 0, y: -20 },
       { opacity: 1, y: 0, duration: 0.3 }
     );
-    
+
     // Animate out and remove
     gsap.to(feedback, {
       opacity: 0,
@@ -569,64 +599,71 @@ Good luck, and have fun exploring!`,
         if (feedback.parentNode) {
           feedback.parentNode.removeChild(feedback);
         }
-      }
+      },
     });
   }
 
   // Enhanced update method with player event checking
   update(deltaTime) {
     if (this.state !== 'playing') return;
-    
+
     // Update input handler
     this.inputHandler.update();
-    
+
     // Update physics
     this.physics.update(deltaTime);
-    
+
     // Update player
     this.player.update(deltaTime, this.inputHandler);
-    
+
     // Check for player events (audio and effects)
     if (this.playerEventChecks) {
       this.checkPlayerEvents();
     }
-    
+
     // Update particle system with enhanced environmental effects
     const currentWorld = this.worldTransitionManager.getCurrentWorldInstance();
-    const worldWidth = currentWorld ? currentWorld.getDimensions().width : this.level.getDimensions().width;
-    this.particleSystem.update(deltaTime, this.camera, worldWidth, this.gameTime);
-    
+    const worldWidth = currentWorld
+      ? currentWorld.getDimensions().width
+      : this.level.getDimensions().width;
+    this.particleSystem.update(
+      deltaTime,
+      this.camera,
+      worldWidth,
+      this.gameTime
+    );
+
     // Update background (for animated elements like clouds)
     this.background.update(deltaTime);
-    
+
     // Update mystery boxes and handle collisions
-    this.mysteryBoxes.forEach(mysteryBox => {
+    this.mysteryBoxes.forEach((mysteryBox) => {
       mysteryBox.update(deltaTime);
-      
+
       // Check for player hitting mystery box from below
       mysteryBox.checkPlayerCollision(this.player);
-      
+
       // Check for player collecting spawned collectible
       mysteryBox.checkCollectibleCollection(this.player);
-      
+
       // Sync state with state manager
       const currentState = this.mysteryBoxStateManager.getState(mysteryBox.id);
       if (currentState !== mysteryBox.state) {
         this.mysteryBoxStateManager.setState(mysteryBox.id, mysteryBox.state);
       }
     });
-    
+
     // Update doors
     if (this.doors && this.doors.length > 0) {
-      this.doors.forEach(door => door.update(deltaTime));
+      this.doors.forEach((door) => door.update(deltaTime));
     }
-    
+
     // Check for door collisions (world transitions)
     this.worldTransitionManager.checkDoorCollisions(this.player);
-    
+
     // Check for death (falling off the world)
     this.checkPlayerDeath();
-    
+
     // Update camera to follow player
     this.camera.follow(this.player);
     this.camera.update();
@@ -635,25 +672,25 @@ Good luck, and have fun exploring!`,
   // Enhanced respawn with audio and screen shake
   respawnPlayer() {
     console.log('Player died! Respawning...');
-    
+
     // Audio and visual effects
     this.audioManager.playDeath();
     this.camera.heavyShake();
-    
+
     // Increment respawn counter
     this.respawnCount++;
-    
+
     // Create death particle effect
     if (this.particleSystem) {
       this.createDeathEffect(this.player.x, this.player.y);
     }
-    
+
     // Reset player position and state with delay for effect
     setTimeout(() => {
       this.player.respawn(this.spawnPoint.x, this.spawnPoint.y);
       this.audioManager.playRespawn();
       this.camera.mediumShake();
-      
+
       // Reset camera to follow respawned player smoothly
       this.camera.x = 0;
       this.camera.y = 0;
@@ -667,16 +704,22 @@ Good luck, and have fun exploring!`,
     // Draw main UI elements
     this.ctx.fillStyle = 'white';
     this.ctx.font = '16px monospace';
-    this.ctx.fillText('Arrow Keys/WASD: Move | Space/Up: Double Jump | F1: Debug', 10, 30);
-    
+    this.ctx.fillText(
+      'Arrow Keys/WASD: Move | Space/Up: Double Jump | F1: Debug',
+      10,
+      30
+    );
+
     // Audio controls
     this.ctx.fillText('M: Mute | +/-: Volume', 10, 50);
-    
+
     if (this.debugMode) {
       this.ctx.fillText('Debug Mode ON', 10, 70);
-      
+
       // Enhanced debug info with audio status
-      const audioStatus = this.audioManager.isMuted() ? 'MUTED' : `${Math.round(this.audioManager.getSFXVolume() * 100)}%`;
+      const audioStatus = this.audioManager.isMuted()
+        ? 'MUTED'
+        : `${Math.round(this.audioManager.getSFXVolume() * 100)}%`;
       this.ctx.fillText(`Audio: ${audioStatus}`, 10, 90);
     }
   }
@@ -696,20 +739,20 @@ Good luck, and have fun exploring!`,
   resetAllMysteryBoxes() {
     this.resetGameState();
   }
-  
+
   // Comprehensive game state reset
   resetGameState() {
     console.log('Resetting all game state...');
-    
+
     // Reset game statistics
     this.gameTime = 0;
     this.startTime = Date.now();
     this.respawnCount = 0;
-    
+
     // Reset player position
     this.player.setPosition(this.spawnPoint.x, this.spawnPoint.y);
     this.player.respawn(this.spawnPoint.x, this.spawnPoint.y);
-    
+
     // Reset camera
     this.camera.x = 0;
     this.camera.y = 0;
@@ -717,41 +760,41 @@ Good luck, and have fun exploring!`,
     this.camera.targetY = 0;
     this.camera.stopShake();
     this.camera.setZoom(1.0); // Reset zoom
-    
+
     // Clear particles
     this.particleSystem.particles = [];
     this.particleSystem.environmentalParticles = [];
-    
+
     // Reset mystery box state manager (clears localStorage)
     this.mysteryBoxStateManager.resetAll();
-    
+
     // Reset all currently loaded mystery boxes in memory
-    this.mysteryBoxes.forEach(mysteryBox => {
+    this.mysteryBoxes.forEach((mysteryBox) => {
       mysteryBox.setState('inactive');
-      
+
       // Clean up any spawned collectibles
       if (mysteryBox.collectible) {
         mysteryBox.collectible.destroy();
         mysteryBox.collectible = null;
         mysteryBox.collectibleSpawned = false;
       }
-      
+
       // Reset mystery box properties
       mysteryBox.hasBeenHit = false;
       mysteryBox.questionMarkVisible = true;
       mysteryBox.currentColor = mysteryBox.baseColor;
     });
-    
+
     // Clear all cached worlds and reset world manager
     this.worldTransitionManager.clearAllWorlds();
-    
+
     // Return to main hub
     this.worldTransitionManager.currentWorldId = 'main-hub';
     this.initializeMainHub();
-    
+
     // Show feedback
     this.showAudioFeedback('Complete game reset!');
-    
+
     console.log('Game state reset complete');
   }
 

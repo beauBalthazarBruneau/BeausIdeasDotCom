@@ -11,22 +11,24 @@ export class VibeCodingWorld {
     this.platforms = new Map();
     this.boundaries = new Map();
     this.decorativeElements = [];
-    
+
     // Sub-world dimensions (smaller, linear layout)
     this.width = 2000;
     this.height = 1200;
     this.groundLevel = 600;
-    
+
     // Get Vibe Coding projects
     this.projects = WorldManager.getProjectsByWorld('vibe-coding');
-    
+
     // Create the linear world layout
     this.createWorld();
     this.createBoundaries();
     this.createDecorations();
     this.createDoors();
-    
-    console.log(`VibeCodingWorld created with ${this.projects.length} projects`);
+
+    console.log(
+      `VibeCodingWorld created with ${this.projects.length} projects`
+    );
   }
 
   createWorld() {
@@ -37,21 +39,21 @@ export class VibeCodingWorld {
       y: this.groundLevel,
       width: this.width,
       height: 60,
-      type: 'tech-ground'
+      type: 'tech-ground',
     };
-    
+
     this.createPlatform(groundPlatform);
-    
+
     // Create mystery boxes for each project
     this.createProjectMysteryBoxes();
   }
 
   async createProjectMysteryBoxes() {
     const { MysteryBox } = await import('../../entities/MysteryBox.js');
-    
+
     this.projects.forEach((project, index) => {
-      const xPos = 300 + (index * 400);
-      
+      const xPos = 300 + index * 400;
+
       const mysteryBox = new MysteryBox(
         xPos,
         this.groundLevel - 100,
@@ -59,11 +61,12 @@ export class VibeCodingWorld {
         {
           collectible: project.collectible,
           audioManager: this.worldTransitionManager.game.audioManager,
-          project: project // Pass project data for modal display
+          project: project, // Pass project data for modal display
         }
       );
-      
-      this.worldTransitionManager.game.mysteryBoxes = this.worldTransitionManager.game.mysteryBoxes || [];
+
+      this.worldTransitionManager.game.mysteryBoxes =
+        this.worldTransitionManager.game.mysteryBoxes || [];
       this.worldTransitionManager.game.mysteryBoxes.push(mysteryBox);
       this.physics.addBody(`mystery-box-${index}`, mysteryBox.body);
     });
@@ -71,19 +74,19 @@ export class VibeCodingWorld {
 
   createPlatform(data) {
     const { id, x, y, width, height, type } = data;
-    
+
     const body = Bodies.rectangle(x, y, width, height, {
       label: 'platform',
       isStatic: true,
       friction: 0.8,
-      restitution: 0.1
+      restitution: 0.1,
     });
-    
+
     this.platforms.set(id, {
       body: body,
-      data: data
+      data: data,
     });
-    
+
     this.physics.addBody(id, body);
   }
 
@@ -91,32 +94,44 @@ export class VibeCodingWorld {
     const leftWall = Bodies.rectangle(-50, this.height / 2, 100, this.height, {
       label: 'boundary',
       isStatic: true,
-      render: { visible: false }
+      render: { visible: false },
     });
-    
-    const rightWall = Bodies.rectangle(this.width + 50, this.height / 2, 100, this.height, {
-      label: 'boundary',
-      isStatic: true,
-      render: { visible: false }
-    });
-    
+
+    const rightWall = Bodies.rectangle(
+      this.width + 50,
+      this.height / 2,
+      100,
+      this.height,
+      {
+        label: 'boundary',
+        isStatic: true,
+        render: { visible: false },
+      }
+    );
+
     const ceiling = Bodies.rectangle(this.width / 2, -50, this.width * 2, 100, {
       label: 'boundary',
       isStatic: true,
-      render: { visible: false }
+      render: { visible: false },
     });
-    
-    const floor = Bodies.rectangle(this.width / 2, this.groundLevel + 400, this.width * 2, 100, {
-      label: 'boundary',
-      isStatic: true,
-      render: { visible: false }
-    });
-    
+
+    const floor = Bodies.rectangle(
+      this.width / 2,
+      this.groundLevel + 400,
+      this.width * 2,
+      100,
+      {
+        label: 'boundary',
+        isStatic: true,
+        render: { visible: false },
+      }
+    );
+
     this.boundaries.set('left', leftWall);
     this.boundaries.set('right', rightWall);
     this.boundaries.set('top', ceiling);
     this.boundaries.set('bottom', floor);
-    
+
     this.physics.addBody('boundary-left', leftWall);
     this.physics.addBody('boundary-right', rightWall);
     this.physics.addBody('boundary-top', ceiling);
@@ -136,10 +151,10 @@ export class VibeCodingWorld {
 
   async createDoors() {
     const { Door } = await import('../../entities/Door.js');
-    
+
     // Entry door (player spawns here from main hub)
     // This door is just visual - player spawns next to it
-    
+
     // Exit door (returns to main hub with progression)
     const exitDoor = new Door(
       this.width - 150,
@@ -149,12 +164,13 @@ export class VibeCodingWorld {
         targetWorld: 'main-hub',
         doorType: 'exit',
         themeColor: '#00D4FF',
-        name: 'Return to Hub'
+        name: 'Return to Hub',
       }
     );
-    
+
     // Add exit door to game doors array
-    this.worldTransitionManager.game.doors = this.worldTransitionManager.game.doors || [];
+    this.worldTransitionManager.game.doors =
+      this.worldTransitionManager.game.doors || [];
     this.worldTransitionManager.game.doors.push(exitDoor);
     this.physics.addBody(`door-exit-vibe-coding`, exitDoor.body);
   }
@@ -162,20 +178,20 @@ export class VibeCodingWorld {
   draw(ctx) {
     // Draw background elements first
     this.drawDecorations(ctx, 'background');
-    
+
     // Draw platforms
     this.platforms.forEach((platform) => {
       const { body, data } = platform;
       const pos = body.position;
       const { width, height, type } = data;
-      
+
       ctx.save();
       this.setPlatformStyle(ctx, type);
-      ctx.fillRect(pos.x - width/2, pos.y - height/2, width, height);
+      ctx.fillRect(pos.x - width / 2, pos.y - height / 2, width, height);
       this.drawPlatformDetails(ctx, pos, width, height, type);
       ctx.restore();
     });
-    
+
     // Draw foreground elements
     this.drawDecorations(ctx, 'foreground');
   }
@@ -195,25 +211,25 @@ export class VibeCodingWorld {
 
   drawPlatformDetails(ctx, pos, width, height, type) {
     const { x, y } = pos;
-    
+
     if (type === 'tech-ground') {
       // Draw tech-style ground with circuit patterns
       ctx.strokeStyle = '#00FFFF';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      
+
       // Draw circuit lines
       for (let i = 0; i < width / 50; i++) {
-        const lineX = x - width/2 + (i * 50);
-        ctx.moveTo(lineX, y - height/2);
-        ctx.lineTo(lineX, y + height/2);
+        const lineX = x - width / 2 + i * 50;
+        ctx.moveTo(lineX, y - height / 2);
+        ctx.lineTo(lineX, y + height / 2);
       }
       ctx.stroke();
-      
+
       // Add circuit nodes
       ctx.fillStyle = '#00FFFF';
       for (let i = 0; i < width / 100; i++) {
-        const nodeX = x - width/2 + 25 + (i * 100);
+        const nodeX = x - width / 2 + 25 + i * 100;
         ctx.fillRect(nodeX - 2, y - 2, 4, 4);
       }
     } else if (type === 'floating') {
@@ -221,20 +237,23 @@ export class VibeCodingWorld {
       ctx.strokeStyle = '#00D4FF';
       ctx.lineWidth = 1;
       ctx.setLineDash([5, 5]);
-      ctx.strokeRect(x - width/2, y - height/2, width, height);
+      ctx.strokeRect(x - width / 2, y - height / 2, width, height);
       ctx.setLineDash([]);
     }
   }
 
   drawDecorations(ctx, layer) {
-    this.decorativeElements.forEach(decoration => {
+    this.decorativeElements.forEach((decoration) => {
       const { type, x, y } = decoration;
-      
+
       const isBackground = ['digital-cloud', 'tech-pillar'].includes(type);
-      
-      if ((layer === 'background' && isBackground) || (layer === 'foreground' && !isBackground)) {
+
+      if (
+        (layer === 'background' && isBackground) ||
+        (layer === 'foreground' && !isBackground)
+      ) {
         ctx.save();
-        
+
         switch (type) {
           case 'project-display':
             this.drawProjectDisplay(ctx, x, y, decoration.project);
@@ -252,7 +271,7 @@ export class VibeCodingWorld {
             this.drawDigitalCloud(ctx, x, y);
             break;
         }
-        
+
         ctx.restore();
       }
     });
@@ -262,26 +281,27 @@ export class VibeCodingWorld {
     // Draw project info display
     ctx.fillStyle = '#1a1a1a';
     ctx.fillRect(x - 75, y - 40, 150, 80);
-    
+
     // Border
     ctx.strokeStyle = '#00D4FF';
     ctx.lineWidth = 2;
     ctx.strokeRect(x - 75, y - 40, 150, 80);
-    
+
     // Project title
     ctx.fillStyle = '#00D4FF';
     ctx.font = 'bold 14px Arial';
     ctx.textAlign = 'center';
     ctx.fillText(project.title, x, y - 15);
-    
+
     // Project description (truncated)
     ctx.fillStyle = '#ffffff';
     ctx.font = '10px Arial';
-    const desc = project.description.length > 40 ? 
-      project.description.substring(0, 37) + '...' : 
-      project.description;
+    const desc =
+      project.description.length > 40
+        ? project.description.substring(0, 37) + '...'
+        : project.description;
     ctx.fillText(desc, x, y + 5);
-    
+
     // Tech indicator
     ctx.fillStyle = '#00FF00';
     ctx.font = '8px Arial';
@@ -292,17 +312,17 @@ export class VibeCodingWorld {
     // Server rack
     ctx.fillStyle = '#333333';
     ctx.fillRect(x - 15, y, 30, 80);
-    
+
     // Server units
     ctx.fillStyle = '#666666';
     for (let i = 0; i < 4; i++) {
-      ctx.fillRect(x - 12, y + 5 + (i * 18), 24, 15);
+      ctx.fillRect(x - 12, y + 5 + i * 18, 24, 15);
     }
-    
+
     // LED lights
     ctx.fillStyle = '#00FF00';
     for (let i = 0; i < 4; i++) {
-      ctx.fillRect(x + 8, y + 8 + (i * 18), 3, 3);
+      ctx.fillRect(x + 8, y + 8 + i * 18, 3, 3);
     }
   }
 
@@ -310,12 +330,12 @@ export class VibeCodingWorld {
     // Monitor
     ctx.fillStyle = '#000000';
     ctx.fillRect(x - 25, y - 15, 50, 35);
-    
+
     // Screen border
     ctx.strokeStyle = '#333333';
     ctx.lineWidth = 2;
     ctx.strokeRect(x - 25, y - 15, 50, 35);
-    
+
     // Code lines
     ctx.fillStyle = '#00FF00';
     ctx.font = '8px monospace';
@@ -329,13 +349,13 @@ export class VibeCodingWorld {
     // Metallic pillar with tech details
     ctx.fillStyle = '#708090';
     ctx.fillRect(x - 12, y, 24, 150);
-    
+
     // Tech panels
     ctx.fillStyle = '#2F4F4F';
     ctx.fillRect(x - 8, y + 20, 16, 20);
     ctx.fillRect(x - 8, y + 60, 16, 20);
     ctx.fillRect(x - 8, y + 100, 16, 20);
-    
+
     // LED strips
     ctx.fillStyle = '#00D4FF';
     ctx.fillRect(x - 10, y + 10, 2, 130);
@@ -346,31 +366,31 @@ export class VibeCodingWorld {
     // Pixelated cloud effect
     ctx.fillStyle = '#B0E0E6';
     ctx.globalAlpha = 0.7;
-    
+
     // Draw pixelated cloud shape
     const pixelSize = 8;
     const cloudData = [
-      [0,0,1,1,1,1,0,0],
-      [0,1,1,1,1,1,1,0],
-      [1,1,1,1,1,1,1,1],
-      [1,1,1,1,1,1,1,1],
-      [0,1,1,1,1,1,1,0],
-      [0,0,1,1,1,1,0,0]
+      [0, 0, 1, 1, 1, 1, 0, 0],
+      [0, 1, 1, 1, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 1, 1, 1, 0],
+      [0, 0, 1, 1, 1, 1, 0, 0],
     ];
-    
+
     cloudData.forEach((row, rowIndex) => {
       row.forEach((pixel, colIndex) => {
         if (pixel) {
           ctx.fillRect(
-            x - 32 + (colIndex * pixelSize),
-            y - 24 + (rowIndex * pixelSize),
+            x - 32 + colIndex * pixelSize,
+            y - 24 + rowIndex * pixelSize,
             pixelSize,
             pixelSize
           );
         }
       });
     });
-    
+
     ctx.globalAlpha = 1.0;
   }
 
@@ -378,7 +398,7 @@ export class VibeCodingWorld {
     return {
       width: this.width,
       height: this.height,
-      groundLevel: this.groundLevel
+      groundLevel: this.groundLevel,
     };
   }
 
@@ -386,11 +406,11 @@ export class VibeCodingWorld {
     this.platforms.forEach((platform, id) => {
       this.physics.removeBody(id);
     });
-    
+
     this.boundaries.forEach((boundary, id) => {
       this.physics.removeBody(`boundary-${id}`);
     });
-    
+
     this.platforms.clear();
     this.boundaries.clear();
   }

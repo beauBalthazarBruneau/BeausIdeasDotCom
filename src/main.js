@@ -9,13 +9,15 @@ function initGame() {
     console.error('❌ Game canvas not found!');
     return;
   }
-  
+
   try {
     // Create and start the game
     game = new Game(canvas);
-    
+
     console.log('🎮 Portfolio Mario Game Initialized!');
-    console.log('Controls: Arrow Keys/WASD to move, Space/Up for double jump, F1 for debug');
+    console.log(
+      'Controls: Arrow Keys/WASD to move, Space/Up for double jump, F1 for debug'
+    );
   } catch (error) {
     console.error('❌ Error initializing game:', error);
   }

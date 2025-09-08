@@ -9,7 +9,7 @@ export const Easing = {
   linear: (t) => t,
   easeIn: (t) => t * t,
   easeOut: (t) => 1 - (1 - t) * (1 - t),
-  easeInOut: (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2,
+  easeInOut: (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2),
   bounce: (t) => {
     const n1 = 7.5625;
     const d1 = 2.75;
@@ -28,8 +28,8 @@ export const Easing = {
     return t === 0
       ? 0
       : t === 1
-      ? 1
-      : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+        ? 1
+        : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
   },
 };
 
@@ -107,7 +107,7 @@ export class Tween {
 /**
  * Create a simple tween
  * @param {number} start - Start value
- * @param {number} end - End value  
+ * @param {number} end - End value
  * @param {number} duration - Duration in milliseconds
  * @param {Function} easing - Easing function
  * @returns {Tween} New tween instance
@@ -201,7 +201,11 @@ export class AnimationFrame {
  * @param {number} offset - Phase offset
  * @returns {Function} Function that takes time and returns float offset
  */
-export function createFloatAnimation(amplitude = 10, frequency = 0.002, offset = 0) {
+export function createFloatAnimation(
+  amplitude = 10,
+  frequency = 0.002,
+  offset = 0
+) {
   return (time) => {
     return Math.sin(time * frequency + offset) * amplitude;
   };
@@ -215,7 +219,12 @@ export function createFloatAnimation(amplitude = 10, frequency = 0.002, offset =
  * @param {number} offset - Phase offset
  * @returns {Function} Function that takes time and returns scale value
  */
-export function createPulseAnimation(minScale = 0.9, maxScale = 1.1, frequency = 0.003, offset = 0) {
+export function createPulseAnimation(
+  minScale = 0.9,
+  maxScale = 1.1,
+  frequency = 0.003,
+  offset = 0
+) {
   return (time) => {
     const normalized = (Math.sin(time * frequency + offset) + 1) / 2; // 0-1
     return lerp(minScale, maxScale, normalized);
@@ -259,18 +268,18 @@ export function createShakeAnimation(intensity = 5, frequency = 0.01) {
 export function lerpColor(color1, color2, t) {
   const hex1 = color1.replace('#', '');
   const hex2 = color2.replace('#', '');
-  
+
   const r1 = parseInt(hex1.slice(0, 2), 16);
   const g1 = parseInt(hex1.slice(2, 4), 16);
   const b1 = parseInt(hex1.slice(4, 6), 16);
-  
+
   const r2 = parseInt(hex2.slice(0, 2), 16);
   const g2 = parseInt(hex2.slice(2, 4), 16);
   const b2 = parseInt(hex2.slice(4, 6), 16);
-  
+
   const r = Math.round(lerp(r1, r2, t));
   const g = Math.round(lerp(g1, g2, t));
   const b = Math.round(lerp(b1, b2, t));
-  
+
   return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 }

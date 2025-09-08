@@ -8,29 +8,29 @@ export class Camera {
     this.targetX = 0;
     this.targetY = 0;
     this.smoothing = 0.1;
-    
+
     // Screen shake properties
     this.shakeX = 0;
     this.shakeY = 0;
     this.isShaking = false;
-    
+
     // Zoom properties
     this.zoom = 1;
     this.targetZoom = 1;
     this.baseZoom = 1;
     this.zoomSmoothing = 0.08;
     this.isZooming = false;
-    
+
     // Camera boundaries
     this.minX = 0;
     this.maxX = 2000; // Will be updated based on level size
     this.minY = -200;
     this.maxY = 600;
-    
+
     // Viewport offset to center player
     this.offsetX = this.canvas.width / 2;
     this.offsetY = this.canvas.height / 2;
-    
+
     // Modal mode - when modal is shown, position player using world coordinates
     this.modalMode = false;
   }
@@ -38,9 +38,9 @@ export class Camera {
   follow(target) {
     if (this.modalMode) {
       // Modal mode: Position player at specific screen coordinates (column 2, row 2)
-      const targetScreenX = this.canvas.width / 3;      // Column 2 center (W/3)
+      const targetScreenX = this.canvas.width / 3; // Column 2 center (W/3)
       const targetScreenY = (2 * this.canvas.height) / 3; // Row 2 center (2H/3)
-      
+
       // Calculate camera position so player appears at those screen coordinates
       this.targetX = target.x - targetScreenX;
       this.targetY = target.y - targetScreenY;
@@ -49,21 +49,27 @@ export class Camera {
       this.targetX = target.x - this.offsetX;
       this.targetY = target.y - this.offsetY;
     }
-    
+
     // Apply boundaries
-    this.targetX = Math.max(this.minX, Math.min(this.maxX - this.canvas.width, this.targetX));
-    this.targetY = Math.max(this.minY, Math.min(this.maxY - this.canvas.height, this.targetY));
+    this.targetX = Math.max(
+      this.minX,
+      Math.min(this.maxX - this.canvas.width, this.targetX)
+    );
+    this.targetY = Math.max(
+      this.minY,
+      Math.min(this.maxY - this.canvas.height, this.targetY)
+    );
   }
 
   update() {
     // Smooth camera movement
     this.x += (this.targetX - this.x) * this.smoothing;
     this.y += (this.targetY - this.y) * this.smoothing;
-    
+
     // Smooth zoom
     if (this.isZooming) {
       this.zoom += (this.targetZoom - this.zoom) * this.zoomSmoothing;
-      
+
       // Stop zooming when close enough
       if (Math.abs(this.targetZoom - this.zoom) < 0.01) {
         this.zoom = this.targetZoom;
@@ -74,16 +80,16 @@ export class Camera {
 
   apply(ctx) {
     ctx.save();
-    
+
     // Apply zoom from center of screen
     const centerX = this.canvas.width / 2;
     const centerY = this.canvas.height / 2;
-    
+
     // Translate to center, scale, then translate back
     ctx.translate(centerX, centerY);
     ctx.scale(this.zoom, this.zoom);
     ctx.translate(-centerX, -centerY);
-    
+
     // Apply camera position with screen shake offset
     ctx.translate(-this.x + this.shakeX, -this.y + this.shakeY);
   }
@@ -96,7 +102,7 @@ export class Camera {
   screenToWorld(screenX, screenY) {
     return {
       x: screenX + this.x,
-      y: screenY + this.y
+      y: screenY + this.y,
     };
   }
 
@@ -104,7 +110,7 @@ export class Camera {
   worldToScreen(worldX, worldY) {
     return {
       x: worldX - this.x,
-      y: worldY - this.y
+      y: worldY - this.y,
     };
   }
 
@@ -116,10 +122,12 @@ export class Camera {
 
   // Check if object is visible in camera view
   isVisible(x, y, width, height) {
-    return !(x + width < this.x || 
-             x > this.x + this.canvas.width ||
-             y + height < this.y ||
-             y > this.y + this.canvas.height);
+    return !(
+      x + width < this.x ||
+      x > this.x + this.canvas.width ||
+      y + height < this.y ||
+      y > this.y + this.canvas.height
+    );
   }
 
   // Screen shake effects
@@ -128,20 +136,20 @@ export class Camera {
       // Kill existing shake animation
       gsap.killTweensOf(this);
     }
-    
+
     this.isShaking = true;
-    
+
     // Create shake animation with GSAP
     gsap.to(this, {
       duration: duration,
       shakeX: `random(-${intensity}, ${intensity})`,
       shakeY: `random(-${intensity}, ${intensity})`,
-      ease: "power2.out",
+      ease: 'power2.out',
       repeat: Math.floor(duration * 10), // Higher frequency for more shake
       yoyo: true,
       onComplete: () => {
         this.stopShake();
-      }
+      },
     });
   }
 
@@ -165,30 +173,30 @@ export class Camera {
     if (this.isShaking) {
       gsap.killTweensOf(this);
     }
-    
+
     this.isShaking = true;
-    
+
     // Normalize direction
     const length = Math.sqrt(directionX * directionX + directionY * directionY);
     if (length > 0) {
       directionX /= length;
       directionY /= length;
     }
-    
+
     // Apply shake in specific direction
     const shakeX = directionX * intensity;
     const shakeY = directionY * intensity;
-    
+
     gsap.to(this, {
       duration: duration,
       shakeX: shakeX,
       shakeY: shakeY,
-      ease: "power2.out",
+      ease: 'power2.out',
       yoyo: true,
       repeat: Math.floor(duration * 8),
       onComplete: () => {
         this.stopShake();
-      }
+      },
     });
   }
 
@@ -204,33 +212,33 @@ export class Camera {
   zoomToPlayer(zoomLevel, duration = 1.0) {
     this.targetZoom = zoomLevel;
     this.isZooming = true;
-    
+
     // Animate zoom with GSAP for smoother control
     gsap.to(this, {
       zoom: zoomLevel,
       duration: duration,
-      ease: "power2.out",
+      ease: 'power2.out',
       onComplete: () => {
         this.isZooming = false;
-      }
+      },
     });
   }
-  
+
   // Zoom out to normal view
   zoomOut(duration = 0.6) {
     this.targetZoom = this.baseZoom;
     this.isZooming = true;
-    
+
     gsap.to(this, {
       zoom: this.baseZoom,
       duration: duration,
-      ease: "power2.out",
+      ease: 'power2.out',
       onComplete: () => {
         this.isZooming = false;
-      }
+      },
     });
   }
-  
+
   // Set zoom instantly without animation
   setZoom(zoomLevel) {
     this.zoom = zoomLevel;
@@ -245,33 +253,33 @@ export class Camera {
     this.minY = minY;
     this.maxY = maxY;
   }
-  
+
   // Enter modal mode - position player in left half of screen
   enterModalMode() {
     this.modalMode = true;
     console.log('Camera entering modal mode - centering player in left half');
   }
-  
+
   // Exit modal mode - return to normal centering
   exitModalMode() {
     this.modalMode = false;
     console.log('Camera exiting modal mode - returning to normal centering');
   }
-  
+
   // Combined zoom and modal positioning for showing modal
   zoomToPlayerWithModal(zoomLevel, duration = 0.8) {
     // Enter modal mode first
     this.enterModalMode();
-    
+
     // Then zoom
     this.zoomToPlayer(zoomLevel, duration);
   }
-  
+
   // Combined zoom out and exit modal mode for hiding modal
   zoomOutFromModal(duration = 0.5) {
     // Exit modal mode
     this.exitModalMode();
-    
+
     // Then zoom out
     this.zoomOut(duration);
   }
