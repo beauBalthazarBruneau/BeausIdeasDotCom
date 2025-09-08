@@ -6,19 +6,19 @@ export class InputHandler {
       right: false,
       up: false,
       space: false,
-      d: false // debug mode toggle
+      d: false, // debug mode toggle
     };
 
     this.previousKeys = { ...this.keys }; // Initialize previousKeys
 
     this.keyMap = {
-      'ArrowLeft': 'left',
-      'KeyA': 'left',
-      'ArrowRight': 'right',
-      'KeyD': 'right',
-      'ArrowUp': 'up',
-      'KeyW': 'up',
-      'Space': 'space'
+      ArrowLeft: 'left',
+      KeyA: 'left',
+      ArrowRight: 'right',
+      KeyD: 'right',
+      ArrowUp: 'up',
+      KeyW: 'up',
+      Space: 'space',
     };
 
     this.setupEventListeners();

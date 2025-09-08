@@ -12,7 +12,10 @@ export function save(key, data) {
     localStorage.setItem(key, jsonString);
     return true;
   } catch (error) {
-    console.warn(`Failed to save data to localStorage for key "${key}":`, error);
+    console.warn(
+      `Failed to save data to localStorage for key "${key}":`,
+      error
+    );
     return false;
   }
 }
@@ -31,7 +34,10 @@ export function load(key, defaultValue = null) {
     }
     return JSON.parse(item);
   } catch (error) {
-    console.warn(`Failed to load data from localStorage for key "${key}":`, error);
+    console.warn(
+      `Failed to load data from localStorage for key "${key}":`,
+      error
+    );
     return defaultValue;
   }
 }
@@ -46,7 +52,10 @@ export function remove(key) {
     localStorage.removeItem(key);
     return true;
   } catch (error) {
-    console.warn(`Failed to remove data from localStorage for key "${key}":`, error);
+    console.warn(
+      `Failed to remove data from localStorage for key "${key}":`,
+      error
+    );
     return false;
   }
 }
@@ -94,13 +103,13 @@ export function getKeysWithPrefix(prefix) {
 export function clearPrefix(prefix) {
   const keys = getKeysWithPrefix(prefix);
   let cleared = 0;
-  
-  keys.forEach(key => {
+
+  keys.forEach((key) => {
     if (remove(key)) {
       cleared++;
     }
   });
-  
+
   return cleared;
 }
 
@@ -151,13 +160,13 @@ export function backup(keys = null) {
   try {
     const data = {};
     const keysToBackup = keys || Object.keys(localStorage);
-    
-    keysToBackup.forEach(key => {
+
+    keysToBackup.forEach((key) => {
       if (localStorage.hasOwnProperty(key)) {
         data[key] = localStorage.getItem(key);
       }
     });
-    
+
     return JSON.stringify(data, null, 2);
   } catch (error) {
     console.warn('Failed to backup localStorage data:', error);
@@ -175,14 +184,14 @@ export function restore(backupData, overwrite = false) {
   try {
     const data = JSON.parse(backupData);
     let restored = 0;
-    
+
     for (const [key, value] of Object.entries(data)) {
       if (overwrite || !localStorage.hasOwnProperty(key)) {
         localStorage.setItem(key, value);
         restored++;
       }
     }
-    
+
     console.log(`Restored ${restored} items from backup`);
     return true;
   } catch (error) {

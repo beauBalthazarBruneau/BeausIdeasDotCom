@@ -42,8 +42,8 @@ export const CHECKPOINT = {
   WIDTH: 40,
   HEIGHT: 40,
   COLORS: {
-    BASE: '#8B4513',      // Brown mystery box
-    HIT: '#654321',       // Darker brown when hit
+    BASE: '#8B4513', // Brown mystery box
+    HIT: '#654321', // Darker brown when hit
     COMPLETED: '#FFD700', // Gold when completed
   },
   HIT_BOUNCE_HEIGHT: 8,

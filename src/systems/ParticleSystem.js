@@ -15,28 +15,28 @@ export class Particle {
 
   update(deltaTime) {
     // Update position
-    this.x += this.vx * deltaTime / 16.67; // Normalize to 60fps
-    this.y += this.vy * deltaTime / 16.67;
-    
+    this.x += (this.vx * deltaTime) / 16.67; // Normalize to 60fps
+    this.y += (this.vy * deltaTime) / 16.67;
+
     // Apply gravity and friction
-    this.vy += this.gravity * deltaTime / 16.67;
+    this.vy += (this.gravity * deltaTime) / 16.67;
     this.vx *= this.friction;
     this.vy *= this.friction;
-    
+
     // Update life
     this.life -= deltaTime;
-    
+
     return this.life > 0; // Return false when particle should be removed
   }
 
   draw(ctx) {
     if (this.life <= 0) return;
-    
+
     ctx.save();
-    
+
     // Calculate alpha for fade out
     const alpha = this.fadeOut ? this.life / this.maxLife : 1;
-    
+
     // Parse color and add alpha
     if (this.color.startsWith('#')) {
       const hex = this.color.slice(1);
@@ -47,12 +47,12 @@ export class Particle {
     } else {
       ctx.fillStyle = this.color;
     }
-    
+
     // Draw particle as circle
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fill();
-    
+
     ctx.restore();
   }
 }
@@ -68,13 +68,13 @@ export class ParticleSystem {
   // Create a dust cloud effect for jumping
   createJumpDust(x, y, direction = 1) {
     const numParticles = 6;
-    
+
     for (let i = 0; i < numParticles; i++) {
       // Spread particles more horizontally, less downward
-      const angle = Math.PI * 0.75 + (Math.PI * 0.5 * i / numParticles); // More horizontal spread
+      const angle = Math.PI * 0.75 + (Math.PI * 0.5 * i) / numParticles; // More horizontal spread
       const speed = 3 + Math.random() * 2;
       const size = 4 + Math.random() * 4; // Bigger particles
-      
+
       const particle = new Particle(x + (Math.random() - 0.5) * 20, y + 15, {
         vx: Math.cos(angle) * speed * direction + (Math.random() - 0.5) * 3,
         vy: -Math.abs(Math.sin(angle)) * speed * 0.3, // Less upward velocity
@@ -83,9 +83,9 @@ export class ParticleSystem {
         color: '#F5F5DC', // Beige/cream dust color instead of gray
         gravity: 0.05, // Less gravity so they float more
         friction: 0.95, // More air resistance
-        fadeOut: true
+        fadeOut: true,
       });
-      
+
       this.particles.push(particle);
     }
   }
@@ -93,28 +93,30 @@ export class ParticleSystem {
   // Create a puff effect for double jump (same as ground jump dust)
   createDoubleJumpPuff(x, y) {
     const numParticles = 6;
-    
+
     for (let i = 0; i < numParticles; i++) {
       // Same horizontal spread as ground jump
-      const angle = Math.PI * 0.75 + (Math.PI * 0.5 * i / numParticles); // More horizontal spread
+      const angle = Math.PI * 0.75 + (Math.PI * 0.5 * i) / numParticles; // More horizontal spread
       const speed = 3 + Math.random() * 2;
       const size = 4 + Math.random() * 4; // Same bigger particles
-      
+
       const particle = new Particle(x + (Math.random() - 0.5) * 20, y, {
-        vx: Math.cos(angle) * speed * (Math.random() > 0.5 ? 1 : -1) + (Math.random() - 0.5) * 3,
+        vx:
+          Math.cos(angle) * speed * (Math.random() > 0.5 ? 1 : -1) +
+          (Math.random() - 0.5) * 3,
         vy: -Math.abs(Math.sin(angle)) * speed * 0.3, // Same less upward velocity
         life: 400 + Math.random() * 300, // Same 400-700ms
         size: size,
         color: '#F5F5DC', // Same beige/cream dust color
         gravity: 0.05, // Same less gravity
         friction: 0.95, // Same more air resistance
-        fadeOut: true
+        fadeOut: true,
       });
-      
+
       this.particles.push(particle);
     }
   }
-  
+
   // Generic method to create a single particle (used by checkpoints and other systems)
   createParticle(x, y, options = {}) {
     const particle = new Particle(x, y, options);
@@ -125,7 +127,7 @@ export class ParticleSystem {
   // Environmental particle effects
   createFloatingDust(x, y, width = 100) {
     const numParticles = 3;
-    
+
     for (let i = 0; i < numParticles; i++) {
       const particle = new Particle(
         x + (Math.random() - 0.5) * width,
@@ -138,10 +140,10 @@ export class ParticleSystem {
           color: '#F5F5DC', // Beige dust
           gravity: -0.001, // Negative gravity for floating effect
           friction: 0.999, // Almost no friction
-          fadeOut: true
+          fadeOut: true,
         }
       );
-      
+
       this.environmentalParticles.push(particle);
     }
   }
@@ -149,7 +151,7 @@ export class ParticleSystem {
   // Magic sparkles for floating platforms
   createMagicSparkles(x, y, width = 160) {
     const numParticles = 2;
-    
+
     for (let i = 0; i < numParticles; i++) {
       const particle = new Particle(
         x + (Math.random() - 0.5) * width,
@@ -162,10 +164,10 @@ export class ParticleSystem {
           color: '#E6E6FA', // Lavender sparkle
           gravity: -0.002, // Float upward
           friction: 0.998,
-          fadeOut: true
+          fadeOut: true,
         }
       );
-      
+
       this.environmentalParticles.push(particle);
     }
   }
@@ -173,7 +175,7 @@ export class ParticleSystem {
   // Wind effect particles
   createWindEffect(x, y, direction = 1) {
     const numParticles = 4;
-    
+
     for (let i = 0; i < numParticles; i++) {
       const particle = new Particle(
         x + (Math.random() - 0.5) * 200,
@@ -186,10 +188,10 @@ export class ParticleSystem {
           color: '#F0F8FF', // Alice blue (very light)
           gravity: 0,
           friction: 0.999,
-          fadeOut: true
+          fadeOut: true,
         }
       );
-      
+
       this.environmentalParticles.push(particle);
     }
   }
@@ -200,21 +202,21 @@ export class ParticleSystem {
     if (gameTime - this.lastEnvironmentalSpawn < this.environmentalSpawnRate) {
       return;
     }
-    
+
     this.lastEnvironmentalSpawn = gameTime;
-    
+
     // Spawn floating dust across the visible area
     const visibleStartX = cameraX - 100;
     const visibleEndX = cameraX + 1000;
     const numAreas = 4;
-    
+
     for (let i = 0; i < numAreas; i++) {
       const x = visibleStartX + (visibleEndX - visibleStartX) * Math.random();
       const y = cameraY + 200 + Math.random() * 400; // Middle to lower area
-      
+
       // Randomly choose effect type based on location
       const rand = Math.random();
-      
+
       if (x < 600) {
         // Starting area - gentle dust and occasional sparkles
         if (rand < 0.7) {
@@ -249,17 +251,18 @@ export class ParticleSystem {
         }
       }
     }
-    
+
     // Occasionally create special atmospheric effects
-    if (Math.random() < 0.1) { // 10% chance
+    if (Math.random() < 0.1) {
+      // 10% chance
       this.createAtmosphericBeam(cameraX + Math.random() * 800, cameraY + 100);
     }
   }
-  
+
   // Create atmospheric light beam effect
   createAtmosphericBeam(x, y) {
     const numParticles = 12;
-    
+
     for (let i = 0; i < numParticles; i++) {
       const particle = new Particle(
         x + (Math.random() - 0.5) * 30,
@@ -272,24 +275,33 @@ export class ParticleSystem {
           color: '#FFFACD', // Lemon chiffon (warm light)
           gravity: 0.001, // Very slight downward pull
           friction: 0.999,
-          fadeOut: true
+          fadeOut: true,
         }
       );
-      
+
       this.environmentalParticles.push(particle);
     }
   }
 
   update(deltaTime, camera = null, levelWidth = 3000, gameTime = 0) {
     // Update all particles and remove dead ones
-    this.particles = this.particles.filter(particle => particle.update(deltaTime));
-    this.environmentalParticles = this.environmentalParticles.filter(particle => particle.update(deltaTime));
-    
+    this.particles = this.particles.filter((particle) =>
+      particle.update(deltaTime)
+    );
+    this.environmentalParticles = this.environmentalParticles.filter(
+      (particle) => particle.update(deltaTime)
+    );
+
     // Spawn environmental particles if camera is provided
     if (camera) {
-      this.spawnEnvironmentalParticles(camera.x, camera.y, levelWidth, gameTime);
+      this.spawnEnvironmentalParticles(
+        camera.x,
+        camera.y,
+        levelWidth,
+        gameTime
+      );
     }
-    
+
     // Limit environmental particles to prevent performance issues
     if (this.environmentalParticles.length > 50) {
       this.environmentalParticles = this.environmentalParticles.slice(-50);
@@ -298,8 +310,8 @@ export class ParticleSystem {
 
   draw(ctx) {
     // Draw environmental particles behind action particles
-    this.environmentalParticles.forEach(particle => particle.draw(ctx));
-    this.particles.forEach(particle => particle.draw(ctx));
+    this.environmentalParticles.forEach((particle) => particle.draw(ctx));
+    this.particles.forEach((particle) => particle.draw(ctx));
   }
 
   // Get particle count for debugging

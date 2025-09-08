@@ -32,39 +32,38 @@ export default defineConfig({
     assetsDir: 'assets',
     sourcemap: true,
     minify: 'terser',
-    
+
     // Code splitting for better performance
     rollupOptions: {
       output: {
         manualChunks: {
           // Vendor chunk for third-party libraries
           vendor: ['matter-js', 'gsap', 'howler'],
-          
+
           // Core game engine chunk
           core: [
             'src/core/Game.js',
             'src/core/Physics.js',
             'src/core/Camera.js',
-            'src/core/InputHandler.js'
+            'src/core/InputHandler.js',
           ],
-          
+
           // Game entities chunk
           entities: [
             'src/entities/Player.js',
-            'src/entities/Checkpoint.js',
-            'src/entities/Collectible.js'
+            'src/entities/Collectible.js',
           ],
-          
+
           // Game systems chunk
           systems: [
             'src/systems/AudioManager.js',
             'src/systems/ParticleSystem.js',
-            'src/systems/Background.js'
-          ]
+            'src/systems/Background.js',
+          ],
         },
       },
     },
-    
+
     // Asset optimization
     assetsInlineLimit: 4096, // Inline assets smaller than 4kb
   },

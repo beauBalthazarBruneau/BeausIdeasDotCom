@@ -3,8 +3,9 @@
 A Mario-style platformer game that serves as an interactive portfolio showcase, built with a professional, scalable architecture.
 
 ## ✨ Features
+
 - 🏃‍♂️ **Physics-based movement** with Matter.js double jump mechanics
-- 🎯 **Interactive checkpoints** linked to portfolio projects  
+- 🎯 **Interactive checkpoints** linked to portfolio projects
 - 💎 **Collectible system** with different collectible types per world
 - 🌍 **Multiple themed worlds** (Tech, Entertainment, Sports, Education, Healthcare, Finance, Georgia Tech)
 - 🎨 **Parallax backgrounds** with environmental particle effects
@@ -31,6 +32,7 @@ src/
 ```
 
 ### Key Benefits:
+
 - ✅ **Separation of concerns** - each folder has a clear purpose
 - ✅ **Scalable** - easy to add new features without refactoring
 - ✅ **Maintainable** - find and modify code quickly
@@ -40,19 +42,23 @@ src/
 ## 🚀 Development
 
 ### Quick Start
+
 ```bash
 npm install
 npm run dev
 ```
 
 ### Build for Production
+
 ```bash
 npm run build
 npm run preview
 ```
 
 ### Path Aliases
+
 The project includes Vite path aliases for clean imports:
+
 ```javascript
 import { Player } from '@entities';
 import { GAME, PLAYER } from '@constants';
@@ -60,6 +66,7 @@ import { lerp, clamp } from '@utils';
 ```
 
 ## 🎮 Game Controls
+
 - **Arrow Keys / WASD**: Move Mario
 - **Space / Up Arrow**: Jump (double jump available)
 - **F1**: Toggle comprehensive debug mode
@@ -70,6 +77,7 @@ import { lerp, clamp } from '@utils';
 ## 🌍 Portfolio Integration
 
 The game features a world-based portfolio system:
+
 - **7 themed worlds** each representing different project categories
 - **Mystery box checkpoints** that spawn collectibles when hit
 - **Collectible types** vary by world (mystery-box, star, coin, book, trophy, gem)
@@ -79,12 +87,14 @@ The game features a world-based portfolio system:
 ## 🛠️ Technical Features
 
 ### Performance
+
 - **Code splitting** - separate chunks for core, entities, systems
 - **Asset optimization** - inline small assets, optimize large ones
 - **60 FPS targeting** with delta time normalization
 - **Efficient particle system** with environmental and action particles
 
 ### Developer Experience
+
 - **Hot reload** during development
 - **Source maps** for debugging
 - **Comprehensive constants** - no magic numbers
@@ -92,12 +102,14 @@ The game features a world-based portfolio system:
 - **Type-safe data structures** with clear interfaces
 
 ### Audio System
+
 - **Howler.js integration** for cross-browser audio
 - **Multiple audio types** (SFX, music) with independent volume controls
 - **Audio context management** with proper browser policy handling
 - **Fade effects** and audio state persistence
 
 ### Physics & Animation
+
 - **Matter.js physics** with optimized collision detection
 - **GSAP animations** for smooth UI transitions and effects
 - **Custom easing functions** and animation utilities
@@ -107,16 +119,19 @@ The game features a world-based portfolio system:
 ## 📝 Adding New Features
 
 ### New Game Entity
+
 1. Create in `src/entities/NewEntity.js`
 2. Export from `src/entities/index.js`
 3. Import in Game.js: `import { NewEntity } from '@entities';`
 
 ### New Game System
+
 1. Create in `src/systems/NewSystem.js`
 2. Export from `src/systems/index.js`
 3. Initialize in Game constructor
 
 ### New UI Component
+
 1. Create in `src/ui/components/NewComponent.js`
 2. Export from `src/ui/index.js`
 3. Use with clean imports: `import { NewComponent } from '@ui';`
@@ -124,6 +139,7 @@ The game features a world-based portfolio system:
 ## 🎯 Next Steps
 
 Ready for advanced features:
+
 - 📱 **Mobile responsiveness** and touch controls
 - 🏆 **Achievement system** with unlock conditions
 - 💾 **Cloud save integration** for progress sync
