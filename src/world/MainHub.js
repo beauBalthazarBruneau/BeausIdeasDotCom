@@ -147,8 +147,9 @@ export class MainHub {
     const body = Bodies.rectangle(x, y, width, height, {
       label: 'platform',
       isStatic: true,
-      friction: 0.8,
-      restitution: 0.1,
+      friction: 0.3,
+      frictionStatic: 0.2,
+      restitution: 0,
     });
 
     // Store platform with its data
