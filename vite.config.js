@@ -49,10 +49,7 @@ export default defineConfig({
           ],
 
           // Game entities chunk
-          entities: [
-            'src/entities/Player.js',
-            'src/entities/Collectible.js',
-          ],
+          entities: ['src/entities/Player.js', 'src/entities/Collectible.js'],
 
           // Game systems chunk
           systems: [

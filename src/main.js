@@ -1,5 +1,16 @@
 import { Game } from './core/Game.js';
 
+// Check for dev mode and handle maintenance overlay
+function handleMaintenanceMode() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const isDevMode = urlParams.get('dev') === 'true';
+  const maintenanceOverlay = document.getElementById('maintenance-overlay');
+
+  if (isDevMode && maintenanceOverlay) {
+    maintenanceOverlay.classList.add('hidden');
+  }
+}
+
 // Initialize the game when DOM is loaded
 let game;
 
@@ -25,8 +36,12 @@ function initGame() {
 
 // Wait for DOM to be fully loaded
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initGame);
+  document.addEventListener('DOMContentLoaded', () => {
+    handleMaintenanceMode();
+    initGame();
+  });
 } else {
+  handleMaintenanceMode();
   initGame();
 }
 

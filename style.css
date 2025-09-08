@@ -52,3 +52,34 @@ body {
 .debug-line {
   margin: 2px 0;
 }
+
+/* Maintenance Overlay Styles */
+.maintenance-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #87ceeb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.maintenance-overlay.hidden {
+  display: none;
+}
+
+.maintenance-content {
+  text-align: center;
+  padding: 20px;
+}
+
+.maintenance-message {
+  font-family: 'Courier New', monospace;
+  font-size: 24px;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+}
