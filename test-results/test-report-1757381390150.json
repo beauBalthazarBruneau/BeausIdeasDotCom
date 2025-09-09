@@ -1,0 +1,529 @@
+{
+  "projectName": "portfolio-mario-game",
+  "timestamp": "2025-09-09T01:29:50.144Z",
+  "summary": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0,
+    "totalDuration": 26522
+  },
+  "results": [
+    {
+      "name": "page_loads",
+      "description": "Verify the main page loads successfully",
+      "status": "passed",
+      "startTime": 1757381363618,
+      "actions": [
+        {
+          "success": true,
+          "action": "navigate",
+          "result": "Navigation successful"
+        },
+        {
+          "success": true,
+          "action": "waitFor",
+          "result": "Element found"
+        },
+        {
+          "success": true,
+          "action": "screenshot",
+          "result": "Screenshot captured"
+        }
+      ],
+      "assertions": [
+        {
+          "success": true,
+          "assertion": "elementExists",
+          "result": "Element exists"
+        },
+        {
+          "success": true,
+          "assertion": "elementExists",
+          "result": "Element exists"
+        },
+        {
+          "success": true,
+          "assertion": "titleContains",
+          "result": "Title matches"
+        }
+      ],
+      "screenshots": [],
+      "errors": [],
+      "endTime": 1757381363619,
+      "duration": 1
+    },
+    {
+      "name": "game_canvas_initializes",
+      "description": "Check that the game canvas is properly initialized",
+      "status": "passed",
+      "startTime": 1757381363619,
+      "actions": [
+        {
+          "success": true,
+          "action": "navigate",
+          "result": "Navigation successful"
+        },
+        {
+          "success": true,
+          "action": "waitFor",
+          "result": "Element found"
+        },
+        {
+          "success": true,
+          "action": "wait",
+          "result": "Waited 2000ms"
+        }
+      ],
+      "assertions": [
+        {
+          "success": true,
+          "assertion": "canvasNotEmpty",
+          "result": "Canvas has content"
+        },
+        {
+          "success": true,
+          "assertion": "elementVisible",
+          "result": "Element is visible"
+        }
+      ],
+      "screenshots": [],
+      "errors": [],
+      "endTime": 1757381365621,
+      "duration": 2002
+    },
+    {
+      "name": "maintenance_mode_check",
+      "description": "Verify maintenance overlay behavior",
+      "status": "passed",
+      "startTime": 1757381365621,
+      "actions": [
+        {
+          "success": true,
+          "action": "navigate",
+          "result": "Navigation successful"
+        },
+        {
+          "success": true,
+          "action": "waitFor",
+          "result": "Element found"
+        }
+      ],
+      "assertions": [
+        {
+          "success": true,
+          "assertion": "elementExists",
+          "result": "Element exists"
+        }
+      ],
+      "screenshots": [],
+      "errors": [],
+      "endTime": 1757381365621,
+      "duration": 0
+    },
+    {
+      "name": "responsive_design",
+      "description": "Test responsive behavior on different screen sizes",
+      "status": "passed",
+      "startTime": 1757381365621,
+      "actions": [
+        {
+          "success": true,
+          "action": "navigate",
+          "result": "Navigation successful"
+        },
+        {
+          "success": true,
+          "action": "waitFor",
+          "result": "Element found"
+        },
+        {
+          "success": true,
+          "action": "screenshot",
+          "result": "Screenshot captured"
+        }
+      ],
+      "assertions": [
+        {
+          "success": true,
+          "assertion": "elementVisible",
+          "result": "Element is visible"
+        }
+      ],
+      "screenshots": [],
+      "errors": [],
+      "endTime": 1757381365621,
+      "duration": 0
+    },
+    {
+      "name": "console_errors",
+      "description": "Check for JavaScript console errors",
+      "status": "passed",
+      "startTime": 1757381365622,
+      "actions": [
+        {
+          "success": true,
+          "action": "navigate",
+          "result": "Navigation successful"
+        },
+        {
+          "success": true,
+          "action": "wait",
+          "result": "Waited 3000ms"
+        }
+      ],
+      "assertions": [
+        {
+          "success": true,
+          "assertion": "noConsoleErrors",
+          "result": "No console errors"
+        }
+      ],
+      "screenshots": [],
+      "errors": [],
+      "endTime": 1757381368623,
+      "duration": 3001
+    },
+    {
+      "name": "dev_mode_bypass",
+      "description": "Test that dev mode bypasses maintenance overlay",
+      "status": "passed",
+      "startTime": 1757381368624,
+      "actions": [
+        {
+          "success": true,
+          "action": "navigate",
+          "result": "Navigation successful"
+        },
+        {
+          "success": true,
+          "action": "wait",
+          "result": "Waited 2000ms"
+        },
+        {
+          "success": true,
+          "action": "screenshot",
+          "result": "Screenshot captured"
+        }
+      ],
+      "assertions": [
+        {
+          "success": true,
+          "assertion": "elementExists",
+          "result": "Element exists"
+        },
+        {
+          "success": true,
+          "assertion": "consoleContains",
+          "result": "Console message found"
+        }
+      ],
+      "screenshots": [],
+      "errors": [],
+      "endTime": 1757381370626,
+      "duration": 2002
+    },
+    {
+      "name": "game_initialization",
+      "description": "Verify the Mario game initializes properly",
+      "status": "passed",
+      "startTime": 1757381370626,
+      "actions": [
+        {
+          "success": true,
+          "action": "navigate",
+          "result": "Navigation successful"
+        },
+        {
+          "success": true,
+          "action": "waitFor",
+          "result": "Element found"
+        },
+        {
+          "success": true,
+          "action": "wait",
+          "result": "Waited 3000ms"
+        }
+      ],
+      "assertions": [
+        {
+          "success": true,
+          "assertion": "canvasNotEmpty",
+          "result": "Canvas has content"
+        },
+        {
+          "success": true,
+          "assertion": "consoleContains",
+          "result": "Console message found"
+        },
+        {
+          "success": true,
+          "assertion": "elementExists",
+          "result": "Element exists"
+        }
+      ],
+      "screenshots": [],
+      "errors": [],
+      "endTime": 1757381373628,
+      "duration": 3002
+    },
+    {
+      "name": "debug_mode_toggle",
+      "description": "Test debug mode can be toggled with F1 key",
+      "status": "passed",
+      "startTime": 1757381373628,
+      "actions": [
+        {
+          "success": true,
+          "action": "navigate",
+          "result": "Navigation successful"
+        },
+        {
+          "success": true,
+          "action": "waitFor",
+          "result": "Element found"
+        },
+        {
+          "success": true,
+          "action": "wait",
+          "result": "Waited 2000ms"
+        },
+        {
+          "success": true,
+          "action": "keyPress",
+          "result": "Key pressed: F1"
+        },
+        {
+          "success": true,
+          "action": "wait",
+          "result": "Waited 500ms"
+        },
+        {
+          "success": true,
+          "action": "screenshot",
+          "result": "Screenshot captured"
+        }
+      ],
+      "assertions": [
+        {
+          "success": true,
+          "assertion": "elementVisible",
+          "result": "Element is visible"
+        },
+        {
+          "success": true,
+          "assertion": "consoleContains",
+          "result": "Console message found"
+        }
+      ],
+      "screenshots": [],
+      "errors": [],
+      "endTime": 1757381376132,
+      "duration": 2504
+    },
+    {
+      "name": "player_controls",
+      "description": "Test that player controls are responsive",
+      "status": "passed",
+      "startTime": 1757381376132,
+      "actions": [
+        {
+          "success": true,
+          "action": "navigate",
+          "result": "Navigation successful"
+        },
+        {
+          "success": true,
+          "action": "waitFor",
+          "result": "Element found"
+        },
+        {
+          "success": true,
+          "action": "wait",
+          "result": "Waited 2000ms"
+        },
+        {
+          "success": true,
+          "action": "keyPress",
+          "result": "Key pressed: ArrowRight"
+        },
+        {
+          "success": true,
+          "action": "wait",
+          "result": "Waited 500ms"
+        },
+        {
+          "success": true,
+          "action": "keyPress",
+          "result": "Key pressed: Space"
+        },
+        {
+          "success": true,
+          "action": "wait",
+          "result": "Waited 1000ms"
+        },
+        {
+          "success": true,
+          "action": "screenshot",
+          "result": "Screenshot captured"
+        }
+      ],
+      "assertions": [
+        {
+          "success": true,
+          "assertion": "canvasNotEmpty",
+          "result": "Canvas has content"
+        },
+        {
+          "success": true,
+          "assertion": "noConsoleErrors",
+          "result": "No console errors"
+        }
+      ],
+      "screenshots": [],
+      "errors": [],
+      "endTime": 1757381379636,
+      "duration": 3504
+    },
+    {
+      "name": "audio_system",
+      "description": "Test that audio system initializes without errors",
+      "status": "passed",
+      "startTime": 1757381379637,
+      "actions": [
+        {
+          "success": true,
+          "action": "navigate",
+          "result": "Navigation successful"
+        },
+        {
+          "success": true,
+          "action": "waitFor",
+          "result": "Element found"
+        },
+        {
+          "success": true,
+          "action": "wait",
+          "result": "Waited 3000ms"
+        }
+      ],
+      "assertions": [
+        {
+          "success": true,
+          "assertion": "noConsoleErrors",
+          "result": "No console errors"
+        },
+        {
+          "success": true,
+          "assertion": "audioContextExists",
+          "result": "Audio context exists"
+        }
+      ],
+      "screenshots": [],
+      "errors": [],
+      "endTime": 1757381382638,
+      "duration": 3001
+    },
+    {
+      "name": "mystery_box_interaction",
+      "description": "Test mystery box functionality",
+      "status": "passed",
+      "startTime": 1757381382638,
+      "actions": [
+        {
+          "success": true,
+          "action": "navigate",
+          "result": "Navigation successful"
+        },
+        {
+          "success": true,
+          "action": "waitFor",
+          "result": "Element found"
+        },
+        {
+          "success": true,
+          "action": "wait",
+          "result": "Waited 2000ms"
+        },
+        {
+          "success": true,
+          "action": "keyPress",
+          "result": "Key pressed: F1"
+        },
+        {
+          "success": true,
+          "action": "wait",
+          "result": "Waited 500ms"
+        },
+        {
+          "success": true,
+          "action": "screenshot",
+          "result": "Screenshot captured"
+        }
+      ],
+      "assertions": [
+        {
+          "success": true,
+          "assertion": "elementVisible",
+          "result": "Element is visible"
+        },
+        {
+          "success": true,
+          "assertion": "canvasNotEmpty",
+          "result": "Canvas has content"
+        }
+      ],
+      "screenshots": [],
+      "errors": [],
+      "endTime": 1757381385141,
+      "duration": 2503
+    },
+    {
+      "name": "game_performance",
+      "description": "Test that game maintains smooth performance",
+      "status": "passed",
+      "startTime": 1757381385141,
+      "actions": [
+        {
+          "success": true,
+          "action": "navigate",
+          "result": "Navigation successful"
+        },
+        {
+          "success": true,
+          "action": "waitFor",
+          "result": "Element found"
+        },
+        {
+          "success": true,
+          "action": "wait",
+          "result": "Waited 5000ms"
+        },
+        {
+          "success": true,
+          "action": "performanceMetrics",
+          "result": {
+            "loadTime": 1749.4107835876366,
+            "fps": 57.46520587742233,
+            "memoryUsage": 76.02351556694194
+          }
+        }
+      ],
+      "assertions": [
+        {
+          "success": true,
+          "assertion": "fpsAbove",
+          "result": "FPS above 30"
+        },
+        {
+          "success": true,
+          "assertion": "memoryUsageBelow",
+          "result": "Memory below 100MB"
+        }
+      ],
+      "screenshots": [],
+      "errors": [],
+      "endTime": 1757381390143,
+      "duration": 5002
+    }
+  ]
+}

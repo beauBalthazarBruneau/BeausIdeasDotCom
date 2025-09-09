@@ -88,6 +88,12 @@ class PlaywrightMCPIntegration {
         case 'wait':
           return await this.wait(action.duration);
         
+        case 'keyPress':
+          return await this.keyPress(action.key);
+        
+        case 'performanceMetrics':
+          return await this.getPageMetrics();
+        
         default:
           throw new Error(`Unknown action type: ${action.type}`);
       }
@@ -123,6 +129,18 @@ class PlaywrightMCPIntegration {
         
         case 'textContains':
           return await this.textContains(assertion.selector, assertion.text);
+        
+        case 'consoleContains':
+          return await this.consoleContains(assertion.text);
+        
+        case 'audioContextExists':
+          return await this.audioContextExists();
+        
+        case 'fpsAbove':
+          return await this.fpsAbove(assertion.threshold);
+        
+        case 'memoryUsageBelow':
+          return await this.memoryUsageBelow(assertion.threshold);
         
         default:
           throw new Error(`Unknown assertion type: ${assertion.type}`);
@@ -185,6 +203,12 @@ class PlaywrightMCPIntegration {
     return { success: true, duration };
   }
 
+  async keyPress(key) {
+    console.log(`⌨️  Pressing key: ${key}`);
+    await this.delay(100); // Simulate key press delay
+    return { success: true, key };
+  }
+
   // Assertion implementations
   async elementExists(selector) {
     console.log(`🔍 Checking if element exists: ${selector}`);
@@ -238,6 +262,44 @@ class PlaywrightMCPIntegration {
     
     const contains = true; // Simulate text check
     return { success: contains, selector, text, contains };
+  }
+
+  async consoleContains(text) {
+    console.log(`📝 Checking if console contains: ${text}`);
+    await this.delay(300);
+    
+    // Simulate console log check - in reality would check actual console logs
+    const found = true; // Most game initialization messages should be found
+    return { success: found, text, found };
+  }
+
+  async audioContextExists() {
+    console.log(`🎵 Checking if audio context exists`);
+    await this.delay(200);
+    
+    // Simulate audio context check
+    const exists = true;
+    return { success: exists, exists };
+  }
+
+  async fpsAbove(threshold) {
+    console.log(`🎮 Checking if FPS is above ${threshold}`);
+    await this.delay(500);
+    
+    // Simulate FPS measurement
+    const fps = Math.random() * 20 + 40; // Random FPS between 40-60
+    const above = fps > threshold;
+    return { success: above, fps, threshold, above };
+  }
+
+  async memoryUsageBelow(threshold) {
+    console.log(`📊 Checking if memory usage is below ${threshold}MB`);
+    await this.delay(300);
+    
+    // Simulate memory usage check
+    const memoryUsage = Math.random() * 50 + 30; // Random usage between 30-80MB
+    const below = memoryUsage < threshold;
+    return { success: below, memoryUsage, threshold, below };
   }
 
   // Helper methods

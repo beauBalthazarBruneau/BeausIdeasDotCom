@@ -139,6 +139,258 @@
           "severity": "error"
         }
       ]
+    },
+    {
+      "name": "dev_mode_bypass",
+      "description": "Test that dev mode bypasses maintenance overlay",
+      "actions": [
+        {
+          "type": "navigate",
+          "url": "/?dev=true"
+        },
+        {
+          "type": "wait",
+          "duration": 2000
+        },
+        {
+          "type": "screenshot",
+          "name": "dev_mode_active"
+        }
+      ],
+      "assertions": [
+        {
+          "type": "elementExists",
+          "selector": "#game-canvas"
+        },
+        {
+          "type": "consoleContains",
+          "text": "Portfolio Mario Game Initialized!"
+        }
+      ]
+    },
+    {
+      "name": "game_initialization",
+      "description": "Verify the Mario game initializes properly",
+      "actions": [
+        {
+          "type": "navigate",
+          "url": "/?dev=true"
+        },
+        {
+          "type": "waitFor",
+          "selector": "#game-canvas",
+          "timeout": 5000
+        },
+        {
+          "type": "wait",
+          "duration": 3000
+        }
+      ],
+      "assertions": [
+        {
+          "type": "canvasNotEmpty",
+          "selector": "#game-canvas"
+        },
+        {
+          "type": "consoleContains",
+          "text": "Controls: Arrow Keys/WASD to move"
+        },
+        {
+          "type": "elementExists",
+          "selector": "#debug-info"
+        }
+      ]
+    },
+    {
+      "name": "debug_mode_toggle",
+      "description": "Test debug mode can be toggled with F1 key",
+      "actions": [
+        {
+          "type": "navigate",
+          "url": "/?dev=true"
+        },
+        {
+          "type": "waitFor",
+          "selector": "#game-canvas",
+          "timeout": 5000
+        },
+        {
+          "type": "wait",
+          "duration": 2000
+        },
+        {
+          "type": "keyPress",
+          "key": "F1"
+        },
+        {
+          "type": "wait",
+          "duration": 500
+        },
+        {
+          "type": "screenshot",
+          "name": "debug_mode_on"
+        }
+      ],
+      "assertions": [
+        {
+          "type": "elementVisible",
+          "selector": "#debug-info.visible"
+        },
+        {
+          "type": "consoleContains",
+          "text": "Debug mode ON"
+        }
+      ]
+    },
+    {
+      "name": "player_controls",
+      "description": "Test that player controls are responsive",
+      "actions": [
+        {
+          "type": "navigate",
+          "url": "/?dev=true"
+        },
+        {
+          "type": "waitFor",
+          "selector": "#game-canvas",
+          "timeout": 5000
+        },
+        {
+          "type": "wait",
+          "duration": 2000
+        },
+        {
+          "type": "keyPress",
+          "key": "ArrowRight"
+        },
+        {
+          "type": "wait",
+          "duration": 500
+        },
+        {
+          "type": "keyPress",
+          "key": "Space"
+        },
+        {
+          "type": "wait",
+          "duration": 1000
+        },
+        {
+          "type": "screenshot",
+          "name": "player_movement"
+        }
+      ],
+      "assertions": [
+        {
+          "type": "canvasNotEmpty",
+          "selector": "#game-canvas"
+        },
+        {
+          "type": "noConsoleErrors",
+          "severity": "error"
+        }
+      ]
+    },
+    {
+      "name": "audio_system",
+      "description": "Test that audio system initializes without errors",
+      "actions": [
+        {
+          "type": "navigate",
+          "url": "/?dev=true"
+        },
+        {
+          "type": "waitFor",
+          "selector": "#game-canvas",
+          "timeout": 5000
+        },
+        {
+          "type": "wait",
+          "duration": 3000
+        }
+      ],
+      "assertions": [
+        {
+          "type": "noConsoleErrors",
+          "severity": "error"
+        },
+        {
+          "type": "audioContextExists"
+        }
+      ]
+    },
+    {
+      "name": "mystery_box_interaction",
+      "description": "Test mystery box functionality",
+      "actions": [
+        {
+          "type": "navigate",
+          "url": "/?dev=true"
+        },
+        {
+          "type": "waitFor",
+          "selector": "#game-canvas",
+          "timeout": 5000
+        },
+        {
+          "type": "wait",
+          "duration": 2000
+        },
+        {
+          "type": "keyPress",
+          "key": "F1"
+        },
+        {
+          "type": "wait",
+          "duration": 500
+        },
+        {
+          "type": "screenshot",
+          "name": "mystery_boxes_visible"
+        }
+      ],
+      "assertions": [
+        {
+          "type": "elementVisible",
+          "selector": "#debug-info.visible"
+        },
+        {
+          "type": "canvasNotEmpty",
+          "selector": "#game-canvas"
+        }
+      ]
+    },
+    {
+      "name": "game_performance",
+      "description": "Test that game maintains smooth performance",
+      "actions": [
+        {
+          "type": "navigate",
+          "url": "/?dev=true"
+        },
+        {
+          "type": "waitFor",
+          "selector": "#game-canvas",
+          "timeout": 5000
+        },
+        {
+          "type": "wait",
+          "duration": 5000
+        },
+        {
+          "type": "performanceMetrics"
+        }
+      ],
+      "assertions": [
+        {
+          "type": "fpsAbove",
+          "threshold": 30
+        },
+        {
+          "type": "memoryUsageBelow",
+          "threshold": 100
+        }
+      ]
     }
   ],
   "performance": {
