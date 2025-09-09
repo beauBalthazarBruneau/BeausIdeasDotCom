@@ -14,9 +14,10 @@ export class WorldTransitionManager {
     // Transition state
     this.isTransitioning = false;
     this.transitionCallback = null;
+    this.initialLevelCleared = false; // Flag to prevent multiple clears
 
     // Initialize main hub position tracking
-    this.playerPositions.set('main-hub', { x: 100, y: 300 });
+    this.playerPositions.set('main-hub', { x: 100, y: 550 });
 
     console.log('WorldTransitionManager initialized');
   }
@@ -57,7 +58,7 @@ export class WorldTransitionManager {
 
   // Get saved position for a world
   getSavedPosition(worldId) {
-    return this.playerPositions.get(worldId) || { x: 100, y: 300 };
+    return this.playerPositions.get(worldId) || { x: 100, y: 550 };
   }
 
   // Main transition method
@@ -88,7 +89,7 @@ export class WorldTransitionManager {
           newPosition = this.getProgressionSpawnPoint(this.currentWorldId);
         } else {
           // Entering sub-world - use default spawn
-          newPosition = { x: 100, y: 300 };
+          newPosition = { x: 100, y: 550 };
         }
       }
 
@@ -112,8 +113,8 @@ export class WorldTransitionManager {
   async transitionToMainHub(spawnPosition) {
     console.log('Loading main hub world');
 
-    // Clear current world content
-    this.clearCurrentWorld();
+    // Only clear initial Level, don't clear if we're already in MainHub
+    this.clearInitialLevel();
 
     // Load main hub (the original level)
     const MainHub = await import('./MainHub.js');
@@ -189,31 +190,55 @@ export class WorldTransitionManager {
     console.log(`Sub-world ${worldId} loaded successfully`);
   }
 
+  // Clear only the initial Level (not currentWorld)
+  clearInitialLevel() {
+    if (!this.initialLevelCleared && this.game.level && this.game.level !== this.currentWorld) {
+      console.log('Clearing initial Level platforms');
+      if (this.game.level.destroy) {
+        this.game.level.destroy();
+      } else {
+        // Manually clear Level platforms if no destroy method
+        if (this.game.level.platforms) {
+          this.game.level.platforms.forEach((platform, id) => {
+            this.game.physics.removeBody(id);
+          });
+        }
+        if (this.game.level.boundaries) {
+          this.game.level.boundaries.forEach((boundary, id) => {
+            this.game.physics.removeBody(`boundary-${id}`);
+          });
+        }
+      }
+      this.initialLevelCleared = true;
+    }
+  }
+
   // Clear current world (remove physics bodies, checkpoints, etc.)
   clearCurrentWorld() {
+    // Clear the currentWorld if it exists
     if (this.currentWorld) {
       // Clear physics bodies
       if (this.currentWorld.destroy) {
         this.currentWorld.destroy();
       }
+    }
 
-      // Clear mystery boxes
-      this.game.mysteryBoxes.forEach((mysteryBox) => {
-        if (mysteryBox.body) {
-          this.game.physics.removeBody(mysteryBox.id);
+    // Clear mystery boxes
+    this.game.mysteryBoxes.forEach((mysteryBox) => {
+      if (mysteryBox.body) {
+        this.game.physics.removeBody(mysteryBox.id);
+      }
+    });
+    this.game.mysteryBoxes = [];
+
+    // Clear doors
+    if (this.game.doors) {
+      this.game.doors.forEach((door) => {
+        if (door.body) {
+          this.game.physics.removeBody(`door-${door.x}-${door.y}`);
         }
       });
-      this.game.mysteryBoxes = [];
-
-      // Clear doors
-      if (this.game.doors) {
-        this.game.doors.forEach((door) => {
-          if (door.body) {
-            this.game.physics.removeBody(`door-${door.x}-${door.y}`);
-          }
-        });
-        this.game.doors = [];
-      }
+      this.game.doors = [];
     }
   }
 
@@ -248,7 +273,7 @@ export class WorldTransitionManager {
     doorConfigs.forEach((config) => {
       const door = new Door(config.position.x, config.position.y, this, {
         targetWorld: config.worldId,
-        spawnPoint: { x: 100, y: 300 },
+        spawnPoint: { x: 100, y: 550 },
         doorType: 'entry',
         themeColor: config.themeColor,
         name: config.name,
@@ -265,12 +290,12 @@ export class WorldTransitionManager {
   getProgressionSpawnPoint(fromWorldId) {
     // Return to a position further along the main world based on which world was completed
     const spawnPoints = {
-      'vibe-coding': { x: 900, y: 520 }, // Just past the Vibe Coding door
-      healthcare: { x: 1300, y: 520 }, // Just past the Healthcare door
-      'georgia-tech': { x: 1700, y: 520 }, // Just past the Georgia Tech door
+      'vibe-coding': { x: 900, y: 550 }, // Just past the Vibe Coding door
+      healthcare: { x: 1300, y: 550 }, // Just past the Healthcare door
+      'georgia-tech': { x: 1700, y: 550 }, // Just past the Georgia Tech door
     };
 
-    return spawnPoints[fromWorldId] || { x: 100, y: 300 };
+    return spawnPoints[fromWorldId] || { x: 100, y: 550 };
   }
 
   // Get current world instance
@@ -323,7 +348,7 @@ export class WorldTransitionManager {
     this.worlds.clear();
     this.playerPositions.clear();
     // Reset to main hub defaults
-    this.playerPositions.set('main-hub', { x: 100, y: 300 });
+    this.playerPositions.set('main-hub', { x: 100, y: 550 });
   }
 
   // Cleanup

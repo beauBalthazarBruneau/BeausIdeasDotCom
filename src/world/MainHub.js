@@ -14,7 +14,7 @@ export class MainHub {
     // Level dimensions - expanded to accommodate door positions
     this.width = 3500; // Increased width for door spacing
     this.height = 1200;
-    this.groundLevel = 600;
+    this.groundLevel = 650; // Platform centers at 650
 
     // Hub level data with sections for different doors
     this.levelData = {

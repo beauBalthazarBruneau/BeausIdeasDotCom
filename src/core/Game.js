@@ -28,6 +28,7 @@ export class Game {
     // Game state
     this.state = 'playing'; // playing, paused
     this.debugMode = false;
+    this.showGrid = false; // Grid overlay toggle
 
     // Game statistics
     this.respawnCount = 0;
@@ -35,7 +36,7 @@ export class Game {
 
     // Simple game state tracking
     this.gameState = {
-      playerStartPosition: { x: 100, y: 300 },
+      playerStartPosition: { x: 100, y: 550 },
       initialGameTime: 0,
       initialRespawnCount: 0,
     };
@@ -134,6 +135,7 @@ export class Game {
   setupDebugToggle() {
     // Toggle debug mode with 'F1' key
     let debugPressed = false;
+    let gridPressed = false;
 
     document.addEventListener('keydown', (e) => {
       if (e.code === 'F1' && !debugPressed) {
@@ -141,11 +143,19 @@ export class Game {
         debugPressed = true;
         this.toggleDebug();
       }
+      if (e.code === 'F2' && !gridPressed) {
+        e.preventDefault();
+        gridPressed = true;
+        this.toggleGrid();
+      }
     });
 
     document.addEventListener('keyup', (e) => {
       if (e.code === 'F1') {
         debugPressed = false;
+      }
+      if (e.code === 'F2') {
+        gridPressed = false;
       }
     });
 
@@ -177,6 +187,11 @@ export class Game {
     }
   }
 
+  toggleGrid() {
+    this.showGrid = !this.showGrid;
+    console.log('Grid overlay:', this.showGrid ? 'ON' : 'OFF');
+  }
+
   handleResize() {
     this.resizeCanvas();
     this.camera.resize(this.canvas.width, this.canvas.height);
@@ -190,7 +205,7 @@ export class Game {
     console.log('Initializing main hub world');
     this.level = await this.worldTransitionManager.transitionToMainHub({
       x: 100,
-      y: 300,
+      y: 550,
     });
   }
 
@@ -255,7 +270,7 @@ Good luck, and have fun exploring!`,
     // Create tutorial mystery box at the beginning of the main world
     const tutorialBox = new MysteryBox(
       250, // X position - near the start but after spawn
-      460, // Y position - on the ground level
+      450, // Y position - floating above platforms
       this,
       {
         project: tutorialData,
@@ -330,6 +345,12 @@ Good luck, and have fun exploring!`,
 
     // Draw player
     this.player.draw(this.ctx);
+
+
+    // Draw grid overlay (in world space, before camera restore)
+    if (this.showGrid) {
+      this.drawGrid();
+    }
 
     // Restore camera transform
     this.camera.restore(this.ctx);
@@ -445,6 +466,7 @@ Good luck, and have fun exploring!`,
         <div class="debug-title">🎮 CONTROLS</div>
         <div class="debug-line">M: Toggle Mute | +/-: Volume</div>
         <div class="debug-line">B: Force Music | F1: Debug</div>
+        <div class="debug-line">F2: Grid Overlay (${this.showGrid ? 'ON' : 'OFF'})</div>
         <div class="debug-line">Space: Jump | WASD: Move</div>
         <div class="debug-line">R: Complete Game Reset</div>
       </div>
@@ -705,7 +727,7 @@ Good luck, and have fun exploring!`,
     this.ctx.fillStyle = 'white';
     this.ctx.font = '16px monospace';
     this.ctx.fillText(
-      'Arrow Keys/WASD: Move | Space/Up: Double Jump | F1: Debug',
+      'Arrow Keys/WASD: Move | Space/Up: Double Jump | F1: Debug | F2: Grid',
       10,
       30
     );
@@ -796,6 +818,112 @@ Good luck, and have fun exploring!`,
     this.showAudioFeedback('Complete game reset!');
 
     console.log('Game state reset complete');
+  }
+
+  drawGrid() {
+    const ctx = this.ctx;
+    
+    // Get visible area bounds in world coordinates
+    const leftBound = this.camera.x - 100; // Add some padding
+    const rightBound = this.camera.x + this.canvas.width + 100;
+    const topBound = this.camera.y - 100;
+    const bottomBound = this.camera.y + this.canvas.height + 100;
+    
+    // Calculate grid start points (snap to grid)
+    const gridSize10 = 10;
+    const gridSize50 = 50;
+    
+    const startX = Math.floor(leftBound / gridSize10) * gridSize10;
+    const startY = Math.floor(topBound / gridSize10) * gridSize10;
+    
+    ctx.save();
+    
+    // Draw 10px grid lines (light)
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    
+    // Vertical lines
+    for (let x = startX; x <= rightBound; x += gridSize10) {
+      if (x % gridSize50 !== 0) { // Skip 50px grid lines
+        ctx.moveTo(x, topBound);
+        ctx.lineTo(x, bottomBound);
+      }
+    }
+    
+    // Horizontal lines  
+    for (let y = startY; y <= bottomBound; y += gridSize10) {
+      if (y % gridSize50 !== 0) { // Skip 50px grid lines
+        ctx.moveTo(leftBound, y);
+        ctx.lineTo(rightBound, y);
+      }
+    }
+    
+    ctx.stroke();
+    
+    // Draw 50px grid lines (darker) and coordinates
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    ctx.beginPath();
+    
+    // Vertical 50px lines with coordinates
+    for (let x = Math.floor(leftBound / gridSize50) * gridSize50; x <= rightBound; x += gridSize50) {
+      ctx.moveTo(x, topBound);
+      ctx.lineTo(x, bottomBound);
+      
+      // Add coordinate labels on every 50px line - fixed to top of screen
+      ctx.fillText(x.toString(), x, this.camera.y + 15);
+    }
+    
+    // Horizontal 50px lines with coordinates
+    for (let y = Math.floor(topBound / gridSize50) * gridSize50; y <= bottomBound; y += gridSize50) {
+      ctx.moveTo(leftBound, y);
+      ctx.lineTo(rightBound, y);
+      
+      // Add coordinate labels on every 50px line - fixed to left side of screen
+      ctx.save();
+      ctx.textAlign = 'left';
+      // Position at left edge of screen (camera position + small offset)
+      ctx.fillText(y.toString(), this.camera.x + 5, y);
+      ctx.restore();
+    }
+    
+    ctx.stroke();
+    
+    // Draw origin (0,0) with special highlighting
+    if (leftBound <= 0 && rightBound >= 0 && topBound <= 0 && bottomBound >= 0) {
+      ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      
+      // Red cross at origin
+      ctx.moveTo(-20, 0);
+      ctx.lineTo(20, 0);
+      ctx.moveTo(0, -20);
+      ctx.lineTo(0, 20);
+      ctx.stroke();
+      
+      // Origin label
+      ctx.fillStyle = 'rgba(255, 0, 0, 0.9)';
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText('(0,0)', 10, -10);
+    }
+    
+    // Draw player position marker
+    const playerX = this.player.x;
+    const playerY = this.player.y;
+    
+    ctx.fillStyle = 'rgba(0, 255, 0, 0.8)';
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(`Player: (${Math.round(playerX)}, ${Math.round(playerY)})`, playerX + 20, playerY - 30);
+    
+    ctx.restore();
   }
 
   destroy() {
