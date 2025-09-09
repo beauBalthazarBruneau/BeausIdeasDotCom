@@ -7,7 +7,7 @@ import path from 'path';
 class MarioPlaytestRunner {
   constructor() {
     this.playwright = new PlaywrightRealIntegration({
-      baseUrl: 'http://localhost:5173',
+      baseUrl: 'http://localhost:5174', // Use port 5174 as fallback
       headless: false, // Run with visible browser for gameplay
       outputDir: './playtest-results'
     });

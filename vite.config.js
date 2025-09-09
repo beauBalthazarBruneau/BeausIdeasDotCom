@@ -1,20 +1,21 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig({
   // Path aliases for clean imports
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
-      '@core': resolve(__dirname, 'src/core'),
-      '@entities': resolve(__dirname, 'src/entities'),
-      '@systems': resolve(__dirname, 'src/systems'),
-      '@world': resolve(__dirname, 'src/world'),
-      '@ui': resolve(__dirname, 'src/ui'),
-      '@managers': resolve(__dirname, 'src/managers'),
-      '@data': resolve(__dirname, 'src/data'),
-      '@utils': resolve(__dirname, 'src/utils'),
-      '@constants': resolve(__dirname, 'src/constants'),
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@core': fileURLToPath(new URL('./src/core', import.meta.url)),
+      '@entities': fileURLToPath(new URL('./src/entities', import.meta.url)),
+      '@systems': fileURLToPath(new URL('./src/systems', import.meta.url)),
+      '@world': fileURLToPath(new URL('./src/world', import.meta.url)),
+      '@ui': fileURLToPath(new URL('./src/ui', import.meta.url)),
+      '@managers': fileURLToPath(new URL('./src/managers', import.meta.url)),
+      '@data': fileURLToPath(new URL('./src/data', import.meta.url)),
+      '@utils': fileURLToPath(new URL('./src/utils', import.meta.url)),
+      '@constants': fileURLToPath(new URL('./src/constants', import.meta.url)),
     },
   },
 
