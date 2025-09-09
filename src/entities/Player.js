@@ -11,13 +11,17 @@ export class Player {
     this.body = Bodies.rectangle(x, y, this.width, this.height, {
       label: 'player',
       friction: 0.001,
-      frictionAir: 0.01,
-      restitution: 0.1,
+      frictionStatic: 0.2,
+      frictionAir: 0.005,
+      restitution: 0,
+      chamfer: { radius: 4 },
     });
 
     // Add to physics world
     this.physics.addBody('player', this.body);
 
+    // Prevent rotation so the player doesn't snag on edges
+    Body.setInertia(this.body, Infinity);
     // Movement properties
     this.speed = 0.02;
     this.jumpVelocity = -7.5; // Reduced by half from -15
@@ -58,25 +62,14 @@ export class Player {
             otherBody.label === 'platform' ||
             otherBody.label === 'mysteryBox'
           ) {
-            // Improved ground detection - check if player is on top of surface
+            // Simplified ground detection - check if player is moving downward or stable
             const playerBottom = this.body.position.y + this.height / 2;
-            const playerTop = this.body.position.y - this.height / 2;
-            const surfaceTop =
-              otherBody.position.y -
-              (otherBody.bounds.max.y - otherBody.bounds.min.y) / 2;
-            const surfaceBottom =
-              otherBody.position.y +
-              (otherBody.bounds.max.y - otherBody.bounds.min.y) / 2;
+            const surfaceTop = otherBody.position.y - (otherBody.bounds.max.y - otherBody.bounds.min.y) / 2;
 
-            // Check if player is landing on top (with some tolerance)
-            if (
-              playerBottom <= surfaceTop + 10 &&
-              playerTop < surfaceTop &&
-              this.body.velocity.y >= -1
-            ) {
+            // Check if player is on top of surface (landing from above)
+            if (playerBottom <= surfaceTop + 5 && this.body.velocity.y >= -0.5) {
               this.isGrounded = true;
-              this.jumpsRemaining = this.maxJumps; // Reset jumps immediately when grounded
-              console.log(`Player grounded on ${otherBody.label}`);
+              this.jumpsRemaining = this.maxJumps;
             }
 
             // Special handling for mystery box collision from below (hitting mystery box)
@@ -144,20 +137,20 @@ export class Player {
 
     // Horizontal movement using forces
     if (inputHandler.isPressed('left')) {
-      Body.applyForce(this.body, this.body.position, { x: -0.001, y: 0 });
+      Body.applyForce(this.body, this.body.position, { x: -0.003, y: 0 });
       this.facing = -1;
       this.animationState = this.isGrounded ? 'walking' : 'jumping';
     } else if (inputHandler.isPressed('right')) {
-      Body.applyForce(this.body, this.body.position, { x: 0.001, y: 0 });
+      Body.applyForce(this.body, this.body.position, { x: 0.003, y: 0 });
       this.facing = 1;
       this.animationState = this.isGrounded ? 'walking' : 'jumping';
     } else {
-      // Apply friction when no input
-      Body.setVelocity(this.body, {
-        x: currentVelocity.x * 0.8,
-        y: currentVelocity.y,
-      });
+      // Apply lighter friction when no input - let natural physics handle stopping
       if (this.isGrounded) {
+        Body.setVelocity(this.body, {
+          x: currentVelocity.x * 0.92,
+          y: currentVelocity.y,
+        });
         this.animationState = 'idle';
       }
     }
@@ -250,10 +243,10 @@ export class Player {
     // This method checks if the player is still touching ground after collision ends
     // For now, we'll set a small delay to check if player is falling
     setTimeout(() => {
-      if (this.body.velocity.y > 0.5) {
+      if (this.body.velocity.y > 0.8) {
         this.isGrounded = false;
       }
-    }, 50);
+    }, 30);
   }
 
   draw(ctx) {

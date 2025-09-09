@@ -14,7 +14,7 @@ export class MainHub {
     // Level dimensions - expanded to accommodate door positions
     this.width = 3500; // Increased width for door spacing
     this.height = 1200;
-    this.groundLevel = 600;
+    this.groundLevel = 650; // Platform centers at 650
 
     // Hub level data with sections for different doors
     this.levelData = {
@@ -27,13 +27,10 @@ export class MainHub {
             y: this.groundLevel,
             width: 800,
             height: 60,
-            type: 'grass',
+            type: 'road',
           },
         ],
-        decorations: [
-          { type: 'tree', x: 50, y: this.groundLevel - 60 },
-          { type: 'bush', x: 450, y: this.groundLevel - 30 },
-        ],
+        decorations: [],
       },
 
       // World doors area - where entry doors are located
@@ -45,13 +42,10 @@ export class MainHub {
             y: this.groundLevel,
             width: 1200,
             height: 60,
-            type: 'grass',
+            type: 'road',
           },
         ],
-        decorations: [
-          { type: 'pillar', x: 750, y: this.groundLevel - 150 },
-          { type: 'pillar', x: 1850, y: this.groundLevel - 150 },
-        ],
+        decorations: [],
       },
 
       // Elevated section - jumping challenges
@@ -63,7 +57,7 @@ export class MainHub {
             y: this.groundLevel,
             width: 500,
             height: 60,
-            type: 'grass',
+            type: 'road',
           },
         ],
         decorations: [
@@ -81,13 +75,10 @@ export class MainHub {
             y: this.groundLevel,
             width: 400,
             height: 60,
-            type: 'grass',
+            type: 'road',
           },
         ],
-        decorations: [
-          { type: 'bridge_support', x: 2800, y: this.groundLevel + 50 },
-          { type: 'bridge_support', x: 3000, y: this.groundLevel + 50 },
-        ],
+        decorations: [],
       },
 
       // Victory area - final destination
@@ -147,8 +138,9 @@ export class MainHub {
     const body = Bodies.rectangle(x, y, width, height, {
       label: 'platform',
       isStatic: true,
-      friction: 0.8,
-      restitution: 0.1,
+      friction: 0.3,
+      frictionStatic: 0.2,
+      restitution: 0,
     });
 
     // Store platform with its data
@@ -278,6 +270,15 @@ export class MainHub {
           case 'flag':
             this.drawFlag(ctx, x, y);
             break;
+          case 'street_lamp':
+            this.drawStreetLamp(ctx, x, y);
+            break;
+          case 'road_sign':
+            this.drawRoadSign(ctx, x, y);
+            break;
+          case 'traffic_cone':
+            this.drawTrafficCone(ctx, x, y);
+            break;
         }
 
         ctx.restore();
@@ -287,6 +288,9 @@ export class MainHub {
 
   setPlatformStyle(ctx, type) {
     switch (type) {
+      case 'road':
+        ctx.fillStyle = '#404040'; // Dark gray asphalt base
+        break;
       case 'grass':
         ctx.fillStyle = '#8B4513'; // Brown base
         break;
@@ -311,6 +315,10 @@ export class MainHub {
     const { x, y } = pos;
 
     switch (type) {
+      case 'road':
+        this.drawPixelArtRoad(ctx, x, y, width, height);
+        break;
+        
       case 'grass':
         // Draw grass on top
         ctx.fillStyle = '#228B22'; // Forest green grass
@@ -393,6 +401,66 @@ export class MainHub {
         this.drawStar(ctx, x, y, 10);
         this.drawStar(ctx, x + width / 3, y, 8);
         break;
+    }
+  }
+
+  // Draw a pixel art road with lane markers and curb
+  drawPixelArtRoad(ctx, centerX, centerY, width, height) {
+    const left = centerX - width / 2;
+    const top = centerY - height / 2;
+
+    // Base asphalt
+    ctx.fillStyle = '#3a3a3a';
+    ctx.fillRect(left, top, width, height);
+
+    // Textured asphalt (dithered speckles)
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    for (let i = 0; i < Math.floor(width / 8); i++) {
+      const sx = left + (i * 8) + (Math.random() * 8);
+      const sy = top + 6 + Math.random() * (height - 12);
+      ctx.fillRect(Math.floor(sx), Math.floor(sy), 1, 1);
+    }
+    ctx.fillStyle = 'rgba(0,0,0,0.08)';
+    for (let i = 0; i < Math.floor(width / 10); i++) {
+      const sx = left + (i * 10) + (Math.random() * 10);
+      const sy = top + 6 + Math.random() * (height - 12);
+      ctx.fillRect(Math.floor(sx), Math.floor(sy), 1, 1);
+    }
+
+    // Curbs (top and bottom edges)
+    ctx.fillStyle = '#6b6b6b';
+    ctx.fillRect(left, top, width, 6); // top curb
+    ctx.fillRect(left, top + height - 6, width, 6); // bottom curb
+
+    // Inner curb highlights
+    ctx.fillStyle = '#8a8a8a';
+    ctx.fillRect(left, top + 1, width, 2);
+    ctx.fillRect(left, top + height - 3, width, 2);
+
+    // Lane divider (dashed)
+    const laneY = centerY - 1;
+    ctx.fillStyle = '#f4e66a'; // faded yellow
+    const dashWidth = 20;
+    const gapWidth = 16;
+    for (let xPos = left + 10; xPos < left + width - 10; xPos += dashWidth + gapWidth) {
+      ctx.fillRect(Math.floor(xPos), Math.floor(laneY - 2), dashWidth, 4);
+    }
+
+    // Side stripes (white)
+    ctx.fillStyle = '#e9e9e9';
+    ctx.fillRect(left + 6, top + 10, width - 12, 2);
+    ctx.fillRect(left + 6, top + height - 12, width - 12, 2);
+
+    // Occasional cracks
+    ctx.strokeStyle = '#2f2f2f';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < Math.floor(width / 200); i++) {
+      const cx = left + 40 + Math.random() * (width - 80);
+      const cy = top + 10 + Math.random() * (height - 20);
+      ctx.beginPath();
+      ctx.moveTo(Math.floor(cx), Math.floor(cy));
+      ctx.lineTo(Math.floor(cx + (Math.random() * 30 - 15)), Math.floor(cy + (Math.random() * 6 - 3)));
+      ctx.stroke();
     }
   }
 
@@ -567,6 +635,82 @@ export class MainHub {
 
     // Flag details
     ctx.fillStyle = '#FFFFFF'; // White star
+  }
+
+  // Draw pixel art street lamp
+  drawStreetLamp(ctx, x, y) {
+    // Lamp post (dark gray metal)
+    ctx.fillStyle = '#505050';
+    ctx.fillRect(x - 4, y, 8, 120);
+    
+    // Post highlights
+    ctx.fillStyle = '#707070';
+    ctx.fillRect(x - 4, y, 2, 120);
+    
+    // Lamp housing (darker gray)
+    ctx.fillStyle = '#3a3a3a';
+    ctx.fillRect(x - 20, y - 25, 40, 25);
+    
+    // Light source (warm yellow)
+    ctx.fillStyle = '#ffd700';
+    ctx.fillRect(x - 16, y - 21, 32, 17);
+    
+    // Light glow effect
+    ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+    ctx.fillRect(x - 24, y - 30, 48, 35);
+    
+    // Base of post
+    ctx.fillStyle = '#404040';
+    ctx.fillRect(x - 8, y + 115, 16, 8);
+  }
+
+  // Draw pixel art road sign
+  drawRoadSign(ctx, x, y) {
+    // Sign post
+    ctx.fillStyle = '#606060';
+    ctx.fillRect(x - 3, y, 6, 80);
+    
+    // Sign board (white background)
+    ctx.fillStyle = '#f0f0f0';
+    ctx.fillRect(x - 25, y - 40, 50, 30);
+    
+    // Sign border
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x - 25, y - 40, 50, 30);
+    
+    // Sign text/symbol (simple arrow)
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 12px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('→', x, y - 20);
+  }
+
+  // Draw pixel art traffic cone
+  drawTrafficCone(ctx, x, y) {
+    // Cone base (black)
+    ctx.fillStyle = '#2a2a2a';
+    ctx.fillRect(x - 12, y + 20, 24, 8);
+    
+    // Cone body (orange)
+    ctx.fillStyle = '#ff6600';
+    // Draw cone as trapezoid using path
+    ctx.beginPath();
+    ctx.moveTo(x - 10, y + 20); // bottom left
+    ctx.lineTo(x + 10, y + 20); // bottom right
+    ctx.lineTo(x + 4, y - 10);  // top right
+    ctx.lineTo(x - 4, y - 10);  // top left
+    ctx.closePath();
+    ctx.fill();
+    
+    // White reflective stripes
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x - 8, y + 10, 16, 3);
+    ctx.fillRect(x - 6, y, 12, 3);
+    
+    // Cone tip highlight
+    ctx.fillStyle = '#ffaa44';
+    ctx.fillRect(x - 2, y - 10, 4, 4);
     ctx.beginPath();
     ctx.arc(x + 23, y + 12, 6, 0, Math.PI * 2);
     ctx.fill();

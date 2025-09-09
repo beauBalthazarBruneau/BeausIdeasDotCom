@@ -53,7 +53,7 @@ export class GeorgiaTechWorld {
 
       const mysteryBox = new MysteryBox(
         xPos,
-        this.groundLevel - 100,
+        450,
         this.worldTransitionManager.game,
         {
           collectible: project.collectible,
