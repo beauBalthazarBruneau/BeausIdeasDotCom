@@ -77,6 +77,33 @@ export class JerseyShoreTheme extends WorldTheme {
 }
 
 class JerseyShoreBackground extends ThemedBackground {
+  constructor(canvas, levelWidth, theme) {
+    super(canvas, levelWidth, theme);
+    this.images = new Map();
+    this.preloadImages();
+  }
+
+  async preloadImages() {
+    const imagesToLoad = [
+      { key: 'beach_house', src: '/assets/heritage.png' }
+    ];
+
+    for (const imageData of imagesToLoad) {
+      try {
+        const img = new Image();
+        img.src = imageData.src;
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+        });
+        this.images.set(imageData.key, img);
+        console.log(`Loaded beach house image`);
+      } catch (error) {
+        console.warn(`Failed to load beach house image:`, error);
+      }
+    }
+  }
+
   createSkyLayer() {
     return {
       name: 'sky',
@@ -106,6 +133,7 @@ class JerseyShoreBackground extends ThemedBackground {
       name: 'midground',
       scrollSpeed: 0.5,
       elements: [
+        { type: 'beach_house', x: 400, y: 780, image: '/assets/heritage.png' }, // Moved up another 20px (800 - 20 = 780)
         { type: 'ocean_waves', animated: true },
         { type: 'beach_crowds', density: 0.3 },
         { type: 'pier_structures', count: 3 }
@@ -157,6 +185,9 @@ class JerseyShoreBackground extends ThemedBackground {
         break;
       case 'lighthouse':
         this.drawLighthouse(ctx, element);
+        break;
+      case 'beach_house':
+        this.drawBeachHouse(ctx, element);
         break;
       // Add more element drawing methods as needed
     }
@@ -221,6 +252,36 @@ class JerseyShoreBackground extends ThemedBackground {
       ctx.closePath();
       ctx.fill();
       ctx.restore();
+    }
+  }
+
+  drawBeachHouse(ctx, element) {
+    const image = this.images.get('beach_house');
+    if (image && image.complete) {
+      const x = element.x;
+      const y = element.y;
+      
+      // Scale to 50% size
+      const scaledWidth = image.width * 0.5;
+      const scaledHeight = image.height * 0.5;
+      
+      ctx.save();
+      ctx.imageSmoothingEnabled = false; // Keep pixel art crisp
+      
+      // Draw image at 50% size with bottom touching the specified y coordinate
+      ctx.drawImage(
+        image,
+        x - scaledWidth / 2,  // Center horizontally
+        y - scaledHeight,     // Position so bottom of scaled image is at y coordinate
+        scaledWidth,
+        scaledHeight
+      );
+      
+      ctx.restore();
+    } else {
+      // Simple fallback if image not loaded
+      ctx.fillStyle = '#D2B48C';
+      ctx.fillRect(element.x - 20, element.y - 30, 40, 30); // Also scaled down fallback
     }
   }
 }
