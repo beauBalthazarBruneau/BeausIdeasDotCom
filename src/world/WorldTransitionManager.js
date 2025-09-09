@@ -2,12 +2,14 @@
 // Handles world state, transitions, and player position management
 
 import { WorldManager } from '../managers/ProjectData.js';
+import { WorldThemeFactory } from '../systems/WorldTheme.js';
 
 export class WorldTransitionManager {
   constructor(game) {
     this.game = game;
     this.currentWorldId = 'main-hub';
     this.currentWorld = null;
+    this.currentTheme = null; // Current world theme
     this.worlds = new Map();
     this.playerPositions = new Map();
     this.loadedAssets = new Map(); // Track loaded world assets
@@ -35,6 +37,11 @@ export class WorldTransitionManager {
   // Get current world
   getCurrentWorld() {
     return this.currentWorld;
+  }
+
+  // Get current world theme
+  getCurrentTheme() {
+    return this.currentTheme;
   }
 
   // Get current world ID
@@ -76,6 +83,9 @@ export class WorldTransitionManager {
     // Load main hub (the original level)
     const MainHub = await import('./MainHub.js');
     this.currentWorld = new MainHub.MainHub(this.game.physics);
+
+    // Create theme for main hub
+    this.currentTheme = await this.createThemeForWorld('main-hub');
 
     // Create entry doors for sub-worlds
     await this.createMainHubDoors();
@@ -130,6 +140,9 @@ export class WorldTransitionManager {
 
     // Create world instance
     this.currentWorld = new WorldClass(this.game.physics, this);
+
+    // Create theme for sub-world
+    this.currentTheme = await this.createThemeForWorld(worldId);
 
     // Position player at spawn point
     this.game.player.setPosition(spawnPosition.x, spawnPosition.y);
@@ -484,12 +497,29 @@ export class WorldTransitionManager {
     }
   }
 
+  // Create theme for a world
+  async createThemeForWorld(worldId) {
+    console.log(`Creating theme for world: ${worldId}`);
+    try {
+      const dimensions = this.getCurrentWorldInstance()?.getDimensions() || { width: 3500, height: 1200 };
+      const theme = await WorldThemeFactory.create(worldId, this.game.canvas, dimensions);
+      console.log(`Theme created successfully for ${worldId}:`, theme.getThemeId());
+      return theme;
+    } catch (error) {
+      console.error(`Failed to create theme for ${worldId}:`, error);
+      // Return default theme as fallback
+      const { WorldTheme } = await import('../systems/WorldTheme.js');
+      return new WorldTheme(this.game.canvas, { width: 3500, height: 1200 });
+    }
+  }
+
   // Cleanup
   destroy() {
     this.clearCurrentWorld();
     this.worlds.clear();
     this.playerPositions.clear();
     this.loadedAssets.clear();
+    this.currentTheme = null;
     
     // Remove URL event listeners
     window.removeEventListener('popstate', this.handlePopState);

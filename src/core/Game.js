@@ -6,7 +6,7 @@ import { Player } from '../entities/Player.js';
 import { ParticleSystem, Particle } from '../systems/ParticleSystem.js';
 import { Level } from '../world/Level.js';
 import { WorldTransitionManager } from '../world/WorldTransitionManager.js';
-import { Background } from '../systems/Background.js';
+// import { Background } from '../systems/Background.js'; // Replaced by theme system
 import { AudioManager } from '../systems/AudioManager.js';
 import { MysteryBox } from '../entities/MysteryBox.js';
 import { Collectible } from '../entities/Collectible.js';
@@ -55,8 +55,8 @@ export class Game {
     // Initialize with fallback level for now (will be replaced by world system)
     this.level = new Level(this.physics);
 
-    // Create background with parallax layers (will update when world changes)
-    this.background = new Background(canvas, this.level.getDimensions().width);
+    // Background will be created by theme system when worlds load
+    this.background = null;
 
     // Set spawn point and death system from level
     this.spawnPoint = this.level.getSpawnPoint();
@@ -195,7 +195,10 @@ export class Game {
   handleResize() {
     this.resizeCanvas();
     this.camera.resize(this.canvas.width, this.canvas.height);
-    if (this.background) {
+    
+    // Resize themed background if available
+    const currentTheme = this.worldTransitionManager.getCurrentTheme();
+    if (currentTheme && this.background) {
       this.background.resize(this.canvas);
     }
   }
@@ -314,19 +317,38 @@ Good luck, and have fun exploring!`,
   }
 
   render() {
-    // Clear canvas with temporary solid color (will be replaced by background)
+    // Clear canvas with temporary solid color
     this.ctx.fillStyle = '#87CEEB';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Draw parallax background layers (before camera transform)
-    this.background.draw(this.ctx, this.camera);
+    // Get current theme and draw themed background
+    const currentTheme = this.worldTransitionManager.getCurrentTheme();
+    if (currentTheme) {
+      // Create background if not exists or if theme changed
+      if (!this.background || this.lastThemeId !== currentTheme.getThemeId()) {
+        this.background = currentTheme.createBackground();
+        this.lastThemeId = currentTheme.getThemeId();
+        console.log(`Created themed background: ${this.lastThemeId}`);
+      }
+      // Draw themed background
+      this.background.draw(this.ctx, this.camera);
+    }
 
     // Apply camera transform for world objects
     this.camera.apply(this.ctx);
 
-    // Draw level platforms (use current world if available)
+    // Draw current world with themed platform renderer
     const currentWorld = this.worldTransitionManager.getCurrentWorldInstance();
-    if (currentWorld) {
+    
+    if (currentWorld && currentTheme) {
+      // Use themed platform renderer if available
+      if (currentWorld.drawWithTheme) {
+        currentWorld.drawWithTheme(this.ctx, currentTheme);
+      } else {
+        // Fallback to regular drawing
+        currentWorld.draw(this.ctx);
+      }
+    } else if (currentWorld) {
       currentWorld.draw(this.ctx);
     } else {
       this.level.draw(this.ctx);
@@ -655,8 +677,10 @@ Good luck, and have fun exploring!`,
       this.gameTime
     );
 
-    // Update background (for animated elements like clouds)
-    this.background.update(deltaTime);
+    // Update themed background (for animated elements like clouds)
+    if (this.background) {
+      this.background.update(deltaTime);
+    }
 
     // Update mystery boxes and handle collisions
     this.mysteryBoxes.forEach((mysteryBox) => {
