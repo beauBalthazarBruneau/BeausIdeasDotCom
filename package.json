@@ -10,10 +10,14 @@
     "lint": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives",
     "lint:fix": "eslint . --ext js,jsx,ts,tsx --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test": "node test-runner.js",
+    "test:watch": "node watch-and-test.js",
+    "test:dev": "concurrently \"npm run dev\" \"npm run test:watch\""
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
+    "concurrently": "^9.2.1",
     "eslint": "^9.9.0",
     "globals": "^15.9.0",
     "prettier": "^3.3.3",

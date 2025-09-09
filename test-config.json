@@ -1,0 +1,162 @@
+{
+  "projectName": "portfolio-mario-game",
+  "baseUrl": "http://localhost:5173",
+  "devServer": {
+    "command": "npm run dev",
+    "port": 5173,
+    "timeout": 10000
+  },
+  "testScenarios": [
+    {
+      "name": "page_loads",
+      "description": "Verify the main page loads successfully",
+      "actions": [
+        {
+          "type": "navigate",
+          "url": "/"
+        },
+        {
+          "type": "waitFor",
+          "selector": "#game-container",
+          "timeout": 5000
+        },
+        {
+          "type": "screenshot",
+          "name": "page_loaded"
+        }
+      ],
+      "assertions": [
+        {
+          "type": "elementExists",
+          "selector": "#game-canvas"
+        },
+        {
+          "type": "elementExists", 
+          "selector": "#game-container"
+        },
+        {
+          "type": "titleContains",
+          "text": "Portfolio Mario Game"
+        }
+      ]
+    },
+    {
+      "name": "game_canvas_initializes",
+      "description": "Check that the game canvas is properly initialized",
+      "actions": [
+        {
+          "type": "navigate",
+          "url": "/"
+        },
+        {
+          "type": "waitFor",
+          "selector": "#game-canvas",
+          "timeout": 5000
+        },
+        {
+          "type": "wait",
+          "duration": 2000
+        }
+      ],
+      "assertions": [
+        {
+          "type": "canvasNotEmpty",
+          "selector": "#game-canvas"
+        },
+        {
+          "type": "elementVisible",
+          "selector": "#game-canvas"
+        }
+      ]
+    },
+    {
+      "name": "maintenance_mode_check",
+      "description": "Verify maintenance overlay behavior",
+      "actions": [
+        {
+          "type": "navigate",
+          "url": "/"
+        },
+        {
+          "type": "waitFor",
+          "selector": "#maintenance-overlay",
+          "timeout": 3000
+        }
+      ],
+      "assertions": [
+        {
+          "type": "elementExists",
+          "selector": "#maintenance-overlay"
+        }
+      ]
+    },
+    {
+      "name": "responsive_design",
+      "description": "Test responsive behavior on different screen sizes",
+      "viewport": [
+        {"width": 1920, "height": 1080},
+        {"width": 768, "height": 1024}, 
+        {"width": 375, "height": 667}
+      ],
+      "actions": [
+        {
+          "type": "navigate",
+          "url": "/"
+        },
+        {
+          "type": "waitFor",
+          "selector": "#game-container",
+          "timeout": 5000
+        },
+        {
+          "type": "screenshot",
+          "name": "responsive_test"
+        }
+      ],
+      "assertions": [
+        {
+          "type": "elementVisible",
+          "selector": "#game-container"
+        }
+      ]
+    },
+    {
+      "name": "console_errors",
+      "description": "Check for JavaScript console errors",
+      "actions": [
+        {
+          "type": "navigate",
+          "url": "/"
+        },
+        {
+          "type": "wait",
+          "duration": 3000
+        }
+      ],
+      "assertions": [
+        {
+          "type": "noConsoleErrors",
+          "severity": "error"
+        }
+      ]
+    }
+  ],
+  "performance": {
+    "enabled": true,
+    "thresholds": {
+      "loadTime": 3000,
+      "firstContentfulPaint": 1500,
+      "largestContentfulPaint": 2500
+    }
+  },
+  "accessibility": {
+    "enabled": true,
+    "level": "AA"
+  },
+  "reporting": {
+    "format": "json",
+    "outputDir": "./test-results",
+    "includeScreenshots": true,
+    "includeTrace": true
+  }
+}
