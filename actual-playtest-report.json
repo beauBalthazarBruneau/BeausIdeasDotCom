@@ -1,0 +1,206 @@
+{
+  "timestamp": "2025-09-09T02:20:48.901Z",
+  "gameState": {
+    "gameExists": false,
+    "canvasExists": true,
+    "canvasSize": {
+      "width": 1280,
+      "height": 720
+    },
+    "maintenanceHidden": true
+  },
+  "consoleMessages": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "log",
+      "text": "WorldTransitionManager initialized"
+    },
+    {
+      "type": "log",
+      "text": "Initializing main hub world"
+    },
+    {
+      "type": "log",
+      "text": "Loading main hub world"
+    },
+    {
+      "type": "log",
+      "text": "Clearing initial Level platforms"
+    },
+    {
+      "type": "log",
+      "text": "Creating tutorial mystery box"
+    },
+    {
+      "type": "log",
+      "text": "Created mystery box: Welcome to Mario Portfolio! at (250, 450)"
+    },
+    {
+      "type": "log",
+      "text": "Created tutorial mystery box"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Portfolio Mario Game Initialized!"
+    },
+    {
+      "type": "log",
+      "text": "Controls: Arrow Keys/WASD to move, Space/Up for double jump, F1 for debug"
+    },
+    {
+      "type": "warning",
+      "text": "matter-js: Matter.Engine.update: delta argument is recommended to be less than or equal to 16.667 ms."
+    },
+    {
+      "type": "log",
+      "text": "Background music loaded"
+    },
+    {
+      "type": "log",
+      "text": "Sound effect 'jump' loaded"
+    },
+    {
+      "type": "log",
+      "text": "Sound effect 'doubleJump' loaded"
+    },
+    {
+      "type": "log",
+      "text": "Sound effect 'land' loaded"
+    },
+    {
+      "type": "log",
+      "text": "Sound effect 'death' loaded"
+    },
+    {
+      "type": "log",
+      "text": "Sound effect 'respawn' loaded"
+    },
+    {
+      "type": "log",
+      "text": "Sound effect 'mysteryBoxActivate' loaded"
+    },
+    {
+      "type": "log",
+      "text": "Sound effect 'mysteryBoxComplete' loaded"
+    },
+    {
+      "type": "log",
+      "text": "Creating theme for world: main-hub"
+    },
+    {
+      "type": "log",
+      "text": "Theme created successfully for main-hub: jersey-shore"
+    },
+    {
+      "type": "log",
+      "text": "Created themed background: jersey-shore"
+    },
+    {
+      "type": "log",
+      "text": "Created entry door to vibe-coding at (800, 520)"
+    },
+    {
+      "type": "log",
+      "text": "Created entry door to healthcare at (1200, 520)"
+    },
+    {
+      "type": "log",
+      "text": "Created entry door to georgia-tech at (1600, 520)"
+    },
+    {
+      "type": "log",
+      "text": "Created 3 entry doors in main hub"
+    },
+    {
+      "type": "log",
+      "text": "Creating tutorial mystery box"
+    },
+    {
+      "type": "log",
+      "text": "Created mystery box: Welcome to Mario Portfolio! at (250, 450)"
+    },
+    {
+      "type": "log",
+      "text": "Created tutorial mystery box"
+    },
+    {
+      "type": "log",
+      "text": "Main hub loaded successfully"
+    },
+    {
+      "type": "log",
+      "text": "Loaded beach house image"
+    },
+    {
+      "type": "log",
+      "text": "Attempting to unlock audio context..."
+    },
+    {
+      "type": "log",
+      "text": "startBackgroundMusic called, context unlocked: false"
+    },
+    {
+      "type": "log",
+      "text": "Adding music to pending sounds..."
+    },
+    {
+      "type": "warning",
+      "text": "Silent audio failed to load: Decoding audio data failed."
+    },
+    {
+      "type": "log",
+      "text": "Audio context unlocked!"
+    },
+    {
+      "type": "log",
+      "text": "Starting background music..."
+    },
+    {
+      "type": "log",
+      "text": "Background music started playing"
+    },
+    {
+      "type": "log",
+      "text": "Audio context unlocked!"
+    },
+    {
+      "type": "log",
+      "text": "Starting background music..."
+    },
+    {
+      "type": "log",
+      "text": "Background music started playing"
+    },
+    {
+      "type": "log",
+      "text": "Background music started playing"
+    },
+    {
+      "type": "log",
+      "text": "Debug renderer would be created here"
+    },
+    {
+      "type": "log",
+      "text": "Debug mode ON"
+    }
+  ],
+  "screenshots": [
+    "./actual-game-screenshot-1.png",
+    "./actual-game-screenshot-2.png",
+    "./actual-game-screenshot-3.png",
+    "./actual-game-screenshot-final.png"
+  ],
+  "summary": {
+    "gameLoaded": false,
+    "playable": true,
+    "errors": 0,
+    "warnings": 2
+  }
+}
