@@ -195,98 +195,8 @@ class MysteryBoxTester {
     
     console.log(`📍 Player at (${currentPos.x}, ${currentPos.y}), moving to (${targetX}, ${mysteryBox.y})`);
     
-    // Move towards the mystery box using key holding with better precision
-    const distance = Math.abs(currentPos.x - targetX);
-    
-    if (distance > 10) { // Only move if we're not already close
-      if (currentPos.x < targetX) {
-        // Move right by holding the key
-        console.log('➡️  Moving right towards mystery box (holding key)...');
-        await this.page.keyboard.down('ArrowRight');
-        
-        // Hold the key until we get close, but stop much earlier to account for momentum
-        let attempts = 0;
-        while (attempts < 50) { // Safety limit
-          await this.page.waitForTimeout(30); // Even shorter intervals for better control
-          
-          const pos = await this.page.evaluate(() => {
-            return window.game?.player ? window.game.player.body.position.x : null;
-          });
-          
-          if (pos && pos >= targetX - 30) { // Stop much earlier to account for momentum
-            break;
-          }
-          attempts++;
-        }
-        
-        await this.page.keyboard.up('ArrowRight');
-        
-        // Wait longer for momentum to settle
-        await this.page.waitForTimeout(800);
-        
-      } else {
-        // Move left by holding the key
-        console.log('⬅️  Moving left towards mystery box (holding key)...');
-        await this.page.keyboard.down('ArrowLeft');
-        
-        // Hold the key until we get close, but stop much earlier to account for momentum
-        let attempts = 0;
-        while (attempts < 50) { // Safety limit
-          await this.page.waitForTimeout(30); // Even shorter intervals for better control
-          
-          const pos = await this.page.evaluate(() => {
-            return window.game?.player ? window.game.player.body.position.x : null;
-          });
-          
-          if (pos && pos <= targetX + 30) { // Stop much earlier to account for momentum
-            break;
-          }
-          attempts++;
-        }
-        
-        await this.page.keyboard.up('ArrowLeft');
-        
-        // Wait longer for momentum to settle
-        await this.page.waitForTimeout(800);
-      }
-      
-      // Fine-tune position with small adjustments
-      const finalCheck = await this.page.evaluate(() => {
-        return window.game?.player ? window.game.player.body.position.x : null;
-      });
-      
-      if (finalCheck && Math.abs(finalCheck - targetX) > 3) {
-        console.log('🎯 Fine-tuning position with small movements...');
-        
-        for (let i = 0; i < 10; i++) { // More adjustment attempts
-          const currentX = await this.page.evaluate(() => {
-            return window.game?.player ? window.game.player.body.position.x : null;
-          });
-          
-          if (!currentX || Math.abs(currentX - targetX) <= 3) {
-            console.log(`✅ Perfect position achieved: ${currentX.toFixed(1)} (target: ${targetX})`);
-            break;
-          }
-          
-          const distance = Math.abs(currentX - targetX);
-          console.log(`🔄 Adjustment ${i+1}: Current=${currentX.toFixed(1)}, Target=${targetX}, Distance=${distance.toFixed(1)}`);
-          
-          if (currentX < targetX - 3) {
-            // Need to move right, use short key press
-            await this.page.keyboard.down('ArrowRight');
-            await this.page.waitForTimeout(distance > 20 ? 150 : 50); // Longer press for larger distances
-            await this.page.keyboard.up('ArrowRight');
-          } else if (currentX > targetX + 3) {
-            // Need to move left, use short key press
-            await this.page.keyboard.down('ArrowLeft');
-            await this.page.waitForTimeout(distance > 20 ? 150 : 50); // Longer press for larger distances
-            await this.page.keyboard.up('ArrowLeft');
-          }
-          
-          await this.page.waitForTimeout(400); // Wait for movement to settle
-        }
-      }
-    }
+    // Smart positioning with real-time feedback to minimize back-and-forth movement
+    await this.smartPositioning(targetX, 'Mystery Box Center');
     
     await this.takeScreenshot('positioned_near_mystery_box');
     
@@ -303,7 +213,7 @@ class MysteryBoxTester {
   async hitMysteryBoxFromBelow() {
     console.log('⬆️  Attempting to hit mystery box from below...');
     
-    // Get precise positions before attempting hit
+    // Get precise positions and collision info before attempting hit
     const beforeHit = await this.page.evaluate(() => {
       const player = window.game?.player;
       const mysteryBoxes = window.game?.mysteryBoxes;
@@ -312,70 +222,52 @@ class MysteryBoxTester {
       return {
         playerPos: player ? {
           x: player.body.position.x,
-          y: player.body.position.y
+          y: player.body.position.y,
+          width: 32, // Typical player width
+          height: 32 // Typical player height
         } : null,
         boxPos: targetBox ? {
           x: targetBox.x,
-          y: targetBox.y
+          y: targetBox.y,
+          width: 40, // Mystery box width
+          height: 40, // Mystery box height
+          centerX: targetBox.x + 20,
+          centerY: targetBox.y + 20,
+          bottom: targetBox.y + 40,
+          top: targetBox.y,
+          left: targetBox.x,
+          right: targetBox.x + 40
         } : null
       };
     });
     
-    console.log('📍 Positions before hit:', beforeHit);
+    console.log('📍 Positions before hit:');
+    console.log(`   Player: (${beforeHit.playerPos.x.toFixed(1)}, ${beforeHit.playerPos.y.toFixed(1)}) ${beforeHit.playerPos.width}x${beforeHit.playerPos.height}`);
+    console.log(`   Box: (${beforeHit.boxPos.x}, ${beforeHit.boxPos.y}) ${beforeHit.boxPos.width}x${beforeHit.boxPos.height}`);
+    console.log(`   Box bounds: left=${beforeHit.boxPos.left}, right=${beforeHit.boxPos.right}, top=${beforeHit.boxPos.top}, bottom=${beforeHit.boxPos.bottom}`);
     
     // Fine-tune position to be directly under the mystery box
     if (beforeHit.boxPos) {
-      const boxCenterX = beforeHit.boxPos.x + 20; // Center of box
+      const boxCenterX = beforeHit.boxPos.centerX;
       const playerX = beforeHit.playerPos.x;
       const boxY = beforeHit.boxPos.y;
       const playerY = beforeHit.playerPos.y;
       
-      console.log(`📍 Box center: (${boxCenterX}, ${boxY}), Player: (${playerX}, ${playerY})`);
+      console.log(`📍 Box center: (${boxCenterX}, ${beforeHit.boxPos.centerY}), Player: (${playerX.toFixed(1)}, ${playerY.toFixed(1)})`);
       console.log(`📏 Distance: horizontal=${Math.abs(playerX - boxCenterX).toFixed(1)}, vertical=${Math.abs(playerY - boxY).toFixed(1)}`);
       
-      // Position player more precisely under the mystery box
-      const horizontalDistance = Math.abs(playerX - boxCenterX);
-      if (horizontalDistance > 2) {
-        console.log(`🏃 Fine-tuning horizontal position... Distance: ${horizontalDistance.toFixed(1)} pixels`);
-        
-        // Multiple fine-tuning attempts for perfect positioning
-        for (let attempt = 0; attempt < 8; attempt++) {
-          const currentPos = await this.page.evaluate(() => {
-            const player = window.game?.player;
-            return player ? player.body.position.x : null;
-          });
-          
-          const currentDistance = Math.abs(currentPos - boxCenterX);
-          
-          if (currentDistance <= 2) {
-            console.log(`✅ Perfect horizontal position: ${currentPos.toFixed(1)} (target: ${boxCenterX})`);
-            break;
-          }
-          
-          console.log(`🔄 Fine-tune attempt ${attempt + 1}: Current=${currentPos.toFixed(1)}, Target=${boxCenterX}, Distance=${currentDistance.toFixed(1)}`);
-          
-          if (currentPos < boxCenterX - 2) {
-            // Move right with controlled movement
-            await this.page.keyboard.down('ArrowRight');
-            await this.page.waitForTimeout(currentDistance > 15 ? 100 : 40);
-            await this.page.keyboard.up('ArrowRight');
-          } else if (currentPos > boxCenterX + 2) {
-            // Move left with controlled movement
-            await this.page.keyboard.down('ArrowLeft');
-            await this.page.waitForTimeout(currentDistance > 15 ? 100 : 40);
-            await this.page.keyboard.up('ArrowLeft');
-          }
-          
-          await this.page.waitForTimeout(250); // Let physics settle
-        }
-        
-        // Final position check
-        const finalPos = await this.page.evaluate(() => {
-          const player = window.game?.player;
-          return player ? player.body.position.x : null;
-        });
-        
-        console.log(`🎯 Final jump position: ${finalPos.toFixed(1)} (target: ${boxCenterX}, distance: ${Math.abs(finalPos - boxCenterX).toFixed(1)})`);
+      // Check if player is within horizontal collision range
+      const playerLeft = playerX - beforeHit.playerPos.width/2;
+      const playerRight = playerX + beforeHit.playerPos.width/2;
+      const horizontalOverlap = !(playerRight < beforeHit.boxPos.left || playerLeft > beforeHit.boxPos.right);
+      console.log(`🔍 Horizontal collision check: Player(${playerLeft.toFixed(1)}-${playerRight.toFixed(1)}) vs Box(${beforeHit.boxPos.left}-${beforeHit.boxPos.right}) = ${horizontalOverlap ? 'OVERLAP' : 'NO OVERLAP'}`);
+      
+      // Use smart positioning for precise jump alignment if not overlapping
+      if (!horizontalOverlap) {
+        console.log(`🏃 Fine-tuning jump position for horizontal overlap...`);
+        await this.smartPositioning(boxCenterX, 'Jump Position');
+      } else {
+        console.log(`✅ Player already positioned for collision!`);
       }
     }
     
@@ -532,16 +424,119 @@ class MysteryBoxTester {
 
   async collectCollectible() {
     console.log('🎁 Attempting to collect the collectible...');
+    console.log('🏃 Strategy: Double jump to get on top of mystery box where collectible spawned');
     
-    // Move around to try to collect the collectible
-    const movements = ['ArrowLeft', 'ArrowRight', 'Space', 'ArrowLeft', 'ArrowRight'];
+    // Get collectible and mystery box positions
+    const gameState = await this.page.evaluate(() => {
+      const mysteryBoxes = window.game?.mysteryBoxes;
+      const player = window.game?.player;
+      
+      if (!mysteryBoxes || !player) return null;
+      
+      const boxWithCollectible = mysteryBoxes.find(box => 
+        box.collectible && !box.collectible.collected
+      );
+      
+      return {
+        playerPos: {
+          x: player.body.position.x,
+          y: player.body.position.y
+        },
+        collectible: boxWithCollectible ? {
+          x: boxWithCollectible.collectible.x,
+          y: boxWithCollectible.collectible.y,
+          collected: boxWithCollectible.collectible.collected
+        } : null,
+        mysteryBox: boxWithCollectible ? {
+          x: boxWithCollectible.x,
+          y: boxWithCollectible.y
+        } : null
+      };
+    });
     
-    for (const movement of movements) {
-      await this.page.keyboard.press(movement);
-      await this.page.waitForTimeout(300);
+    if (!gameState?.collectible) {
+      console.log('❌ No collectible found to collect');
+      this.addResult('Collectible Collected', false, { reason: 'No collectible found' });
+      return false;
+    }
+    
+    console.log(`🎯 Collectible at (${gameState.collectible.x}, ${gameState.collectible.y})`);
+    console.log(`📍 Mystery box at (${gameState.mysteryBox.x}, ${gameState.mysteryBox.y})`);
+    console.log(`📍 Player at (${gameState.playerPos.x.toFixed(1)}, ${gameState.playerPos.y.toFixed(1)})`);
+    
+    // Position player under the collectible for precise collection
+    const collectibleX = gameState.collectible.x;
+    const horizontalDistance = Math.abs(gameState.playerPos.x - collectibleX);
+    
+    console.log(`🎯 Collectible at x=${collectibleX}, player at x=${gameState.playerPos.x.toFixed(1)}, distance=${horizontalDistance.toFixed(1)}`);
+    
+    if (horizontalDistance > 10) {
+      console.log(`🏃 Positioning directly under collectible...`);
+      await this.smartPositioning(collectibleX, 'Collectible Collection Position');
+    } else {
+      console.log(`✅ Player already positioned under collectible!`);
+    }
+    
+    // Double jump to get on top of mystery box
+    console.log('🤸 Double jumping to reach collectible...');
+    
+    // First jump
+    await this.page.keyboard.down('ArrowUp');
+    await this.page.waitForTimeout(100);
+    await this.page.keyboard.up('ArrowUp');
+    await this.page.waitForTimeout(200); // Wait to reach peak of first jump
+    
+    // Second jump (double jump)
+    await this.page.keyboard.down('ArrowUp');
+    await this.page.waitForTimeout(100);
+    await this.page.keyboard.up('ArrowUp');
+    await this.page.waitForTimeout(300); // Wait for double jump arc
+    
+    // Check if collectible was collected during double jump
+    let collectionCheck = await this.page.evaluate(() => {
+      const mysteryBoxes = window.game?.mysteryBoxes;
+      if (!mysteryBoxes) return { collected: false, playerPos: null };
+      
+      const boxWithCollectible = mysteryBoxes.find(box => 
+        box.collectible && box.collectible.collected
+      );
+      
+      const player = window.game?.player;
+      
+      return {
+        collected: !!boxWithCollectible,
+        playerPos: player ? {
+          x: player.body.position.x,
+          y: player.body.position.y
+        } : null
+      };
+    });
+    
+    if (collectionCheck.collected) {
+      console.log('✅ Collectible collected during double jump!');
+      await this.takeScreenshot('collectible_collected');
+      this.addResult('Collectible Collected', true, collectionCheck);
+      return true;
+    }
+    
+    console.log(`🔄 First double jump attempt failed. Player at (${collectionCheck.playerPos?.x.toFixed(1)}, ${collectionCheck.playerPos?.y.toFixed(1)})`);
+    
+    // Try moving around on top of mystery box to collect
+    console.log('🔄 Trying to move around to collect collectible...');
+    
+    const collectAttempts = ['ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight'];
+    
+    for (let i = 0; i < collectAttempts.length; i++) {
+      const movement = collectAttempts[i];
+      console.log(`🔄 Collection attempt ${i + 1}: ${movement}`);
+      
+      await this.page.keyboard.down(movement);
+      await this.page.waitForTimeout(100);
+      await this.page.keyboard.up(movement);
+      await this.page.waitForTimeout(200);
       
       // Check if collected
-      const collectionCheck = await this.page.evaluate(() => {
+      collectionCheck = await this.page.evaluate(() => {
         const mysteryBoxes = window.game?.mysteryBoxes;
         if (!mysteryBoxes) return { collected: false };
         
@@ -553,16 +548,52 @@ class MysteryBoxTester {
       });
       
       if (collectionCheck.collected) {
-        console.log('✅ Collectible collected!');
+        console.log(`✅ Collectible collected on attempt ${i + 1}!`);
         await this.takeScreenshot('collectible_collected');
         this.addResult('Collectible Collected', true, collectionCheck);
         return true;
       }
     }
     
-    console.log('❌ Failed to collect collectible');
+    // Final attempt: Another double jump in case collectible moved
+    console.log('🔄 Final attempt: Another double jump...');
+    
+    await this.page.keyboard.down('ArrowUp');
+    await this.page.waitForTimeout(100);
+    await this.page.keyboard.up('ArrowUp');
+    await this.page.waitForTimeout(200);
+    
+    await this.page.keyboard.down('ArrowUp');
+    await this.page.waitForTimeout(100);
+    await this.page.keyboard.up('ArrowUp');
+    await this.page.waitForTimeout(400);
+    
+    // Final check
+    collectionCheck = await this.page.evaluate(() => {
+      const mysteryBoxes = window.game?.mysteryBoxes;
+      if (!mysteryBoxes) return { collected: false };
+      
+      const boxWithCollectible = mysteryBoxes.find(box => 
+        box.collectible && box.collectible.collected
+      );
+      
+      return { collected: !!boxWithCollectible };
+    });
+    
+    if (collectionCheck.collected) {
+      console.log('✅ Collectible collected on final attempt!');
+      await this.takeScreenshot('collectible_collected');
+      this.addResult('Collectible Collected', true, collectionCheck);
+      return true;
+    }
+    
+    console.log('❌ Failed to collect collectible after all attempts');
     await this.takeScreenshot('collectible_not_collected');
-    this.addResult('Collectible Collected', false, { collected: false });
+    this.addResult('Collectible Collected', false, { 
+      collected: false, 
+      attempts: 'double_jump_and_movement',
+      finalPlayerPos: collectionCheck.playerPos 
+    });
     return false;
   }
 
@@ -599,6 +630,307 @@ class MysteryBoxTester {
     return completionCheck.completed;
   }
 
+  async smartPositioning(targetX, description) {
+    console.log(`🎯 Smart positioning to ${description} at x=${targetX}`);
+    
+    // More lenient tolerance - player head (32px) + mystery box (40px) gives good collision range
+    const tolerance = 20; // More forgiving tolerance to reduce oscillation
+    const maxAttempts = 15; // Fewer attempts since we have better control
+    
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      // Get current position
+      const currentX = await this.page.evaluate(() => {
+        return window.game?.player ? window.game.player.body.position.x : null;
+      });
+      
+      if (!currentX) {
+        console.log('❌ Unable to get player position');
+        return;
+      }
+      
+      const distance = Math.abs(currentX - targetX);
+      
+      // Check if we're close enough
+      if (distance <= tolerance) {
+        console.log(`✅ Perfect position achieved: ${currentX.toFixed(1)} (target: ${targetX}, distance: ${distance.toFixed(1)})`);
+        return;
+      }
+      
+      // Determine movement direction and duration based on distance
+      const direction = currentX < targetX ? 'right' : 'left';
+      const key = direction === 'right' ? 'ArrowRight' : 'ArrowLeft';
+      
+      console.log(`🏃 Attempt ${attempt}: Moving ${direction} to reach target (current: ${currentX.toFixed(1)}, target: ${targetX}, distance: ${distance.toFixed(1)})`);
+      
+      // Use different strategies based on distance
+      if (distance > 120) {
+        // Very large distance: use holding method for initial approach
+        console.log(`📏 Very large distance (${distance.toFixed(1)}): Using hold method`);
+        await this.moveWithHolding(key, targetX, 30); // Stop when within 30 pixels
+      } else {
+        // Medium to small distance: use single presses for precision
+        console.log(`⚡ Medium/small distance (${distance.toFixed(1)}): Using single presses`);
+        await this.moveWithPresses(key, targetX, tolerance, distance);
+      }
+      
+      await this.page.keyboard.up(key);
+      
+      // Get final position to see if we need momentum stopping
+      const finalPosition = await this.page.evaluate(() => {
+        return window.game?.player ? window.game.player.body.position.x : null;
+      });
+      
+      const finalDistance = Math.abs(finalPosition - targetX);
+      
+      // Only use momentum stopping if we're not close enough
+      if (finalDistance > tolerance) {
+        // Stop momentum by quickly pressing opposite direction
+        const oppositeKey = key === 'ArrowRight' ? 'ArrowLeft' : 'ArrowRight';
+        await this.page.keyboard.press(oppositeKey);
+      }
+      
+      // Much shorter settle time
+      await this.page.waitForTimeout(100);
+    }
+    
+    // Final position check
+    const finalX = await this.page.evaluate(() => {
+      return window.game?.player ? window.game.player.body.position.x : null;
+    });
+    
+    const finalDistance = Math.abs(finalX - targetX);
+    
+    if (finalDistance <= tolerance) {
+      console.log(`✅ Final position achieved: ${finalX.toFixed(1)} (distance: ${finalDistance.toFixed(1)})`);
+    } else {
+      console.log(`⚠️  Close enough: ${finalX.toFixed(1)} (distance: ${finalDistance.toFixed(1)}) after ${maxAttempts} attempts`);
+    }
+  }
+  
+  async moveWithHolding(key, targetX, tolerance) {
+    // Start movement
+    await this.page.keyboard.down(key);
+    
+    // Keep moving until we reach the target or get close enough
+    const checkInterval = 15; // Check position every 15ms for responsive control
+    const maxMovementTime = 1500; // Safety timeout
+    let elapsed = 0;
+    let lastPosition = null;
+    let stuckCount = 0;
+    
+    while (elapsed < maxMovementTime) {
+      await this.page.waitForTimeout(checkInterval);
+      elapsed += checkInterval;
+      
+      // Get current position
+      const currentPos = await this.page.evaluate(() => {
+        return window.game?.player ? window.game.player.body.position.x : null;
+      });
+      
+      if (!currentPos) break;
+      
+      // Check if we've reached the target (within tolerance)
+      const currentDistance = Math.abs(currentPos - targetX);
+      if (currentDistance <= tolerance) {
+        console.log(`🎯 Target reached: ${currentPos.toFixed(1)} (distance: ${currentDistance.toFixed(1)})`);
+        break;
+      }
+      
+      // Check if we're moving in the wrong direction (overshot)
+      const direction = key === 'ArrowRight' ? 'right' : 'left';
+      const wasMovingRight = direction === 'right';
+      const nowPastTarget = wasMovingRight ? currentPos > targetX : currentPos < targetX;
+      if (nowPastTarget) {
+        console.log(`🎯 Target passed: ${currentPos.toFixed(1)} (overshot by ${Math.abs(currentPos - targetX).toFixed(1)})`);
+        break;
+      }
+      
+      // Check if player is stuck (not moving)
+      if (lastPosition !== null && Math.abs(currentPos - lastPosition) < 0.5) {
+        stuckCount++;
+        if (stuckCount > 5) {
+          console.log(`⚠️ Player seems stuck at ${currentPos.toFixed(1)}`);
+          break;
+        }
+      } else {
+        stuckCount = 0;
+      }
+      lastPosition = currentPos;
+    }
+    
+    await this.page.keyboard.up(key);
+  }
+  
+  async moveWithShortHold(key, targetX, tolerance, distance) {
+    const direction = key === 'ArrowRight' ? 'right' : 'left';
+    
+    // Calculate hold duration based on observed movement (~95px per 27ms = ~3.5px/ms)
+    // Target: move approximately the distance requested
+    let holdDuration;
+    if (distance > 60) {
+      holdDuration = Math.ceil(distance / 4.0); // ~4px per ms for large distances
+    } else if (distance > 30) {
+      holdDuration = Math.ceil(distance / 3.8); // ~3.8px per ms for medium distances  
+    } else if (distance > 15) {
+      holdDuration = Math.ceil(distance / 3.5); // ~3.5px per ms for small distances
+    } else {
+      holdDuration = Math.max(4, Math.ceil(distance / 3.0)); // Minimum 4ms, ~3px per ms for tiny adjustments
+    }
+    
+    console.log(`🎯 Short hold: ${holdDuration}ms to move ${direction} ${distance.toFixed(1)} pixels`);
+    
+    // Add player state debugging
+    const preMove = await this.page.evaluate(() => {
+      const player = window.game?.player;
+      return player ? {
+        position: { x: player.body.position.x, y: player.body.position.y },
+        velocity: { x: player.body.velocity.x, y: player.body.velocity.y },
+        onGround: player.body.position.y > 590 // Rough ground check
+      } : null;
+    });
+    
+    console.log(`   Pre-move: pos(${preMove.position.x.toFixed(1)}, ${preMove.position.y.toFixed(1)}) vel(${preMove.velocity.x.toFixed(2)}, ${preMove.velocity.y.toFixed(2)}) onGround=${preMove.onGround}`);
+    
+    // Perform the short hold
+    await this.page.keyboard.down(key);
+    await this.page.waitForTimeout(holdDuration);
+    await this.page.keyboard.up(key);
+    
+    // Wait a bit for movement to take effect
+    await this.page.waitForTimeout(120);
+    
+    // Check post-movement state
+    const postMove = await this.page.evaluate(() => {
+      const player = window.game?.player;
+      return player ? {
+        position: { x: player.body.position.x, y: player.body.position.y },
+        velocity: { x: player.body.velocity.x, y: player.body.velocity.y }
+      } : null;
+    });
+    
+    const actualMovement = Math.abs(postMove.position.x - preMove.position.x);
+    console.log(`   Post-move: pos(${postMove.position.x.toFixed(1)}, ${postMove.position.y.toFixed(1)}) vel(${postMove.velocity.x.toFixed(2)}, ${postMove.velocity.y.toFixed(2)}) moved=${actualMovement.toFixed(1)}px`);
+  }
+  
+  async moveWithPresses(key, targetX, tolerance, distance) {
+    const direction = key === 'ArrowRight' ? 'right' : 'left';
+    
+    // Based on observation: 10ms moves ~90px, so 4ms should move ~36px
+    const pixelsPerPress = 36; // 4ms hold estimate
+    
+    // Calculate number of presses needed
+    let pressCount = Math.ceil(distance / pixelsPerPress);
+    pressCount = Math.min(pressCount, 3); // Cap at 3 presses to prevent overshooting
+    
+    console.log(`⚡ Using ${pressCount} single presses to move ${direction} (target: ${distance.toFixed(1)}px, expect: ~${(pressCount * pixelsPerPress).toFixed(1)}px)`);
+    
+    for (let press = 1; press <= pressCount; press++) {
+      console.log(`   Press ${press}: Single ${direction} press`);
+      
+      // Get position before press
+      const beforePress = await this.page.evaluate(() => {
+        return window.game?.player ? window.game.player.body.position.x : null;
+      });
+      
+      // Single ultra-precise key press using down/up for better control
+      await this.page.keyboard.down(key);
+      await this.page.waitForTimeout(4); // Ultra-precise 4ms hold (~30px movement)
+      await this.page.keyboard.up(key);
+      
+      // Wait for movement to settle
+      await this.page.waitForTimeout(150);
+      
+      // Check position after press
+      const afterPress = await this.page.evaluate(() => {
+        return window.game?.player ? window.game.player.body.position.x : null;
+      });
+      
+      if (!afterPress || !beforePress) break;
+      
+      const actualMovement = Math.abs(afterPress - beforePress);
+      const distanceToTarget = Math.abs(afterPress - targetX);
+      
+      console.log(`   Press ${press} result: ${beforePress.toFixed(1)} -> ${afterPress.toFixed(1)} (moved ${actualMovement.toFixed(1)}px, ${distanceToTarget.toFixed(1)}px from target)`);
+      
+      // Check if we've reached the target
+      if (distanceToTarget <= tolerance) {
+        console.log(`🎯 Target reached with ${press} presses!`);
+        return;
+      }
+      
+      // Check if we overshot - if so, stop
+      const wasMovingRight = direction === 'right';
+      const nowPastTarget = wasMovingRight ? afterPress > targetX : afterPress < targetX;
+      if (nowPastTarget) {
+        console.log(`⚠️ Overshot target on press ${press} by ${Math.abs(afterPress - targetX).toFixed(1)}px`);
+        return;
+      }
+      
+      // If this is not the last press, check if remaining distance is too small for another full press
+      if (press < pressCount) {
+        const remainingDistance = Math.abs(afterPress - targetX);
+        if (remainingDistance < pixelsPerPress * 0.7) {
+          console.log(`⚡ Stopping early: remaining distance ${remainingDistance.toFixed(1)}px too small for another press`);
+          return;
+        }
+      }
+    }
+  }
+  
+  async moveWithTaps(key, targetX, tolerance, distance) {
+    const direction = key === 'ArrowRight' ? 'right' : 'left';
+    
+    // Calculate number of taps based on distance - extremely conservative
+    // Each tap seems to move ~80-100 pixels based on testing
+    let tapCount;
+    if (distance > 150) {
+      tapCount = Math.ceil(distance / 100); // Large movements - ~100 pixels per tap
+    } else if (distance > 80) {
+      tapCount = Math.ceil(distance / 80);  // Medium movements - ~80 pixels per tap
+    } else if (distance > 40) {
+      tapCount = Math.ceil(distance / 60);  // Small movements - ~60 pixels per tap
+    } else if (distance > 20) {
+      tapCount = Math.ceil(distance / 40);  // Tiny movements - ~40 pixels per tap
+    } else {
+      tapCount = 1; // For very small distances, just try one tap
+    }
+    tapCount = Math.min(tapCount, 5); // Very low cap - max 5 taps
+    
+    console.log(`⚡ Using ${tapCount} discrete taps to move ${direction} (${distance.toFixed(1)} pixels)`);
+    
+    for (let tap = 1; tap <= tapCount; tap++) {
+      // Ultra-precise single instantaneous key press
+      await this.page.keyboard.press(key); // Instantaneous press/release
+      await this.page.waitForTimeout(100); // Wait for physics to settle
+      
+      // Check position after every few taps
+      if (tap % 3 === 0 || tap === tapCount) {
+        const currentPos = await this.page.evaluate(() => {
+          return window.game?.player ? window.game.player.body.position.x : null;
+        });
+        
+        if (!currentPos) break;
+        
+        const currentDistance = Math.abs(currentPos - targetX);
+        console.log(`   Tap ${tap}: Position ${currentPos.toFixed(1)} (distance: ${currentDistance.toFixed(1)})`);
+        
+        // Check if we've reached the target
+        if (currentDistance <= tolerance) {
+          console.log(`🎯 Target reached with discrete taps: ${currentPos.toFixed(1)}`);
+          return;
+        }
+        
+        // Check if we overshot
+        const wasMovingRight = direction === 'right';
+        const nowPastTarget = wasMovingRight ? currentPos > targetX : currentPos < targetX;
+        if (nowPastTarget) {
+          console.log(`🎯 Target passed with taps: ${currentPos.toFixed(1)} (overshot by ${Math.abs(currentPos - targetX).toFixed(1)})`);
+          return;
+        }
+      }
+    }
+  }
+  
   async takeScreenshot(name) {
     const filename = `${name}-${Date.now()}.png`;
     const filepath = path.join(this.outputDir, filename);
@@ -613,12 +945,48 @@ class MysteryBoxTester {
   }
 
   addResult(testName, success, details) {
+    // Sanitize details to prevent circular references
+    const sanitizedDetails = this.sanitizeForJSON(details);
+    
     this.testResults.push({
       testName,
       success,
-      details,
+      details: sanitizedDetails,
       timestamp: Date.now()
     });
+  }
+  
+  sanitizeForJSON(obj, depth = 0, maxDepth = 5) {
+    // Prevent infinite recursion
+    if (depth > maxDepth) {
+      return '[Max Depth Reached]';
+    }
+    
+    if (obj === null || obj === undefined) return obj;
+    if (typeof obj !== 'object') return obj;
+    
+    // Handle arrays
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.sanitizeForJSON(item, depth + 1, maxDepth));
+    }
+    
+    // Handle objects - create clean copy without circular references
+    const cleaned = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (value !== null && typeof value === 'object') {
+        // Skip potentially problematic references
+        if (key.includes('body') || key.includes('element') || key.includes('gameObject') || 
+            key.includes('physics') || key.includes('Matter') || key.includes('hitBox')) {
+          cleaned[key] = '[Circular Reference Removed]';
+        } else {
+          cleaned[key] = this.sanitizeForJSON(value, depth + 1, maxDepth);
+        }
+      } else {
+        cleaned[key] = value;
+      }
+    }
+    
+    return cleaned;
   }
 
   async generateReport() {

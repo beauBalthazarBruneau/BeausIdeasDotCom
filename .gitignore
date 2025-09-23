@@ -22,3 +22,40 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Test results and automation artifacts
+mystery-box-results/
+playtest-results/
+results/
+*.png
+*.mp4
+*.webm
+test-reports/
+test-results/
+playwright-report/
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Vite
+dist
+dist-ssr
+*.local
