@@ -14,8 +14,8 @@
     "test": "node test-runner.js",
     "test:watch": "node watch-and-test.js",
     "test:dev": "concurrently \"npm run dev\" \"npm run test:watch\"",
-    "playtest": "node mario-playtest-runner.js",
-    "playtest:dev": "concurrently \"npm run dev\" \"sleep 5 && npm run playtest\""
+    "mcp-ai": "node mcp-ai-player.js",
+    "mcp-ai:dev": "concurrently \"npm run dev\" \"sleep 5 && npm run mcp-ai\""
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

@@ -1,0 +1,477 @@
+{
+  "session": {
+    "startTime": 1758590456880,
+    "endTime": 1758590478938,
+    "duration": 22058,
+    "totalActions": 30
+  },
+  "discoveries": {
+    "mysteryBoxes": [],
+    "playerMovements": [
+      {
+        "position": {
+          "x": 252.67880358194708,
+          "y": 500
+        },
+        "timestamp": 1758590460888
+      },
+      {
+        "position": {
+          "x": 201.40103889750299,
+          "y": 500
+        },
+        "timestamp": 1758590460888
+      },
+      {
+        "position": {
+          "x": 165.08222708212048,
+          "y": 500
+        },
+        "timestamp": 1758590461491
+      },
+      {
+        "position": {
+          "x": 286.764029502242,
+          "y": 500
+        },
+        "timestamp": 1758590462092
+      },
+      {
+        "position": {
+          "x": 170.50224857503366,
+          "y": 500
+        },
+        "timestamp": 1758590462694
+      },
+      {
+        "position": {
+          "x": 170.87870251922965,
+          "y": 500
+        },
+        "timestamp": 1758590463296
+      },
+      {
+        "position": {
+          "x": 270.88414010469205,
+          "y": 500
+        },
+        "timestamp": 1758590463898
+      },
+      {
+        "position": {
+          "x": 297.6529972333914,
+          "y": 500
+        },
+        "timestamp": 1758590464500
+      },
+      {
+        "position": {
+          "x": 186.98301156505343,
+          "y": 500
+        },
+        "timestamp": 1758590465102
+      },
+      {
+        "position": {
+          "x": 124.66016317797566,
+          "y": 500
+        },
+        "timestamp": 1758590465704
+      },
+      {
+        "position": {
+          "x": 217.4385053946964,
+          "y": 500
+        },
+        "timestamp": 1758590466305
+      },
+      {
+        "position": {
+          "x": 160.23450867544855,
+          "y": 500
+        },
+        "timestamp": 1758590466907
+      },
+      {
+        "position": {
+          "x": 134.9153515504495,
+          "y": 500
+        },
+        "timestamp": 1758590467509
+      },
+      {
+        "position": {
+          "x": 249.77449441541418,
+          "y": 500
+        },
+        "timestamp": 1758590468111
+      },
+      {
+        "position": {
+          "x": 234.40987242398091,
+          "y": 500
+        },
+        "timestamp": 1758590468713
+      },
+      {
+        "position": {
+          "x": 103.2544636462244,
+          "y": 500
+        },
+        "timestamp": 1758590469315
+      },
+      {
+        "position": {
+          "x": 118.06166978939486,
+          "y": 500
+        },
+        "timestamp": 1758590469917
+      },
+      {
+        "position": {
+          "x": 224.63219155882211,
+          "y": 500
+        },
+        "timestamp": 1758590470517
+      },
+      {
+        "position": {
+          "x": 277.6148598107239,
+          "y": 500
+        },
+        "timestamp": 1758590471119
+      },
+      {
+        "position": {
+          "x": 256.9293939224158,
+          "y": 500
+        },
+        "timestamp": 1758590471720
+      },
+      {
+        "position": {
+          "x": 122.45192841248644,
+          "y": 500
+        },
+        "timestamp": 1758590472321
+      },
+      {
+        "position": {
+          "x": 132.47533029873293,
+          "y": 500
+        },
+        "timestamp": 1758590472923
+      },
+      {
+        "position": {
+          "x": 214.78939174784597,
+          "y": 500
+        },
+        "timestamp": 1758590473525
+      },
+      {
+        "position": {
+          "x": 120.05734890815592,
+          "y": 500
+        },
+        "timestamp": 1758590474126
+      },
+      {
+        "position": {
+          "x": 124.33116097388867,
+          "y": 500
+        },
+        "timestamp": 1758590474728
+      },
+      {
+        "position": {
+          "x": 231.32800244795976,
+          "y": 500
+        },
+        "timestamp": 1758590475329
+      },
+      {
+        "position": {
+          "x": 291.095307886671,
+          "y": 500
+        },
+        "timestamp": 1758590475930
+      },
+      {
+        "position": {
+          "x": 262.50238324789143,
+          "y": 500
+        },
+        "timestamp": 1758590476532
+      },
+      {
+        "position": {
+          "x": 241.78024311243806,
+          "y": 500
+        },
+        "timestamp": 1758590477133
+      },
+      {
+        "position": {
+          "x": 262.6127378579831,
+          "y": 500
+        },
+        "timestamp": 1758590477735
+      },
+      {
+        "position": {
+          "x": 109.64174486223234,
+          "y": 500
+        },
+        "timestamp": 1758590478336
+      }
+    ],
+    "gameEvents": [
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590460890
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "ArrowRight",
+          "reason": "move_to_mystery_box"
+        },
+        "timestamp": 1758590461491
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590462093
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "ArrowRight",
+          "reason": "move_to_mystery_box"
+        },
+        "timestamp": 1758590462694
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "ArrowRight",
+          "reason": "move_to_mystery_box"
+        },
+        "timestamp": 1758590463296
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590463898
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590464500
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "ArrowRight",
+          "reason": "move_to_mystery_box"
+        },
+        "timestamp": 1758590465102
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "ArrowRight",
+          "reason": "move_to_mystery_box"
+        },
+        "timestamp": 1758590465704
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590466305
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "ArrowRight",
+          "reason": "move_to_mystery_box"
+        },
+        "timestamp": 1758590466907
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "ArrowRight",
+          "reason": "move_to_mystery_box"
+        },
+        "timestamp": 1758590467509
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590468111
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590468713
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "ArrowRight",
+          "reason": "move_to_mystery_box"
+        },
+        "timestamp": 1758590469315
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "ArrowRight",
+          "reason": "move_to_mystery_box"
+        },
+        "timestamp": 1758590469917
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590470517
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590471119
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590471720
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "ArrowRight",
+          "reason": "move_to_mystery_box"
+        },
+        "timestamp": 1758590472321
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "ArrowRight",
+          "reason": "move_to_mystery_box"
+        },
+        "timestamp": 1758590472924
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590473525
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "ArrowRight",
+          "reason": "move_to_mystery_box"
+        },
+        "timestamp": 1758590474126
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "ArrowRight",
+          "reason": "move_to_mystery_box"
+        },
+        "timestamp": 1758590474728
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590475330
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590475930
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590476532
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590477133
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "Space",
+          "reason": "jump_to_mystery_box"
+        },
+        "timestamp": 1758590477735
+      },
+      {
+        "action": {
+          "type": "keypress",
+          "key": "ArrowRight",
+          "reason": "move_to_mystery_box"
+        },
+        "timestamp": 1758590478337
+      }
+    ]
+  },
+  "performance": {
+    "actionsPerSecond": 1.360050775228942,
+    "explorationCoverage": 2,
+    "efficiency": 1
+  }
+}
