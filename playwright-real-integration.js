@@ -5,7 +5,7 @@ import path from 'path';
 class PlaywrightRealIntegration {
   constructor(options = {}) {
     this.baseUrl = options.baseUrl || 'http://localhost:5173';
-    this.timeout = options.timeout || 30000;
+    this.timeout = options.timeout || 60000;
     this.outputDir = options.outputDir || './test-results';
     this.browser = null;
     this.context = null;

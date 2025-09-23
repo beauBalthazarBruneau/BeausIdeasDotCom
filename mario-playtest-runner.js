@@ -7,7 +7,7 @@ import path from 'path';
 class MarioPlaytestRunner {
   constructor() {
     this.playwright = new PlaywrightRealIntegration({
-      baseUrl: 'http://localhost:5173', // Use standard Vite port
+      baseUrl: 'http://localhost:9000', // Use Python HTTP server port
       headless: false, // Run with visible browser for gameplay
       outputDir: './playtest-results'
     });
@@ -41,7 +41,7 @@ class MarioPlaytestRunner {
 
     // 1. Load the game in dev mode
     await this.gameAction('Load Game', async () => {
-      await this.playwright.executeAction({ type: 'navigate', url: '/?dev=true' });
+      await this.playwright.executeAction({ type: 'navigate', url: 'http://localhost:9000?dev=true' });
       await this.playwright.executeAction({ type: 'wait', duration: 3000 });
       await this.takeGameplayScreenshot('game_loaded');
       

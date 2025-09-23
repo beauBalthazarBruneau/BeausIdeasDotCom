@@ -64,7 +64,7 @@ class MCPMarioAI {
   async playGameWithAI() {
     console.log('\n🎮 Starting AI gameplay session...');
     
-    const maxActions = 30; // Limit for demo
+    const maxActions = 15; // Shorter demo so you can watch
     
     while (this.actionCount < maxActions) {
       this.actionCount++;
@@ -84,8 +84,8 @@ class MCPMarioAI {
         await this.mcpScreenshot(`mario_ai_action_${this.actionCount}`);
       }
       
-      // Brief pause for realistic gameplay
-      await this.delay(600);
+      // Longer pause so you can watch the gameplay
+      await this.delay(1500);
     }
     
     console.log(`\n🏁 AI gameplay completed! Executed ${this.actionCount} actions.`);

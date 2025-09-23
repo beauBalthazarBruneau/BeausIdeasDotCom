@@ -1,0 +1,89 @@
+{
+  "testType": "Mystery Box Interaction Test",
+  "timestamp": "2025-09-23T02:41:19.028Z",
+  "totalTests": 6,
+  "passedTests": 2,
+  "failedTests": 4,
+  "results": [
+    {
+      "testName": "Game Load",
+      "success": true,
+      "details": {
+        "gameLoaded": true,
+        "playerExists": true,
+        "playerPosition": {
+          "x": 100,
+          "y": 596.1022114577277
+        },
+        "mysteryBoxCount": 2
+      },
+      "timestamp": 1758595264597
+    },
+    {
+      "testName": "Mystery Box Analysis",
+      "success": true,
+      "details": {
+        "found": true,
+        "count": 2,
+        "boxes": [
+          {
+            "id": "tutorial",
+            "title": "Welcome to Mario Portfolio!",
+            "position": {
+              "x": 250,
+              "y": 450
+            },
+            "state": "inactive",
+            "hasBeenHit": false
+          },
+          {
+            "id": "tutorial",
+            "title": "Welcome to Mario Portfolio!",
+            "position": {
+              "x": 250,
+              "y": 450
+            },
+            "state": "inactive",
+            "hasBeenHit": false
+          }
+        ]
+      },
+      "timestamp": 1758595264598
+    },
+    {
+      "testName": "Mystery Box Hit",
+      "success": false,
+      "details": {
+        "attempts": 3,
+        "hit": false
+      },
+      "timestamp": 1758595276177
+    },
+    {
+      "testName": "Collectible Spawned",
+      "success": false,
+      "details": {
+        "found": false,
+        "collectible": null
+      },
+      "timestamp": 1758595276178
+    },
+    {
+      "testName": "Collectible Collected",
+      "success": false,
+      "details": {
+        "collected": false
+      },
+      "timestamp": 1758595278927
+    },
+    {
+      "testName": "Mystery Box Completed",
+      "success": false,
+      "details": {
+        "completed": false,
+        "completedBox": null
+      },
+      "timestamp": 1758595278928
+    }
+  ]
+}
