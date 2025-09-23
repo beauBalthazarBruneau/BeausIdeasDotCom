@@ -1,153 +1,163 @@
-# 🎮 Portfolio Mario Game
+# Portfolio Mario Game 🎮
 
-A Mario-style platformer game that serves as an interactive portfolio showcase, built with a professional, scalable architecture.
+An interactive Mario-style portfolio website with advanced AI automation and testing capabilities.
 
-## ✨ Features
-
-- 🏃‍♂️ **Physics-based movement** with Matter.js double jump mechanics
-- 🎯 **Interactive checkpoints** linked to portfolio projects
-- 💎 **Collectible system** with different collectible types per world
-- 🌍 **Multiple themed worlds** (Tech, Entertainment, Sports, Education, Healthcare, Finance, Georgia Tech)
-- 🎨 **Parallax backgrounds** with environmental particle effects
-- 🎵 **Immersive audio** with sound effects and background music
-- 🐛 **Advanced debug mode** with comprehensive game state monitoring
-- 📱 **Responsive design** ready for mobile optimization
-- 🚀 **Performance optimized** with code splitting and asset optimization
-
-## 🏗️ Architecture
-
-This project follows a professional, scalable architecture:
-
-```
-src/
-├── 🎮 core/           # Reusable game engine (Physics, Camera, Input, Game)
-├── 🎯 entities/       # Game objects (Player, Checkpoints, Collectibles)
-├── ⚙️  systems/        # Services (Audio, Particles, Background)
-├── 🌍 world/          # Level and world management
-├── 🖥️  ui/            # User interface components and screens
-├── 📊 managers/       # Data and state management
-├── 📂 data/           # Configuration and project data
-├── 🔧 utils/          # Utility functions (math, storage, animation)
-└── 📋 constants/      # Game configuration and constants
-```
-
-### Key Benefits:
-
-- ✅ **Separation of concerns** - each folder has a clear purpose
-- ✅ **Scalable** - easy to add new features without refactoring
-- ✅ **Maintainable** - find and modify code quickly
-- ✅ **Team-friendly** - clear ownership boundaries
-- ✅ **Enterprise-ready** - professional structure for complex applications
-
-## 🚀 Development
-
-### Quick Start
+## 🚀 Quick Start
 
 ```bash
+# Install dependencies
 npm install
+
+# Start development server
 npm run dev
+
+# Run MCP AI player
+npm run mcp-ai:dev
 ```
 
-### Build for Production
+## 📁 Directory Structure
+
+```
+BeausIdeasDotCom/
+├── 📁 automation/           # MCP & AI automation systems
+│   ├── mcp-ai-player.js    # Intelligent AI that plays the game
+│   ├── test-runner.js      # Automated test orchestration
+│   ├── test-config.json    # Test scenario configuration
+│   └── watch-and-test.js   # File watcher for continuous testing
+│
+├── 📁 analysis/             # Game analysis & testing tools
+│   ├── gameplay-analysis.js    # AI gameplay analysis
+│   ├── feedback-analyzer.js    # Intelligent feedback generation
+│   ├── visual-analysis.js      # Visual testing and analysis
+│   └── capture-game-visuals.js # Screenshot and visual capture
+│
+├── 📁 docs/                 # Documentation
+│   ├── FULL_AUTOMATION_GUIDE.md  # Complete automation guide
+│   ├── TESTING_README.md         # Testing system documentation
+│   └── CODE_ARCHITECTURE.md      # Code architecture overview
+│
+├── 📁 results/              # All test results and reports
+│   ├── mcp-results/         # MCP AI gameplay reports
+│   ├── test-results/        # Automated test results
+│   ├── ai-gameplay-results/ # AI gameplay screenshots
+│   └── screenshots/         # Visual test screenshots
+│
+├── 📁 src/                  # Main game source code
+├── 📁 public/               # Static assets
+└── 📁 archive/              # Archived implementations
+```
+
+## 🤖 AI Automation Features
+
+### **MCP-Powered AI Player**
+- **Intelligent Decision Making**: Priority-based AI that analyzes game state
+- **Smart Pathfinding**: Finds and navigates to mystery boxes optimally  
+- **Adaptive Exploration**: Dynamic exploration strategies
+- **Performance Analytics**: Detailed gameplay reports and insights
 
 ```bash
-npm run build
-npm run preview
+# Run the AI player
+npm run mcp-ai:dev
 ```
 
-### Path Aliases
+### **Automated Testing System**
+- **13 Test Scenarios**: Comprehensive game validation
+- **Real-time Analysis**: Browser-based game state monitoring
+- **Visual Documentation**: Automatic screenshot capture
+- **Intelligent Reporting**: AI-powered feedback and recommendations
 
-The project includes Vite path aliases for clean imports:
-
-```javascript
-import { Player } from '@entities';
-import { GAME, PLAYER } from '@constants';
-import { lerp, clamp } from '@utils';
+```bash
+# Run automated tests
+npm run test:dev
 ```
+
+## 📊 Available Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start development server |
+| `npm run mcp-ai:dev` | Run AI player with dev server |
+| `npm run test:dev` | Run automated tests with dev server |
+| `npm run analyze` | Run gameplay analysis |
+| `npm run visual-test` | Run visual testing suite |
+| `npm run build` | Build for production |
+
+## 🎯 Key Features
+
+### **Game Features**
+- Interactive Mario-style platformer
+- Mystery box interactions
+- Dynamic background themes
+- Sound effects and music
+- Debug mode with F1
+
+### **Automation Features**
+- **MCP Browser Integration**: Real browser automation
+- **Intelligent AI**: Smart decision-making algorithms
+- **Performance Monitoring**: FPS, memory, load time tracking
+- **Visual Testing**: Screenshot comparison and analysis
+- **Comprehensive Reports**: JSON reports with detailed analytics
+
+### **Development Features**
+- **Hot Reload**: Instant development feedback
+- **ESLint**: Code quality enforcement
+- **Prettier**: Consistent code formatting
+- **Vite**: Fast build system
+
+## 🔧 Configuration
+
+### **Test Configuration**
+Edit `automation/test-config.json` to customize:
+- Test scenarios and assertions
+- Performance thresholds  
+- Screenshot settings
+- Report formats
+
+### **AI Configuration**
+The MCP AI player can be customized in `automation/mcp-ai-player.js`:
+- Exploration strategies
+- Risk tolerance
+- Decision priorities
+- Performance metrics
+
+## 📈 Reports & Analytics
+
+All automation generates detailed reports in the `results/` directory:
+
+- **`mcp-results/`**: AI gameplay analysis with decision trees
+- **`test-results/`**: Automated test outcomes and metrics
+- **`screenshots/`**: Visual documentation of gameplay
+- **Performance data**: FPS, memory usage, load times
+
+## 🚀 Advanced Usage
+
+### **MCP Integration**
+The system integrates with Model Context Protocol (MCP) for:
+- Browser automation
+- Real-time game state analysis
+- External data integration (Linear, Supabase)
+- Intelligent context-aware decisions
+
+### **AI Analysis**
+The AI system provides:
+- Mystery box discovery optimization
+- Player movement pattern analysis
+- Performance bottleneck identification
+- Game design recommendations
+
+## 📝 Documentation
+
+- **[Full Automation Guide](docs/FULL_AUTOMATION_GUIDE.md)**: Complete setup and usage
+- **[Testing README](docs/TESTING_README.md)**: Testing system details
+- **[Code Architecture](docs/CODE_ARCHITECTURE.md)**: System design overview
 
 ## 🎮 Game Controls
 
-- **Arrow Keys / WASD**: Move Mario
+- **Arrow Keys / WASD**: Move player
 - **Space / Up Arrow**: Jump (double jump available)
-- **F1**: Toggle comprehensive debug mode
-- **M**: Toggle audio mute
-- **+/-**: Adjust volume
-- **B**: Force start background music (debug)
+- **F1**: Toggle debug mode
+- **Dev Mode**: Add `?dev=true` to URL
 
-## 🌍 Portfolio Integration
+---
 
-The game features a world-based portfolio system:
-
-- **7 themed worlds** each representing different project categories
-- **Mystery box checkpoints** that spawn collectibles when hit
-- **Collectible types** vary by world (mystery-box, star, coin, book, trophy, gem)
-- **Project data structure** supports title, subtitle, image, and description
-- **Progress tracking** with persistent localStorage saves
-
-## 🛠️ Technical Features
-
-### Performance
-
-- **Code splitting** - separate chunks for core, entities, systems
-- **Asset optimization** - inline small assets, optimize large ones
-- **60 FPS targeting** with delta time normalization
-- **Efficient particle system** with environmental and action particles
-
-### Developer Experience
-
-- **Hot reload** during development
-- **Source maps** for debugging
-- **Comprehensive constants** - no magic numbers
-- **Utility functions** for common game math and operations
-- **Type-safe data structures** with clear interfaces
-
-### Audio System
-
-- **Howler.js integration** for cross-browser audio
-- **Multiple audio types** (SFX, music) with independent volume controls
-- **Audio context management** with proper browser policy handling
-- **Fade effects** and audio state persistence
-
-### Physics & Animation
-
-- **Matter.js physics** with optimized collision detection
-- **GSAP animations** for smooth UI transitions and effects
-- **Custom easing functions** and animation utilities
-- **Screen shake** system with multiple intensity levels
-- **Particle effects** for environmental atmosphere and feedback
-
-## 📝 Adding New Features
-
-### New Game Entity
-
-1. Create in `src/entities/NewEntity.js`
-2. Export from `src/entities/index.js`
-3. Import in Game.js: `import { NewEntity } from '@entities';`
-
-### New Game System
-
-1. Create in `src/systems/NewSystem.js`
-2. Export from `src/systems/index.js`
-3. Initialize in Game constructor
-
-### New UI Component
-
-1. Create in `src/ui/components/NewComponent.js`
-2. Export from `src/ui/index.js`
-3. Use with clean imports: `import { NewComponent } from '@ui';`
-
-## 🎯 Next Steps
-
-Ready for advanced features:
-
-- 📱 **Mobile responsiveness** and touch controls
-- 🏆 **Achievement system** with unlock conditions
-- 💾 **Cloud save integration** for progress sync
-- 🎨 **Theme customization** per world
-- 🔊 **Advanced audio** with positional sound
-- 🌟 **Particle effects** expansion
-- 📊 **Analytics integration** for gameplay metrics
-
-## 📜 License
-
-MIT License - feel free to use this architecture for your own projects!
+Built with ❤️ using Vite, Matter.js, GSAP, and advanced MCP automation.

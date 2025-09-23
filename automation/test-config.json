@@ -407,7 +407,7 @@
   },
   "reporting": {
     "format": "json",
-    "outputDir": "./test-results",
+    "outputDir": "./results/test-results",
     "includeScreenshots": true,
     "includeTrace": true
   }

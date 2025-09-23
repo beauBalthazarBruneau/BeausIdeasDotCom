@@ -240,7 +240,7 @@ class TestRunner {
     };
 
     // Create test results directory
-    const outputDir = this.config.reporting.outputDir || './test-results';
+    const outputDir = this.config.reporting.outputDir || './results/test-results';
     try {
       await fs.mkdir(outputDir, { recursive: true });
     } catch (error) {

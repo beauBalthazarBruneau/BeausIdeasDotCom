@@ -11,11 +11,13 @@
     "lint:fix": "eslint . --ext js,jsx,ts,tsx --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "node test-runner.js",
-    "test:watch": "node watch-and-test.js",
+    "test": "node automation/test-runner.js",
+    "test:watch": "node automation/watch-and-test.js",
     "test:dev": "concurrently \"npm run dev\" \"npm run test:watch\"",
-    "mcp-ai": "node mcp-ai-player.js",
-    "mcp-ai:dev": "concurrently \"npm run dev\" \"sleep 5 && npm run mcp-ai\""
+    "mcp-ai": "node automation/mcp-ai-player.js",
+    "mcp-ai:dev": "concurrently \"npm run dev\" \"sleep 5 && npm run mcp-ai\"",
+    "analyze": "node analysis/gameplay-analysis.js",
+    "visual-test": "node analysis/simple-visual-test.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

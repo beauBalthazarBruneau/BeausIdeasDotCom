@@ -280,8 +280,8 @@ class MCPMarioAI {
     };
     
     // Save report
-    await fs.mkdir('./mcp-results', { recursive: true });
-    const reportPath = `./mcp-results/mcp-ai-report-${Date.now()}.json`;
+    await fs.mkdir('./results/mcp-results', { recursive: true });
+    const reportPath = `./results/mcp-results/mcp-ai-report-${Date.now()}.json`;
     await fs.writeFile(reportPath, JSON.stringify(report, null, 2));
     
     // Print summary
