@@ -21,6 +21,7 @@ npm run format:check     # Check code formatting
 
 ### Testing & Automation
 ```bash
+# Legacy testing (still available)
 npm run test             # Run automated test suite
 npm run test:watch       # Run tests in watch mode
 npm run test:dev         # Start dev server and run tests concurrently
@@ -28,6 +29,13 @@ npm run mcp-ai           # Run MCP AI player
 npm run mcp-ai:dev       # Start dev server and run AI player
 npm run analyze          # Run gameplay analysis
 npm run visual-test      # Run visual testing suite
+
+# New advanced testing system
+node automation/tests/mystery-box-hybrid.test.js                    # Run specific test
+node automation/runners/test-runner.js run <test-path>             # Managed test execution
+node automation/runners/test-runner.js list                        # List available tests
+node automation/runners/test-runner.js run-all                     # Run complete test suite
+node automation/runners/test-runner.js cleanup                     # Clean old results
 ```
 
 ## Architecture Overview
@@ -74,13 +82,21 @@ The project uses Vite path aliases for clean imports:
 
 ### Testing & Automation Architecture
 
-**MCP AI Player**: `automation/mcp-ai-player.js` - Intelligent browser automation with priority-based decision making, smart pathfinding, and performance analytics
+**Advanced Testing System**: `automation/` directory with modular architecture
+- **BasePlayer** (`automation/core/BasePlayer.js`): Hybrid automation engine combining smart movement from mystery-box-test with comprehensive monitoring from mario-playtest-runner
+- **Smart Navigation**: Sub-20px positioning accuracy with overshoot prevention, momentum stopping, and multiple movement strategies
+- **Real-time Monitoring**: 100ms position/velocity tracking, game state analysis, performance metrics
+- **Visual Documentation**: Automatic screenshots at key moments with organized per-test storage
+- **Data Export**: JSON reports with position tracking, action logs, and intelligent recommendations
 
-**Test Framework**: Playwright-based testing in `automation/test-runner.js` with 13 comprehensive test scenarios including performance monitoring and visual validation
+**Legacy Systems** (still available):
+- **MCP AI Player**: `automation/mcp-ai-player.js` - Intelligent browser automation with priority-based decision making
+- **Original Test Framework**: Playwright-based testing with 13 test scenarios
+- **Analysis Tools**: `analysis/` directory with gameplay analysis and visual testing
 
-**Analysis System**: `analysis/` directory contains gameplay analysis, feedback generation, and visual testing tools
-
-**Results Tracking**: All automation outputs structured reports to `results/` directory with screenshots, performance data, and AI analysis
+**Results Management**:
+- **New**: `automation/results/[test-name]/` - Per-test organized with automatic cleanup
+- **Legacy**: Global `results/` directory with manual management
 
 ### Game Architecture
 
@@ -93,6 +109,35 @@ The project uses Vite path aliases for clean imports:
 **Multi-layer Parallax**: Background system with 5 layers (sky, mountains, clouds, hills, trees) at different parallax speeds
 
 **Particle Effects**: Jump dust, double-jump puffs, atmospheric effects with performance-conscious cleanup
+
+## Creating Custom Tests
+
+### Quick Test Creation
+1. Copy the template: `cp automation/templates/test-template.js automation/tests/my-test.js`
+2. Edit the test logic using BasePlayer methods:
+   - `navigateToPosition(x, y, description)` - Smart movement with precision
+   - `hitMysteryBoxFromBelow(boxPosition)` - Strategic mystery box interaction
+   - `collectItem(itemPosition)` - Collectible collection with multiple strategies
+   - `jump()` - Jump with timing control
+   - `getPlayerPosition()` - Real-time position/velocity data
+   - `takeScreenshot(name)` - Visual documentation
+   - `executeAction(name, function)` - Timed action with logging
+3. Run: `node automation/tests/my-test.js`
+
+### BasePlayer Configuration
+```javascript
+const config = {
+  baseUrl: 'http://localhost:5173',
+  headless: false,                    // Show browser
+  slowMo: 200,                       // Slow down for visibility
+  enablePositionTracking: true,       // Real-time position data
+  cleanupAfter: true,                // Auto-cleanup old results
+  positioning: {
+    tolerance: 20,                   // Positioning accuracy (pixels)
+    maxAttempts: 15                  // Max positioning attempts
+  }
+};
+```
 
 ## Development Notes
 

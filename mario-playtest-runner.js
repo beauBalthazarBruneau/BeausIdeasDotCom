@@ -7,9 +7,9 @@ import path from 'path';
 class MarioPlaytestRunner {
   constructor() {
     this.playwright = new PlaywrightRealIntegration({
-      baseUrl: 'http://localhost:9000', // Use Python HTTP server port
+      baseUrl: 'http://localhost:5173', // Use Vite dev server port
       headless: false, // Run with visible browser for gameplay
-      outputDir: './playtest-results'
+      outputDir: './automation/results'
     });
     this.playtestResults = [];
     this.gameplaySession = {
@@ -41,7 +41,7 @@ class MarioPlaytestRunner {
 
     // 1. Load the game in dev mode
     await this.gameAction('Load Game', async () => {
-      await this.playwright.executeAction({ type: 'navigate', url: 'http://localhost:9000?dev=true' });
+      await this.playwright.executeAction({ type: 'navigate', url: 'http://localhost:5173?dev=true' });
       await this.playwright.executeAction({ type: 'wait', duration: 3000 });
       await this.takeGameplayScreenshot('game_loaded');
       
@@ -344,7 +344,7 @@ class MarioPlaytestRunner {
     };
 
     // Save detailed report
-    const outputDir = './playtest-results';
+    const outputDir = './automation/results';
     await fs.mkdir(outputDir, { recursive: true });
     
     const reportPath = path.join(outputDir, `mario-playtest-${Date.now()}.json`);
@@ -426,7 +426,7 @@ class MarioPlaytestRunner {
       console.log(`   ${index + 1}. [${rec.priority}] ${rec.message}`);
     });
     
-    console.log('\\n📸 Screenshots saved to: ./playtest-results/');
+    console.log('\\n📸 Screenshots saved to: ./automation/results/');
     
     const overallRating = report.summary.criticalIssues === 0 ? 
       (report.summary.warnings === 0 ? 'EXCELLENT 🌟' : 'GOOD 👍') : 
