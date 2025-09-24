@@ -24,9 +24,7 @@ dist-ssr
 *.sw?
 
 # Test results and automation artifacts
-mystery-box-results/
-playtest-results/
-results/
+automation/results/
 *.png
 *.mp4
 *.webm
