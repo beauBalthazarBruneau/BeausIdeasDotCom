@@ -7,17 +7,20 @@ After extensive debugging, we found that **Vite's dev server blocks Playwright c
 ## 🚀 How to Run Tests
 
 ### 1. Build the Game
+
 ```bash
 npm run build
 ```
 
 ### 2. Start Python HTTP Server
+
 ```bash
 cd dist && python3 -m http.server 9000 &
 cd ..
 ```
 
 ### 3. Run the AI Playtest
+
 ```bash
 ./archive/mario-playtest-runner.js
 ```
@@ -25,6 +28,7 @@ cd ..
 ## 📋 What the AI Tests
 
 The AI player will:
+
 - ✅ Load your game in a browser
 - ✅ Test player movement (arrow keys + space)
 - ✅ Toggle debug mode (F1)

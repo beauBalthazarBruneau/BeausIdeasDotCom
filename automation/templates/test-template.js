@@ -14,7 +14,7 @@ class YourCustomTest {
       ...DEFAULT_CONFIG,
       // Add your test-specific config here
       duration: 60000, // 1 minute
-      ...config
+      ...config,
     };
 
     // Create BasePlayer instance
@@ -35,7 +35,6 @@ class YourCustomTest {
       await this.player.finishSession();
 
       console.log('✅ Your Custom Test completed!');
-
     } catch (error) {
       console.error('❌ Test failed:', error.message);
       throw error;
@@ -55,10 +54,12 @@ class YourCustomTest {
     await this.player.executeAction('Analyze Game State', async () => {
       const gameState = await this.player.playwright.page.evaluate(() => {
         return {
-          playerPos: window.game?.player ? {
-            x: window.game.player.body.position.x,
-            y: window.game.player.body.position.y
-          } : null,
+          playerPos: window.game?.player
+            ? {
+                x: window.game.player.body.position.x,
+                y: window.game.player.body.position.y,
+              }
+            : null,
           // Add your custom game state analysis here
         };
       });
@@ -74,7 +75,10 @@ class YourCustomTest {
 
       // Example: Jump test
       await this.player.jump();
-      await this.player.playwright.executeAction({ type: 'wait', duration: 500 });
+      await this.player.playwright.executeAction({
+        type: 'wait',
+        duration: 500,
+      });
 
       const result = await this.player.getPlayerPosition();
       console.log('🤘 Jump result:', result);
@@ -92,7 +96,7 @@ class YourCustomTest {
 // CLI interface
 if (import.meta.url === `file://${process.argv[1]}`) {
   const test = new YourCustomTest();
-  test.run().catch(error => {
+  test.run().catch((error) => {
     console.error('Test error:', error);
     process.exit(1);
   });

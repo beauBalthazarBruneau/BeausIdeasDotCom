@@ -5,16 +5,19 @@ This project includes a comprehensive automated testing system that uses Playwri
 ## 🚀 Quick Start
 
 ### Run Tests Once
+
 ```bash
 npm run test
 ```
 
 ### Watch Mode (Automatic Testing)
+
 ```bash
 npm run test:watch
 ```
 
 ### Development Mode (Dev Server + Testing)
+
 ```bash
 npm run test:dev
 ```
@@ -42,6 +45,7 @@ The automated testing system validates:
 5. **feedback-analyzer.js** - Intelligent feedback generation
 
 ### File Structure
+
 ```
 portfolio-mario-game/
 ├── test-config.json           # Test scenarios configuration
@@ -70,13 +74,11 @@ You can customize what gets tested by editing `test-config.json`:
       "name": "custom_test",
       "description": "Test specific functionality",
       "actions": [
-        {"type": "navigate", "url": "/"},
-        {"type": "waitFor", "selector": "#my-element"},
-        {"type": "click", "selector": ".my-button"}
+        { "type": "navigate", "url": "/" },
+        { "type": "waitFor", "selector": "#my-element" },
+        { "type": "click", "selector": ".my-button" }
       ],
-      "assertions": [
-        {"type": "elementExists", "selector": "#result"}
-      ]
+      "assertions": [{ "type": "elementExists", "selector": "#result" }]
     }
   ]
 }
@@ -85,6 +87,7 @@ You can customize what gets tested by editing `test-config.json`:
 ### Playwright MCP Options
 
 The system uses Playwright MCP with these configurations:
+
 - **Headless Mode**: Runs without opening browser windows
 - **Screenshots**: Captures visual evidence of tests
 - **Console Monitoring**: Tracks JavaScript errors
@@ -120,16 +123,19 @@ The system automatically analyzes test results and provides:
 ## 🎯 How It Helps You
 
 ### 1. Immediate Feedback
+
 - Get instant validation when you make changes
 - Catch regressions before they reach production
 - Identify performance bottlenecks early
 
 ### 2. Intelligent Analysis
+
 - AI categorizes issues by priority
 - Provides specific code suggestions
 - Estimates time to fix problems
 
 ### 3. Continuous Monitoring
+
 - Watches your source files for changes
 - Automatically runs relevant tests
 - Maintains test history and trends
@@ -163,13 +169,11 @@ When tests fail, you'll see structured feedback like:
   "name": "my_new_test",
   "description": "Test my new feature",
   "actions": [
-    {"type": "navigate", "url": "/"},
-    {"type": "click", "selector": "#my-button"},
-    {"type": "waitFor", "selector": ".result"}
+    { "type": "navigate", "url": "/" },
+    { "type": "click", "selector": "#my-button" },
+    { "type": "waitFor", "selector": ".result" }
   ],
-  "assertions": [
-    {"type": "elementVisible", "selector": ".success-message"}
-  ]
+  "assertions": [{ "type": "elementVisible", "selector": ".success-message" }]
 }
 ```
 
@@ -194,20 +198,26 @@ When tests fail, you'll see structured feedback like:
 ## 🔄 Integration with Development Workflow
 
 ### 1. Development Mode
+
 ```bash
 npm run test:dev
 ```
+
 Starts both dev server and file watcher for continuous testing.
 
 ### 2. Pre-commit Testing
+
 Add to your git hooks:
+
 ```bash
 #!/bin/sh
 npm run test || exit 1
 ```
 
 ### 3. CI/CD Integration
+
 Use in GitHub Actions:
+
 ```yaml
 - name: Run Tests
   run: npm run test
@@ -232,6 +242,7 @@ Use in GitHub Actions:
 ### Debug Mode
 
 Enable verbose logging:
+
 ```bash
 DEBUG=true npm run test
 ```
@@ -239,8 +250,9 @@ DEBUG=true npm run test
 ## 📈 Performance Monitoring
 
 The system tracks:
+
 - Page load times
-- Canvas initialization speed  
+- Canvas initialization speed
 - JavaScript execution time
 - Memory usage patterns
 - Network request performance
@@ -256,8 +268,9 @@ The system tracks:
 ## 🚀 Future Enhancements
 
 The testing system can be extended to include:
+
 - Visual regression testing
-- Performance regression detection  
+- Performance regression detection
 - Cross-browser compatibility testing
 - API endpoint validation
 - Database state verification
@@ -268,6 +281,7 @@ The testing system can be extended to include:
 ## 📞 Getting Help
 
 If you encounter issues:
+
 1. Check the `test-results/` directory for detailed error logs
 2. Review the feedback reports for specific recommendations
 3. Run tests in debug mode for verbose output

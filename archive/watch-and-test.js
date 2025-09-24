@@ -9,23 +9,18 @@ class FileWatcher {
     this.debounceTimeout = null;
     this.debounceDelay = 2000; // 2 seconds
     this.isRunning = false;
-    this.watchedPaths = [
-      './src',
-      './index.html',
-      './style.css',
-      './public'
-    ];
+    this.watchedPaths = ['./src', './index.html', './style.css', './public'];
     this.ignoredPatterns = [
       /node_modules/,
       /\.git/,
       /test-results/,
       /dist/,
-      /\.DS_Store/
+      /\.DS_Store/,
     ];
   }
 
   shouldIgnore(filePath) {
-    return this.ignoredPatterns.some(pattern => pattern.test(filePath));
+    return this.ignoredPatterns.some((pattern) => pattern.test(filePath));
   }
 
   async runTests() {
@@ -72,12 +67,16 @@ class FileWatcher {
 
     console.log(`👀 Watching directory: ${dirPath}`);
 
-    const watcher = fs.watch(dirPath, { recursive: true }, (eventType, filename) => {
-      if (filename) {
-        const fullPath = path.join(dirPath, filename);
-        this.handleFileChange(eventType, filename, fullPath);
+    const watcher = fs.watch(
+      dirPath,
+      { recursive: true },
+      (eventType, filename) => {
+        if (filename) {
+          const fullPath = path.join(dirPath, filename);
+          this.handleFileChange(eventType, filename, fullPath);
+        }
       }
-    });
+    );
 
     return watcher;
   }
@@ -104,12 +103,12 @@ class FileWatcher {
     const watchers = [];
 
     // Watch each path
-    this.watchedPaths.forEach(watchPath => {
+    this.watchedPaths.forEach((watchPath) => {
       const fullPath = path.resolve(watchPath);
-      
+
       if (fs.existsSync(fullPath)) {
         const stats = fs.statSync(fullPath);
-        
+
         if (stats.isDirectory()) {
           const watcher = this.watchDirectory(fullPath);
           if (watcher) watchers.push(watcher);
@@ -127,7 +126,7 @@ class FileWatcher {
     // Graceful shutdown
     process.on('SIGINT', () => {
       console.log('\\n🛑 Shutting down file watcher...');
-      watchers.forEach(watcher => watcher.close());
+      watchers.forEach((watcher) => watcher.close());
       process.exit(0);
     });
 

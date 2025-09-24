@@ -318,7 +318,7 @@ export class MainHub {
       case 'road':
         this.drawPixelArtRoad(ctx, x, y, width, height);
         break;
-        
+
       case 'grass':
         // Draw grass on top
         ctx.fillStyle = '#228B22'; // Forest green grass
@@ -416,13 +416,13 @@ export class MainHub {
     // Textured asphalt (dithered speckles)
     ctx.fillStyle = 'rgba(255,255,255,0.06)';
     for (let i = 0; i < Math.floor(width / 8); i++) {
-      const sx = left + (i * 8) + (Math.random() * 8);
+      const sx = left + i * 8 + Math.random() * 8;
       const sy = top + 6 + Math.random() * (height - 12);
       ctx.fillRect(Math.floor(sx), Math.floor(sy), 1, 1);
     }
     ctx.fillStyle = 'rgba(0,0,0,0.08)';
     for (let i = 0; i < Math.floor(width / 10); i++) {
-      const sx = left + (i * 10) + (Math.random() * 10);
+      const sx = left + i * 10 + Math.random() * 10;
       const sy = top + 6 + Math.random() * (height - 12);
       ctx.fillRect(Math.floor(sx), Math.floor(sy), 1, 1);
     }
@@ -442,7 +442,11 @@ export class MainHub {
     ctx.fillStyle = '#f4e66a'; // faded yellow
     const dashWidth = 20;
     const gapWidth = 16;
-    for (let xPos = left + 10; xPos < left + width - 10; xPos += dashWidth + gapWidth) {
+    for (
+      let xPos = left + 10;
+      xPos < left + width - 10;
+      xPos += dashWidth + gapWidth
+    ) {
       ctx.fillRect(Math.floor(xPos), Math.floor(laneY - 2), dashWidth, 4);
     }
 
@@ -459,7 +463,10 @@ export class MainHub {
       const cy = top + 10 + Math.random() * (height - 20);
       ctx.beginPath();
       ctx.moveTo(Math.floor(cx), Math.floor(cy));
-      ctx.lineTo(Math.floor(cx + (Math.random() * 30 - 15)), Math.floor(cy + (Math.random() * 6 - 3)));
+      ctx.lineTo(
+        Math.floor(cx + (Math.random() * 30 - 15)),
+        Math.floor(cy + (Math.random() * 6 - 3))
+      );
       ctx.stroke();
     }
   }
@@ -642,23 +649,23 @@ export class MainHub {
     // Lamp post (dark gray metal)
     ctx.fillStyle = '#505050';
     ctx.fillRect(x - 4, y, 8, 120);
-    
+
     // Post highlights
     ctx.fillStyle = '#707070';
     ctx.fillRect(x - 4, y, 2, 120);
-    
+
     // Lamp housing (darker gray)
     ctx.fillStyle = '#3a3a3a';
     ctx.fillRect(x - 20, y - 25, 40, 25);
-    
+
     // Light source (warm yellow)
     ctx.fillStyle = '#ffd700';
     ctx.fillRect(x - 16, y - 21, 32, 17);
-    
+
     // Light glow effect
     ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
     ctx.fillRect(x - 24, y - 30, 48, 35);
-    
+
     // Base of post
     ctx.fillStyle = '#404040';
     ctx.fillRect(x - 8, y + 115, 16, 8);
@@ -669,16 +676,16 @@ export class MainHub {
     // Sign post
     ctx.fillStyle = '#606060';
     ctx.fillRect(x - 3, y, 6, 80);
-    
+
     // Sign board (white background)
     ctx.fillStyle = '#f0f0f0';
     ctx.fillRect(x - 25, y - 40, 50, 30);
-    
+
     // Sign border
     ctx.strokeStyle = '#333';
     ctx.lineWidth = 2;
     ctx.strokeRect(x - 25, y - 40, 50, 30);
-    
+
     // Sign text/symbol (simple arrow)
     ctx.fillStyle = '#333';
     ctx.font = 'bold 12px monospace';
@@ -691,23 +698,23 @@ export class MainHub {
     // Cone base (black)
     ctx.fillStyle = '#2a2a2a';
     ctx.fillRect(x - 12, y + 20, 24, 8);
-    
+
     // Cone body (orange)
     ctx.fillStyle = '#ff6600';
     // Draw cone as trapezoid using path
     ctx.beginPath();
     ctx.moveTo(x - 10, y + 20); // bottom left
     ctx.lineTo(x + 10, y + 20); // bottom right
-    ctx.lineTo(x + 4, y - 10);  // top right
-    ctx.lineTo(x - 4, y - 10);  // top left
+    ctx.lineTo(x + 4, y - 10); // top right
+    ctx.lineTo(x - 4, y - 10); // top left
     ctx.closePath();
     ctx.fill();
-    
+
     // White reflective stripes
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(x - 8, y + 10, 16, 3);
     ctx.fillRect(x - 6, y, 12, 3);
-    
+
     // Cone tip highlight
     ctx.fillStyle = '#ffaa44';
     ctx.fillRect(x - 2, y - 10, 4, 4);

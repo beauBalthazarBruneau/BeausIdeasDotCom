@@ -29,10 +29,10 @@ class TestRunner {
   async startDevServer() {
     return new Promise((resolve, reject) => {
       console.log('🚀 Starting development server...');
-      
+
       this.devServer = spawn('npm', ['run', 'dev'], {
         stdio: 'pipe',
-        detached: false
+        detached: false,
       });
 
       let serverReady = false;
@@ -40,8 +40,12 @@ class TestRunner {
       this.devServer.stdout.on('data', (data) => {
         const output = data.toString();
         console.log(`[DEV SERVER] ${output.trim()}`);
-        
-        if (output.includes('localhost:5173') || output.includes('Local:') || output.includes('ready in')) {
+
+        if (
+          output.includes('localhost:5173') ||
+          output.includes('Local:') ||
+          output.includes('ready in')
+        ) {
           if (!serverReady) {
             serverReady = true;
             setTimeout(() => resolve(), 3000); // Give server time to fully start
@@ -86,7 +90,7 @@ class TestRunner {
       actions: [],
       assertions: [],
       screenshots: [],
-      errors: []
+      errors: [],
     };
 
     try {
@@ -94,9 +98,11 @@ class TestRunner {
       for (const action of scenario.actions) {
         const actionResult = await this.executeAction(action);
         testResult.actions.push(actionResult);
-        
+
         if (!actionResult.success) {
-          throw new Error(`Action failed: ${action.type} - ${actionResult.error}`);
+          throw new Error(
+            `Action failed: ${action.type} - ${actionResult.error}`
+          );
         }
       }
 
@@ -104,9 +110,11 @@ class TestRunner {
       for (const assertion of scenario.assertions) {
         const assertionResult = await this.executeAssertion(assertion);
         testResult.assertions.push(assertionResult);
-        
+
         if (!assertionResult.success) {
-          testResult.errors.push(`Assertion failed: ${assertion.type} - ${assertionResult.error}`);
+          testResult.errors.push(
+            `Assertion failed: ${assertion.type} - ${assertionResult.error}`
+          );
         }
       }
 
@@ -115,13 +123,14 @@ class TestRunner {
       testResult.duration = testResult.endTime - testResult.startTime;
 
       const statusIcon = testResult.status === 'passed' ? '✅' : '❌';
-      console.log(`${statusIcon} Test ${scenario.name}: ${testResult.status.toUpperCase()}`);
-      
+      console.log(
+        `${statusIcon} Test ${scenario.name}: ${testResult.status.toUpperCase()}`
+      );
+
       if (testResult.errors.length > 0) {
         console.log('❌ Errors:');
-        testResult.errors.forEach(error => console.log(`   - ${error}`));
+        testResult.errors.forEach((error) => console.log(`   - ${error}`));
       }
-
     } catch (error) {
       testResult.status = 'failed';
       testResult.endTime = Date.now();
@@ -135,7 +144,7 @@ class TestRunner {
 
   async executeAction(action) {
     console.log(`   🔄 Executing action: ${action.type}`);
-    
+
     try {
       if (this.playwrightMCP) {
         const result = await this.playwrightMCP.executeAction(action);
@@ -144,35 +153,61 @@ class TestRunner {
         // Fallback simulation when MCP is not available
         switch (action.type) {
           case 'navigate':
-            return { success: true, action: action.type, result: 'Navigation successful' };
-          
+            return {
+              success: true,
+              action: action.type,
+              result: 'Navigation successful',
+            };
+
           case 'waitFor':
-            return { success: true, action: action.type, result: 'Element found' };
-          
+            return {
+              success: true,
+              action: action.type,
+              result: 'Element found',
+            };
+
           case 'screenshot':
-            return { success: true, action: action.type, result: 'Screenshot captured' };
-          
+            return {
+              success: true,
+              action: action.type,
+              result: 'Screenshot captured',
+            };
+
           case 'wait':
-            await new Promise(resolve => setTimeout(resolve, action.duration));
-            return { success: true, action: action.type, result: `Waited ${action.duration}ms` };
-          
+            await new Promise((resolve) =>
+              setTimeout(resolve, action.duration)
+            );
+            return {
+              success: true,
+              action: action.type,
+              result: `Waited ${action.duration}ms`,
+            };
+
           case 'keyPress':
-            return { success: true, action: action.type, result: `Key pressed: ${action.key}` };
-          
+            return {
+              success: true,
+              action: action.type,
+              result: `Key pressed: ${action.key}`,
+            };
+
           case 'performanceMetrics':
             // Simulate performance metrics collection
-            return { 
-              success: true, 
-              action: action.type, 
+            return {
+              success: true,
+              action: action.type,
               result: {
                 loadTime: Math.random() * 2000 + 500,
                 fps: Math.random() * 30 + 30,
-                memoryUsage: Math.random() * 50 + 30
-              }
+                memoryUsage: Math.random() * 50 + 30,
+              },
             };
-          
+
           default:
-            return { success: false, action: action.type, error: 'Unknown action type' };
+            return {
+              success: false,
+              action: action.type,
+              error: 'Unknown action type',
+            };
         }
       }
     } catch (error) {
@@ -182,7 +217,7 @@ class TestRunner {
 
   async executeAssertion(assertion) {
     console.log(`   🔍 Checking assertion: ${assertion.type}`);
-    
+
     try {
       if (this.playwrightMCP) {
         const result = await this.playwrightMCP.executeAssertion(assertion);
@@ -191,38 +226,82 @@ class TestRunner {
         // Fallback simulation when MCP is not available
         switch (assertion.type) {
           case 'elementExists':
-            return { success: true, assertion: assertion.type, result: 'Element exists' };
-          
+            return {
+              success: true,
+              assertion: assertion.type,
+              result: 'Element exists',
+            };
+
           case 'elementVisible':
-            return { success: true, assertion: assertion.type, result: 'Element is visible' };
-          
+            return {
+              success: true,
+              assertion: assertion.type,
+              result: 'Element is visible',
+            };
+
           case 'titleContains':
-            return { success: true, assertion: assertion.type, result: 'Title matches' };
-          
+            return {
+              success: true,
+              assertion: assertion.type,
+              result: 'Title matches',
+            };
+
           case 'canvasNotEmpty':
-            return { success: true, assertion: assertion.type, result: 'Canvas has content' };
-          
+            return {
+              success: true,
+              assertion: assertion.type,
+              result: 'Canvas has content',
+            };
+
           case 'noConsoleErrors':
-            return { success: true, assertion: assertion.type, result: 'No console errors' };
-          
+            return {
+              success: true,
+              assertion: assertion.type,
+              result: 'No console errors',
+            };
+
           case 'consoleContains':
-            return { success: true, assertion: assertion.type, result: 'Console message found' };
-          
+            return {
+              success: true,
+              assertion: assertion.type,
+              result: 'Console message found',
+            };
+
           case 'audioContextExists':
-            return { success: true, assertion: assertion.type, result: 'Audio context exists' };
-          
+            return {
+              success: true,
+              assertion: assertion.type,
+              result: 'Audio context exists',
+            };
+
           case 'fpsAbove':
-            return { success: true, assertion: assertion.type, result: `FPS above ${assertion.threshold}` };
-          
+            return {
+              success: true,
+              assertion: assertion.type,
+              result: `FPS above ${assertion.threshold}`,
+            };
+
           case 'memoryUsageBelow':
-            return { success: true, assertion: assertion.type, result: `Memory below ${assertion.threshold}MB` };
-          
+            return {
+              success: true,
+              assertion: assertion.type,
+              result: `Memory below ${assertion.threshold}MB`,
+            };
+
           default:
-            return { success: false, assertion: assertion.type, error: 'Unknown assertion type' };
+            return {
+              success: false,
+              assertion: assertion.type,
+              error: 'Unknown assertion type',
+            };
         }
       }
     } catch (error) {
-      return { success: false, assertion: assertion.type, error: error.message };
+      return {
+        success: false,
+        assertion: assertion.type,
+        error: error.message,
+      };
     }
   }
 
@@ -232,15 +311,19 @@ class TestRunner {
       timestamp: new Date().toISOString(),
       summary: {
         total: this.results.length,
-        passed: this.results.filter(r => r.status === 'passed').length,
-        failed: this.results.filter(r => r.status === 'failed').length,
-        totalDuration: this.results.reduce((sum, r) => sum + (r.duration || 0), 0)
+        passed: this.results.filter((r) => r.status === 'passed').length,
+        failed: this.results.filter((r) => r.status === 'failed').length,
+        totalDuration: this.results.reduce(
+          (sum, r) => sum + (r.duration || 0),
+          0
+        ),
       },
-      results: this.results
+      results: this.results,
     };
 
     // Create test results directory
-    const outputDir = this.config.reporting.outputDir || './results/test-results';
+    const outputDir =
+      this.config.reporting.outputDir || './results/test-results';
     try {
       await fs.mkdir(outputDir, { recursive: true });
     } catch (error) {
@@ -264,7 +347,9 @@ class TestRunner {
       await this.loadConfig();
       await this.startDevServer();
 
-      console.log(`\n🎯 Running ${this.config.testScenarios.length} test scenarios...\n`);
+      console.log(
+        `\n🎯 Running ${this.config.testScenarios.length} test scenarios...\n`
+      );
 
       // Run all test scenarios
       for (const scenario of this.config.testScenarios) {
@@ -281,7 +366,6 @@ class TestRunner {
       // Exit with appropriate code
       const hasFailures = report.summary.failed > 0;
       process.exit(hasFailures ? 1 : 0);
-
     } catch (error) {
       console.error(`❌ Test runner failed: ${error.message}`);
       await this.stopDevServer();
@@ -293,7 +377,7 @@ class TestRunner {
 // CLI interface
 if (import.meta.url === `file://${process.argv[1]}`) {
   const runner = new TestRunner();
-  runner.run().catch(error => {
+  runner.run().catch((error) => {
     console.error('Unexpected error:', error);
     process.exit(1);
   });

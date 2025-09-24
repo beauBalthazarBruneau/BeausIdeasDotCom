@@ -31,7 +31,7 @@
           "selector": "#game-canvas"
         },
         {
-          "type": "elementExists", 
+          "type": "elementExists",
           "selector": "#game-container"
         },
         {
@@ -94,9 +94,9 @@
       "name": "responsive_design",
       "description": "Test responsive behavior on different screen sizes",
       "viewport": [
-        {"width": 1920, "height": 1080},
-        {"width": 768, "height": 1024}, 
-        {"width": 375, "height": 667}
+        { "width": 1920, "height": 1080 },
+        { "width": 768, "height": 1024 },
+        { "width": 375, "height": 667 }
       ],
       "actions": [
         {

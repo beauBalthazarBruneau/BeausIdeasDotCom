@@ -13,7 +13,7 @@ class TestRunner {
       resultsBaseDir: './automation/results',
       cleanupAfterTest: true,
       keepLastNResults: 5, // Keep last 5 test runs per test
-      ...config
+      ...config,
     };
   }
 
@@ -40,7 +40,6 @@ class TestRunner {
 
       console.log(`✅ Test completed successfully: ${testPath}`);
       return { success: true, testName };
-
     } catch (error) {
       console.error(`❌ Test failed: ${testPath}`, error.message);
       return { success: false, error: error.message };
@@ -82,17 +81,32 @@ class TestRunner {
       const files = await fs.readdir(testResultsDir);
 
       // Separate different file types
-      const reports = files.filter(f => f.includes('-report-') && f.endsWith('.json'));
-      const positions = files.filter(f => f.includes('-positions-') && f.endsWith('.json'));
-      const screenshots = files.filter(f => f.endsWith('.png'));
+      const reports = files.filter(
+        (f) => f.includes('-report-') && f.endsWith('.json')
+      );
+      const positions = files.filter(
+        (f) => f.includes('-positions-') && f.endsWith('.json')
+      );
+      const screenshots = files.filter((f) => f.endsWith('.png'));
 
       // Keep only the most recent files of each type
-      await this.keepRecentFiles(testResultsDir, reports, this.config.keepLastNResults);
-      await this.keepRecentFiles(testResultsDir, positions, this.config.keepLastNResults);
-      await this.keepRecentFiles(testResultsDir, screenshots, this.config.keepLastNResults * 10); // Keep more screenshots
+      await this.keepRecentFiles(
+        testResultsDir,
+        reports,
+        this.config.keepLastNResults
+      );
+      await this.keepRecentFiles(
+        testResultsDir,
+        positions,
+        this.config.keepLastNResults
+      );
+      await this.keepRecentFiles(
+        testResultsDir,
+        screenshots,
+        this.config.keepLastNResults * 10
+      ); // Keep more screenshots
 
       console.log(`✅ Cleanup completed for ${testName}`);
-
     } catch (error) {
       console.warn(`⚠️ Cleanup failed for ${testName}:`, error.message);
     }
@@ -105,7 +119,7 @@ class TestRunner {
 
     // Sort files by timestamp (newest first)
     const filesWithStats = await Promise.all(
-      files.map(async file => {
+      files.map(async (file) => {
         const fullPath = path.join(dir, file);
         const stats = await fs.stat(fullPath);
         return { file, fullPath, mtime: stats.mtime };
@@ -133,13 +147,19 @@ class TestRunner {
     const summary = {
       timestamp: new Date().toISOString(),
       totalTests: results.length,
-      successfulTests: results.filter(r => r.success).length,
-      failedTests: results.filter(r => !r.success).length,
-      successRate: ((results.filter(r => r.success).length / results.length) * 100).toFixed(1),
-      results
+      successfulTests: results.filter((r) => r.success).length,
+      failedTests: results.filter((r) => !r.success).length,
+      successRate: (
+        (results.filter((r) => r.success).length / results.length) *
+        100
+      ).toFixed(1),
+      results,
     };
 
-    const summaryPath = path.join(this.config.resultsBaseDir, `test-summary-${Date.now()}.json`);
+    const summaryPath = path.join(
+      this.config.resultsBaseDir,
+      `test-summary-${Date.now()}.json`
+    );
     await fs.writeFile(summaryPath, JSON.stringify(summary, null, 2));
 
     // Print summary to console
@@ -151,7 +171,7 @@ class TestRunner {
     console.log(`📈 Success Rate: ${summary.successRate}%`);
 
     console.log('\n📋 Individual Results:');
-    results.forEach(result => {
+    results.forEach((result) => {
       const icon = result.success ? '✅' : '❌';
       const testName = path.basename(result.testPath, '.js');
       console.log(`   ${icon} ${testName}`);
@@ -160,9 +180,12 @@ class TestRunner {
       }
     });
 
-    const overallRating = summary.successRate === '100.0' ? 'EXCELLENT 🌟' :
-                         parseFloat(summary.successRate) >= 80 ? 'GOOD 👍' :
-                         'NEEDS WORK 🔧';
+    const overallRating =
+      summary.successRate === '100.0'
+        ? 'EXCELLENT 🌟'
+        : parseFloat(summary.successRate) >= 80
+          ? 'GOOD 👍'
+          : 'NEEDS WORK 🔧';
 
     console.log(`\n🎯 Overall Rating: ${overallRating}`);
     console.log(`📄 Summary saved: ${summaryPath}`);
@@ -176,14 +199,14 @@ class TestRunner {
 
     try {
       const files = await fs.readdir(testsDir);
-      const testFiles = files.filter(f => f.endsWith('.test.js'));
+      const testFiles = files.filter((f) => f.endsWith('.test.js'));
 
       console.log('\n📋 Available Tests:');
       testFiles.forEach((file, index) => {
         console.log(`   ${index + 1}. ${file}`);
       });
 
-      return testFiles.map(f => path.join(testsDir, f));
+      return testFiles.map((f) => path.join(testsDir, f));
     } catch (error) {
       console.error('❌ Failed to list tests:', error.message);
       return [];
@@ -219,10 +242,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   switch (command) {
     case 'run':
       if (!testPath) {
-        console.error('❌ Please specify a test path: npm run test-runner run <test-path>');
+        console.error(
+          '❌ Please specify a test path: npm run test-runner run <test-path>'
+        );
         process.exit(1);
       }
-      runner.runTest(testPath).then(result => {
+      runner.runTest(testPath).then((result) => {
         process.exit(result.success ? 0 : 1);
       });
       break;
@@ -236,12 +261,15 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       break;
 
     case 'run-all':
-      runner.listAvailableTests().then(tests => {
-        return runner.runMultipleTests(tests);
-      }).then(results => {
-        const hasFailures = results.some(r => !r.success);
-        process.exit(hasFailures ? 1 : 0);
-      });
+      runner
+        .listAvailableTests()
+        .then((tests) => {
+          return runner.runMultipleTests(tests);
+        })
+        .then((results) => {
+          const hasFailures = results.some((r) => !r.success);
+          process.exit(hasFailures ? 1 : 0);
+        });
       break;
 
     default:

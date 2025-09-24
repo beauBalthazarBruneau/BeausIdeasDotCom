@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ### Development
+
 ```bash
 npm run dev              # Start development server on localhost:5173
 npm run build            # Build for production
@@ -12,6 +13,7 @@ npm run preview          # Preview production build on localhost:4173
 ```
 
 ### Code Quality
+
 ```bash
 npm run lint             # Run ESLint
 npm run lint:fix         # Run ESLint with auto-fix
@@ -20,6 +22,7 @@ npm run format:check     # Check code formatting
 ```
 
 ### Testing & Automation
+
 ```bash
 # Legacy testing (still available)
 npm run test             # Run automated test suite
@@ -41,6 +44,7 @@ node automation/runners/test-runner.js cleanup                     # Clean old r
 ## Architecture Overview
 
 ### Core Structure
+
 The codebase follows a modular architecture with clean separation of concerns:
 
 - **`src/core/`** - Core game engine (Game.js, Physics.js, Camera.js, InputHandler.js)
@@ -67,7 +71,9 @@ The codebase follows a modular architecture with clean separation of concerns:
 **Audio**: Howler.js-based AudioManager with auto-start on user interaction, spatial audio, and browser compatibility handling
 
 ### Import Path Aliases
+
 The project uses Vite path aliases for clean imports:
+
 ```javascript
 '@' → './src'
 '@core' → './src/core'
@@ -83,6 +89,7 @@ The project uses Vite path aliases for clean imports:
 ### Testing & Automation Architecture
 
 **Advanced Testing System**: `automation/` directory with modular architecture
+
 - **BasePlayer** (`automation/core/BasePlayer.js`): Hybrid automation engine combining smart movement from mystery-box-test with comprehensive monitoring from mario-playtest-runner
 - **Smart Navigation**: Sub-20px positioning accuracy with overshoot prevention, momentum stopping, and multiple movement strategies
 - **Real-time Monitoring**: 100ms position/velocity tracking, game state analysis, performance metrics
@@ -90,11 +97,13 @@ The project uses Vite path aliases for clean imports:
 - **Data Export**: JSON reports with position tracking, action logs, and intelligent recommendations
 
 **Legacy Systems** (still available):
+
 - **MCP AI Player**: `automation/mcp-ai-player.js` - Intelligent browser automation with priority-based decision making
 - **Original Test Framework**: Playwright-based testing with 13 test scenarios
 - **Analysis Tools**: `analysis/` directory with gameplay analysis and visual testing
 
 **Results Management**:
+
 - **New**: `automation/results/[test-name]/` - Per-test organized with automatic cleanup
 - **Legacy**: Global `results/` directory with manual management
 
@@ -113,6 +122,7 @@ The project uses Vite path aliases for clean imports:
 ## Creating Custom Tests
 
 ### Quick Test Creation
+
 1. Copy the template: `cp automation/templates/test-template.js automation/tests/my-test.js`
 2. Edit the test logic using BasePlayer methods:
    - `navigateToPosition(x, y, description)` - Smart movement with precision
@@ -125,23 +135,25 @@ The project uses Vite path aliases for clean imports:
 3. Run: `node automation/tests/my-test.js`
 
 ### BasePlayer Configuration
+
 ```javascript
 const config = {
   baseUrl: 'http://localhost:5173',
-  headless: false,                    // Show browser
-  slowMo: 200,                       // Slow down for visibility
-  enablePositionTracking: true,       // Real-time position data
-  cleanupAfter: true,                // Auto-cleanup old results
+  headless: false, // Show browser
+  slowMo: 200, // Slow down for visibility
+  enablePositionTracking: true, // Real-time position data
+  cleanupAfter: true, // Auto-cleanup old results
   positioning: {
-    tolerance: 20,                   // Positioning accuracy (pixels)
-    maxAttempts: 15                  // Max positioning attempts
-  }
+    tolerance: 20, // Positioning accuracy (pixels)
+    maxAttempts: 15, // Max positioning attempts
+  },
 };
 ```
 
 ## Development Notes
 
 ### Technology Stack
+
 - **Vite**: Modern build tool with HMR and ES modules
 - **Matter.js**: 2D physics engine
 - **GSAP**: Smooth animations and screen shake effects
@@ -149,6 +161,7 @@ const config = {
 - **Playwright**: Browser automation and testing
 
 ### Code Conventions
+
 - ES6+ modules with clean imports
 - Class-based entity architecture
 - Event-driven collision system
@@ -156,12 +169,14 @@ const config = {
 - Performance-conscious particle and physics management
 
 ### Build Configuration
+
 - Code splitting into vendor, core, entities, and systems chunks
 - Asset optimization with 4kb inline limit
 - Terser minification with source maps
 - ES2018 target for broad compatibility
 
 ### Browser Requirements
+
 - Modern ES6+ support
 - Canvas 2D rendering
 - Web Audio API

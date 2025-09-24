@@ -24,7 +24,7 @@ function initGame() {
   try {
     // Create and start the game
     game = new Game(canvas);
-    
+
     // Expose game globally for testing and debugging
     window.game = game;
 

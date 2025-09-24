@@ -20,14 +20,14 @@ class BasePlayer {
       cleanupAfter: true,
       enableVideo: true,
       enablePositionTracking: true,
-      ...config
+      ...config,
     };
 
     // Initialize Playwright integration
     this.playwright = new PlaywrightRealIntegration({
       baseUrl: this.config.baseUrl,
       headless: this.config.headless,
-      outputDir: this.config.outputDir
+      outputDir: this.config.outputDir,
     });
 
     // Test session data
@@ -39,7 +39,7 @@ class BasePlayer {
       gameStates: [],
       feedback: [],
       positionData: [],
-      performance: []
+      performance: [],
     };
 
     this.testResults = [];
@@ -53,7 +53,9 @@ class BasePlayer {
 
   async startSession(gameUrl = null) {
     console.log(`🎮 Starting ${this.testName} automation session...`);
-    console.log('🚀 Hybrid BasePlayer: Smart movement + comprehensive monitoring');
+    console.log(
+      '🚀 Hybrid BasePlayer: Smart movement + comprehensive monitoring'
+    );
 
     try {
       await this.setupEnvironment();
@@ -78,12 +80,17 @@ class BasePlayer {
     await this.playwright.startBrowser();
 
     // Setup console monitoring for game events
-    this.playwright.page.on('console', msg => {
+    this.playwright.page.on('console', (msg) => {
       const type = msg.type();
       const text = msg.text();
-      if (text.includes('mystery') || text.includes('Mystery') ||
-          text.includes('collectible') || text.includes('player') ||
-          text.includes('position') || text.includes('collision')) {
+      if (
+        text.includes('mystery') ||
+        text.includes('Mystery') ||
+        text.includes('collectible') ||
+        text.includes('player') ||
+        text.includes('position') ||
+        text.includes('collision')
+      ) {
         console.log(`[GAME] ${type}: ${text}`);
       }
     });
@@ -113,15 +120,19 @@ class BasePlayer {
       return {
         gameLoaded: typeof window.game !== 'undefined',
         playerExists: window.game?.player ? true : false,
-        playerPosition: window.game?.player ? {
-          x: window.game.player.body.position.x,
-          y: window.game.player.body.position.y
-        } : null,
-        mysteryBoxCount: window.game?.mysteryBoxes ? window.game.mysteryBoxes.length : 0,
+        playerPosition: window.game?.player
+          ? {
+              x: window.game.player.body.position.x,
+              y: window.game.player.body.position.y,
+            }
+          : null,
+        mysteryBoxCount: window.game?.mysteryBoxes
+          ? window.game.mysteryBoxes.length
+          : 0,
         canvasSize: {
           width: document.querySelector('#game-canvas')?.width || 0,
-          height: document.querySelector('#game-canvas')?.height || 0
-        }
+          height: document.querySelector('#game-canvas')?.height || 0,
+        },
       };
     });
 
@@ -158,8 +169,14 @@ class BasePlayer {
   // SMART MOVEMENT SYSTEM (from Mystery Box Test)
   // ========================================
 
-  async navigateToPosition(targetX, targetY = null, description = 'Target Position') {
-    console.log(`🎯 Navigating to ${description} at x=${targetX}${targetY ? `, y=${targetY}` : ''}`);
+  async navigateToPosition(
+    targetX,
+    targetY = null,
+    description = 'Target Position'
+  ) {
+    console.log(
+      `🎯 Navigating to ${description} at x=${targetX}${targetY ? `, y=${targetY}` : ''}`
+    );
 
     // Get current position
     const currentPos = await this.getPlayerPosition();
@@ -167,7 +184,9 @@ class BasePlayer {
       throw new Error('Unable to get player position for navigation');
     }
 
-    console.log(`📍 Current position: (${currentPos.x.toFixed(1)}, ${currentPos.y.toFixed(1)})`);
+    console.log(
+      `📍 Current position: (${currentPos.x.toFixed(1)}, ${currentPos.y.toFixed(1)})`
+    );
 
     // Use smart positioning for precise horizontal movement
     await this.smartPositioning(targetX, description);
@@ -178,9 +197,13 @@ class BasePlayer {
     }
 
     const finalPos = await this.getPlayerPosition();
-    console.log(`✅ Navigation complete: (${finalPos.x.toFixed(1)}, ${finalPos.y.toFixed(1)})`);
+    console.log(
+      `✅ Navigation complete: (${finalPos.x.toFixed(1)}, ${finalPos.y.toFixed(1)})`
+    );
 
-    await this.takeScreenshot(`navigated_to_${description.toLowerCase().replace(/\s+/g, '_')}`);
+    await this.takeScreenshot(
+      `navigated_to_${description.toLowerCase().replace(/\s+/g, '_')}`
+    );
     return finalPos;
   }
 
@@ -197,14 +220,18 @@ class BasePlayer {
       const distance = Math.abs(currentX - targetX);
 
       if (distance <= tolerance) {
-        console.log(`✅ Perfect position: ${currentX.toFixed(1)} (target: ${targetX}, distance: ${distance.toFixed(1)})`);
+        console.log(
+          `✅ Perfect position: ${currentX.toFixed(1)} (target: ${targetX}, distance: ${distance.toFixed(1)})`
+        );
         return;
       }
 
       const direction = currentX < targetX ? 'right' : 'left';
       const key = direction === 'right' ? 'ArrowRight' : 'ArrowLeft';
 
-      console.log(`🏃 Attempt ${attempt}: Moving ${direction} (distance: ${distance.toFixed(1)})`);
+      console.log(
+        `🏃 Attempt ${attempt}: Moving ${direction} (distance: ${distance.toFixed(1)})`
+      );
 
       // Choose movement strategy based on distance
       if (distance > 120) {
@@ -236,7 +263,10 @@ class BasePlayer {
     let stuckCount = 0;
 
     while (elapsed < maxMovementTime) {
-      await this.playwright.executeAction({ type: 'wait', duration: checkInterval });
+      await this.playwright.executeAction({
+        type: 'wait',
+        duration: checkInterval,
+      });
       elapsed += checkInterval;
 
       const currentPos = await this.getPlayerX();
@@ -251,7 +281,9 @@ class BasePlayer {
       // Check for overshoot
       const direction = key === 'ArrowRight' ? 'right' : 'left';
       const wasMovingRight = direction === 'right';
-      const nowPastTarget = wasMovingRight ? currentPos > targetX : currentPos < targetX;
+      const nowPastTarget = wasMovingRight
+        ? currentPos > targetX
+        : currentPos < targetX;
       if (nowPastTarget) {
         console.log(`🎯 Target passed: ${currentPos.toFixed(1)}`);
         break;
@@ -273,7 +305,7 @@ class BasePlayer {
   async moveWithPresses(key, targetX, tolerance, distance) {
     const direction = key === 'ArrowRight' ? 'right' : 'left';
     const pixelsPerPress = 36;
-    let pressCount = Math.min(Math.ceil(distance / pixelsPerPress), 3);
+    const pressCount = Math.min(Math.ceil(distance / pixelsPerPress), 3);
 
     console.log(`⚡ Using ${pressCount} precise presses to move ${direction}`);
 
@@ -286,7 +318,9 @@ class BasePlayer {
       const afterPress = await this.getPlayerX();
       const distanceToTarget = Math.abs(afterPress - targetX);
 
-      console.log(`   Press ${press}: Position ${afterPress.toFixed(1)} (${distanceToTarget.toFixed(1)}px from target)`);
+      console.log(
+        `   Press ${press}: Position ${afterPress.toFixed(1)} (${distanceToTarget.toFixed(1)}px from target)`
+      );
 
       if (distanceToTarget <= tolerance) {
         console.log(`🎯 Target reached with ${press} presses!`);
@@ -295,7 +329,9 @@ class BasePlayer {
 
       // Check for overshoot
       const wasMovingRight = direction === 'right';
-      const nowPastTarget = wasMovingRight ? afterPress > targetX : afterPress < targetX;
+      const nowPastTarget = wasMovingRight
+        ? afterPress > targetX
+        : afterPress < targetX;
       if (nowPastTarget) {
         console.log(`⚠️ Overshot target on press ${press}`);
         return;
@@ -419,14 +455,16 @@ class BasePlayer {
   async getPlayerPosition() {
     return await this.playwright.page.evaluate(() => {
       const player = window.game?.player;
-      return player ? {
-        x: player.body.position.x,
-        y: player.body.position.y,
-        velocity: {
-          x: player.body.velocity.x,
-          y: player.body.velocity.y
-        }
-      } : null;
+      return player
+        ? {
+            x: player.body.position.x,
+            y: player.body.position.y,
+            velocity: {
+              x: player.body.velocity.x,
+              y: player.body.velocity.y,
+            },
+          }
+        : null;
     });
   }
 
@@ -459,8 +497,8 @@ class BasePlayer {
           title: box.projectData?.title || `Box ${index + 1}`,
           position: { x: box.x, y: box.y },
           state: box.state,
-          hasBeenHit: box.hasBeenHit
-        }))
+          hasBeenHit: box.hasBeenHit,
+        })),
       };
     });
 
@@ -472,15 +510,17 @@ class BasePlayer {
   async checkMysteryBoxHit() {
     return await this.playwright.page.evaluate(() => {
       const mysteryBoxes = window.game?.mysteryBoxes;
-      const hitBox = mysteryBoxes?.find(box => box.hasBeenHit);
+      const hitBox = mysteryBoxes?.find((box) => box.hasBeenHit);
 
       return {
         hit: !!hitBox,
-        hitBox: hitBox ? {
-          title: hitBox.projectData?.title,
-          state: hitBox.state,
-          collectibleSpawned: hitBox.collectibleSpawned
-        } : null
+        hitBox: hitBox
+          ? {
+              title: hitBox.projectData?.title,
+              state: hitBox.state,
+              collectibleSpawned: hitBox.collectibleSpawned,
+            }
+          : null,
       };
     });
   }
@@ -490,8 +530,8 @@ class BasePlayer {
       const mysteryBoxes = window.game?.mysteryBoxes;
       if (!mysteryBoxes) return { collected: false };
 
-      const boxWithCollectible = mysteryBoxes.find(box =>
-        box.collectible && box.collectible.collected
+      const boxWithCollectible = mysteryBoxes.find(
+        (box) => box.collectible && box.collectible.collected
       );
 
       return { collected: !!boxWithCollectible };
@@ -500,14 +540,20 @@ class BasePlayer {
 
   async getGamePerformance() {
     const metrics = await this.playwright.getPageMetrics();
-    const consoleErrors = this.playwright.consoleMessages.filter(msg => msg.type === 'error');
+    const consoleErrors = this.playwright.consoleMessages.filter(
+      (msg) => msg.type === 'error'
+    );
 
     return {
       metrics: metrics.metrics,
       consoleErrors: consoleErrors.length,
-      rating: consoleErrors.length === 0 ? 'EXCELLENT' :
-              consoleErrors.length <= 2 ? 'GOOD' : 'NEEDS_IMPROVEMENT',
-      timestamp: Date.now()
+      rating:
+        consoleErrors.length === 0
+          ? 'EXCELLENT'
+          : consoleErrors.length <= 2
+            ? 'GOOD'
+            : 'NEEDS_IMPROVEMENT',
+      timestamp: Date.now(),
     };
   }
 
@@ -523,7 +569,7 @@ class BasePlayer {
       if (position) {
         this.gameplaySession.positionData.push({
           timestamp: Date.now(),
-          ...position
+          ...position,
         });
       }
     }, intervalMs);
@@ -542,7 +588,7 @@ class BasePlayer {
         startTime,
         duration,
         status: 'success',
-        result: this.sanitizeForJSON(result)
+        result: this.sanitizeForJSON(result),
       });
 
       console.log(`✅ ${actionName} completed in ${duration}ms`);
@@ -555,7 +601,7 @@ class BasePlayer {
         startTime,
         duration,
         status: 'failed',
-        error: error.message
+        error: error.message,
       });
 
       console.log(`❌ ${actionName} failed: ${error.message}`);
@@ -573,14 +619,14 @@ class BasePlayer {
 
     await this.playwright.page.screenshot({
       path: filepath,
-      fullPage: false
+      fullPage: false,
     });
 
     this.gameplaySession.screenshots.push({
       name,
       filename,
       filepath,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     console.log(`📸 Screenshot: ${filename}`);
@@ -598,14 +644,16 @@ class BasePlayer {
       testName,
       success,
       details: sanitizedDetails,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     const feedback = {
       category: testName,
       level: success ? 'SUCCESS' : 'ERROR',
-      message: success ? `${testName} completed successfully` : `${testName} failed`,
-      timestamp: Date.now()
+      message: success
+        ? `${testName} completed successfully`
+        : `${testName} failed`,
+      timestamp: Date.now(),
     };
 
     this.gameplaySession.feedback.push(feedback);
@@ -620,15 +668,20 @@ class BasePlayer {
     if (typeof obj !== 'object') return obj;
 
     if (Array.isArray(obj)) {
-      return obj.map(item => this.sanitizeForJSON(item, depth + 1, maxDepth));
+      return obj.map((item) => this.sanitizeForJSON(item, depth + 1, maxDepth));
     }
 
     const cleaned = {};
     for (const [key, value] of Object.entries(obj)) {
       if (value !== null && typeof value === 'object') {
-        if (key.includes('body') || key.includes('element') ||
-            key.includes('gameObject') || key.includes('physics') ||
-            key.includes('Matter') || key.includes('hitBox')) {
+        if (
+          key.includes('body') ||
+          key.includes('element') ||
+          key.includes('gameObject') ||
+          key.includes('physics') ||
+          key.includes('Matter') ||
+          key.includes('hitBox')
+        ) {
           cleaned[key] = '[Circular Reference Removed]';
         } else {
           cleaned[key] = this.sanitizeForJSON(value, depth + 1, maxDepth);
@@ -652,29 +705,49 @@ class BasePlayer {
         totalActions: this.gameplaySession.actions.length,
         totalScreenshots: this.gameplaySession.screenshots.length,
         positionDataPoints: this.gameplaySession.positionData.length,
-        totalFeedback: this.gameplaySession.feedback.length
+        totalFeedback: this.gameplaySession.feedback.length,
       },
       summary: {
-        successfulActions: this.gameplaySession.actions.filter(a => a.status === 'success').length,
-        failedActions: this.gameplaySession.actions.filter(a => a.status === 'failed').length,
-        successfulTests: this.testResults.filter(r => r.success).length,
-        failedTests: this.testResults.filter(r => !r.success).length,
-        criticalIssues: this.gameplaySession.feedback.filter(f => f.level === 'ERROR').length,
-        warnings: this.gameplaySession.feedback.filter(f => f.level === 'WARNING').length
+        successfulActions: this.gameplaySession.actions.filter(
+          (a) => a.status === 'success'
+        ).length,
+        failedActions: this.gameplaySession.actions.filter(
+          (a) => a.status === 'failed'
+        ).length,
+        successfulTests: this.testResults.filter((r) => r.success).length,
+        failedTests: this.testResults.filter((r) => !r.success).length,
+        criticalIssues: this.gameplaySession.feedback.filter(
+          (f) => f.level === 'ERROR'
+        ).length,
+        warnings: this.gameplaySession.feedback.filter(
+          (f) => f.level === 'WARNING'
+        ).length,
       },
       gameplay: this.gameplaySession,
       testResults: this.testResults,
-      recommendations: this.generateRecommendations()
+      recommendations: this.generateRecommendations(),
     };
 
     // Save comprehensive report
-    const reportPath = path.join(this.config.outputDir, `${this.testName}-report-${Date.now()}.json`);
+    const reportPath = path.join(
+      this.config.outputDir,
+      `${this.testName}-report-${Date.now()}.json`
+    );
     await fs.writeFile(reportPath, JSON.stringify(report, null, 2));
 
     // Save position data separately if enabled
-    if (this.config.enablePositionTracking && this.gameplaySession.positionData.length > 0) {
-      const positionPath = path.join(this.config.outputDir, `${this.testName}-positions-${Date.now()}.json`);
-      await fs.writeFile(positionPath, JSON.stringify(this.gameplaySession.positionData, null, 2));
+    if (
+      this.config.enablePositionTracking &&
+      this.gameplaySession.positionData.length > 0
+    ) {
+      const positionPath = path.join(
+        this.config.outputDir,
+        `${this.testName}-positions-${Date.now()}.json`
+      );
+      await fs.writeFile(
+        positionPath,
+        JSON.stringify(this.gameplaySession.positionData, null, 2)
+      );
       console.log(`📊 Position data saved: ${positionPath}`);
     }
 
@@ -687,15 +760,19 @@ class BasePlayer {
   generateRecommendations() {
     const recommendations = [];
 
-    const errors = this.gameplaySession.feedback.filter(f => f.level === 'ERROR');
-    const warnings = this.gameplaySession.feedback.filter(f => f.level === 'WARNING');
+    const errors = this.gameplaySession.feedback.filter(
+      (f) => f.level === 'ERROR'
+    );
+    const warnings = this.gameplaySession.feedback.filter(
+      (f) => f.level === 'WARNING'
+    );
 
     if (errors.length > 0) {
       recommendations.push({
         priority: 'HIGH',
         type: 'BUG_FIX',
         message: `Fix ${errors.length} critical issue(s)`,
-        details: errors.map(e => e.message)
+        details: errors.map((e) => e.message),
       });
     }
 
@@ -704,17 +781,23 @@ class BasePlayer {
         priority: 'MEDIUM',
         type: 'IMPROVEMENT',
         message: `Address ${warnings.length} warning(s)`,
-        details: warnings.map(w => w.message)
+        details: warnings.map((w) => w.message),
       });
     }
 
-    const successfulActions = this.gameplaySession.actions.filter(a => a.status === 'success');
+    const successfulActions = this.gameplaySession.actions.filter(
+      (a) => a.status === 'success'
+    );
     if (successfulActions.length > 0) {
       recommendations.push({
         priority: 'LOW',
         type: 'ENHANCEMENT',
         message: 'Core mechanics working well - consider adding features',
-        details: ['Smart movement system functional', 'Game interaction working', 'Monitoring systems active']
+        details: [
+          'Smart movement system functional',
+          'Game interaction working',
+          'Monitoring systems active',
+        ],
       });
     }
 
@@ -724,7 +807,9 @@ class BasePlayer {
   printSummary(report) {
     console.log(`\n🎮 ${this.testName.toUpperCase()} SUMMARY`);
     console.log('='.repeat(50));
-    console.log(`⏱️  Duration: ${(report.session.duration / 1000).toFixed(1)}s`);
+    console.log(
+      `⏱️  Duration: ${(report.session.duration / 1000).toFixed(1)}s`
+    );
     console.log(`🎬 Actions: ${report.session.totalActions}`);
     console.log(`📸 Screenshots: ${report.session.totalScreenshots}`);
     console.log(`📊 Position Points: ${report.session.positionDataPoints}`);
@@ -740,9 +825,12 @@ class BasePlayer {
       console.log(`   ${index + 1}. [${rec.priority}] ${rec.message}`);
     });
 
-    const overallRating = report.summary.criticalIssues === 0 ?
-      (report.summary.warnings === 0 ? 'EXCELLENT 🌟' : 'GOOD 👍') :
-      'NEEDS WORK 🔧';
+    const overallRating =
+      report.summary.criticalIssues === 0
+        ? report.summary.warnings === 0
+          ? 'EXCELLENT 🌟'
+          : 'GOOD 👍'
+        : 'NEEDS WORK 🔧';
 
     console.log(`\n🎯 Overall Rating: ${overallRating}`);
     console.log('='.repeat(50));
