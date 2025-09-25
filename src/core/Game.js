@@ -195,7 +195,7 @@ export class Game {
   handleResize() {
     this.resizeCanvas();
     this.camera.resize(this.canvas.width, this.canvas.height);
-    
+
     // Resize themed background if available
     const currentTheme = this.worldTransitionManager.getCurrentTheme();
     if (currentTheme && this.background) {
@@ -339,7 +339,7 @@ Good luck, and have fun exploring!`,
 
     // Draw current world with themed platform renderer
     const currentWorld = this.worldTransitionManager.getCurrentWorldInstance();
-    
+
     if (currentWorld && currentTheme) {
       // Use themed platform renderer if available
       if (currentWorld.drawWithTheme) {
@@ -367,7 +367,6 @@ Good luck, and have fun exploring!`,
 
     // Draw player
     this.player.draw(this.ctx);
-
 
     // Draw grid overlay (in world space, before camera restore)
     if (this.showGrid) {
@@ -846,45 +845,47 @@ Good luck, and have fun exploring!`,
 
   drawGrid() {
     const ctx = this.ctx;
-    
+
     // Get visible area bounds in world coordinates
     const leftBound = this.camera.x - 100; // Add some padding
     const rightBound = this.camera.x + this.canvas.width + 100;
     const topBound = this.camera.y - 100;
     const bottomBound = this.camera.y + this.canvas.height + 100;
-    
+
     // Calculate grid start points (snap to grid)
     const gridSize10 = 10;
     const gridSize50 = 50;
-    
+
     const startX = Math.floor(leftBound / gridSize10) * gridSize10;
     const startY = Math.floor(topBound / gridSize10) * gridSize10;
-    
+
     ctx.save();
-    
+
     // Draw 10px grid lines (light)
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
     ctx.lineWidth = 0.5;
     ctx.beginPath();
-    
+
     // Vertical lines
     for (let x = startX; x <= rightBound; x += gridSize10) {
-      if (x % gridSize50 !== 0) { // Skip 50px grid lines
+      if (x % gridSize50 !== 0) {
+        // Skip 50px grid lines
         ctx.moveTo(x, topBound);
         ctx.lineTo(x, bottomBound);
       }
     }
-    
-    // Horizontal lines  
+
+    // Horizontal lines
     for (let y = startY; y <= bottomBound; y += gridSize10) {
-      if (y % gridSize50 !== 0) { // Skip 50px grid lines
+      if (y % gridSize50 !== 0) {
+        // Skip 50px grid lines
         ctx.moveTo(leftBound, y);
         ctx.lineTo(rightBound, y);
       }
     }
-    
+
     ctx.stroke();
-    
+
     // Draw 50px grid lines (darker) and coordinates
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
     ctx.lineWidth = 1;
@@ -892,23 +893,31 @@ Good luck, and have fun exploring!`,
     ctx.font = '10px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    
+
     ctx.beginPath();
-    
+
     // Vertical 50px lines with coordinates
-    for (let x = Math.floor(leftBound / gridSize50) * gridSize50; x <= rightBound; x += gridSize50) {
+    for (
+      let x = Math.floor(leftBound / gridSize50) * gridSize50;
+      x <= rightBound;
+      x += gridSize50
+    ) {
       ctx.moveTo(x, topBound);
       ctx.lineTo(x, bottomBound);
-      
+
       // Add coordinate labels on every 50px line - fixed to top of screen
       ctx.fillText(x.toString(), x, this.camera.y + 15);
     }
-    
+
     // Horizontal 50px lines with coordinates
-    for (let y = Math.floor(topBound / gridSize50) * gridSize50; y <= bottomBound; y += gridSize50) {
+    for (
+      let y = Math.floor(topBound / gridSize50) * gridSize50;
+      y <= bottomBound;
+      y += gridSize50
+    ) {
       ctx.moveTo(leftBound, y);
       ctx.lineTo(rightBound, y);
-      
+
       // Add coordinate labels on every 50px line - fixed to left side of screen
       ctx.save();
       ctx.textAlign = 'left';
@@ -916,37 +925,46 @@ Good luck, and have fun exploring!`,
       ctx.fillText(y.toString(), this.camera.x + 5, y);
       ctx.restore();
     }
-    
+
     ctx.stroke();
-    
+
     // Draw origin (0,0) with special highlighting
-    if (leftBound <= 0 && rightBound >= 0 && topBound <= 0 && bottomBound >= 0) {
+    if (
+      leftBound <= 0 &&
+      rightBound >= 0 &&
+      topBound <= 0 &&
+      bottomBound >= 0
+    ) {
       ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      
+
       // Red cross at origin
       ctx.moveTo(-20, 0);
       ctx.lineTo(20, 0);
       ctx.moveTo(0, -20);
       ctx.lineTo(0, 20);
       ctx.stroke();
-      
+
       // Origin label
       ctx.fillStyle = 'rgba(255, 0, 0, 0.9)';
       ctx.font = 'bold 12px monospace';
       ctx.fillText('(0,0)', 10, -10);
     }
-    
+
     // Draw player position marker
     const playerX = this.player.x;
     const playerY = this.player.y;
-    
+
     ctx.fillStyle = 'rgba(0, 255, 0, 0.8)';
     ctx.font = '10px monospace';
     ctx.textAlign = 'left';
-    ctx.fillText(`Player: (${Math.round(playerX)}, ${Math.round(playerY)})`, playerX + 20, playerY - 30);
-    
+    ctx.fillText(
+      `Player: (${Math.round(playerX)}, ${Math.round(playerY)})`,
+      playerX + 20,
+      playerY - 30
+    );
+
     ctx.restore();
   }
 

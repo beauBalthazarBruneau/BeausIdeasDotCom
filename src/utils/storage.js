@@ -125,7 +125,7 @@ export function getStorageInfo() {
   try {
     // Calculate used space
     let used = 0;
-    for (let key in localStorage) {
+    for (const key in localStorage) {
       if (localStorage.hasOwnProperty(key)) {
         used += localStorage[key].length + key.length;
       }

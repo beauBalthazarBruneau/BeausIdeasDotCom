@@ -72,7 +72,6 @@ export class WorldTransitionManager {
     return this.playerPositions.get(worldId) || { x: 100, y: 550 };
   }
 
-
   // Transition to main hub
   async transitionToMainHub(spawnPosition) {
     console.log('Loading main hub world');
@@ -123,7 +122,7 @@ export class WorldTransitionManager {
     // Use preloaded assets for better performance
     const worldModule = await this.preloadWorldAssets(worldId);
     let WorldClass;
-    
+
     switch (worldId) {
       case 'vibe-coding':
         WorldClass = worldModule.VibeCodingWorld;
@@ -161,7 +160,11 @@ export class WorldTransitionManager {
 
   // Clear only the initial Level (not currentWorld)
   clearInitialLevel() {
-    if (!this.initialLevelCleared && this.game.level && this.game.level !== this.currentWorld) {
+    if (
+      !this.initialLevelCleared &&
+      this.game.level &&
+      this.game.level !== this.currentWorld
+    ) {
       console.log('Clearing initial Level platforms');
       if (this.game.level.destroy) {
         this.game.level.destroy();
@@ -325,7 +328,10 @@ export class WorldTransitionManager {
     // Listen for URL changes (back/forward navigation)
     window.addEventListener('popstate', (event) => {
       if (event.state && event.state.worldId) {
-        this.transitionToWorldFromUrl(event.state.worldId, event.state.position);
+        this.transitionToWorldFromUrl(
+          event.state.worldId,
+          event.state.position
+        );
       }
     });
 
@@ -342,7 +348,7 @@ export class WorldTransitionManager {
 
     if (worldParam && this.isValidWorldId(worldParam)) {
       console.log(`Loading world from URL: ${worldParam}`);
-      const position = (x !== null && y !== null) ? { x, y } : null;
+      const position = x !== null && y !== null ? { x, y } : null;
       // Delay to allow game initialization
       setTimeout(() => {
         this.transitionToWorldFromUrl(worldParam, position);
@@ -352,7 +358,9 @@ export class WorldTransitionManager {
 
   // Validate world ID
   isValidWorldId(worldId) {
-    return ['main-hub', 'vibe-coding', 'healthcare', 'georgia-tech'].includes(worldId);
+    return ['main-hub', 'vibe-coding', 'healthcare', 'georgia-tech'].includes(
+      worldId
+    );
   }
 
   // Transition from URL (no door interaction)
@@ -368,7 +376,7 @@ export class WorldTransitionManager {
   updateUrl(worldId, position = null) {
     const url = new URL(window.location.href);
     url.searchParams.set('world', worldId);
-    
+
     if (position) {
       url.searchParams.set('x', Math.round(position.x).toString());
       url.searchParams.set('y', Math.round(position.y).toString());
@@ -383,7 +391,7 @@ export class WorldTransitionManager {
       `Portfolio Game - ${this.getWorldDisplayName(worldId)}`,
       url.toString()
     );
-    
+
     // Update page title
     document.title = `Beau's Portfolio - ${this.getWorldDisplayName(worldId)}`;
   }
@@ -393,8 +401,8 @@ export class WorldTransitionManager {
     const names = {
       'main-hub': 'Main Hub',
       'vibe-coding': 'Vibe Coding World',
-      'healthcare': 'Healthcare World',
-      'georgia-tech': 'Georgia Tech World'
+      healthcare: 'Healthcare World',
+      'georgia-tech': 'Georgia Tech World',
     };
     return names[worldId] || 'Unknown World';
   }
@@ -407,7 +415,7 @@ export class WorldTransitionManager {
 
     console.log(`Preloading assets for ${worldId}`);
     let worldModule;
-    
+
     switch (worldId) {
       case 'vibe-coding':
         worldModule = await import('./worlds/VibeCodingWorld.js');
@@ -422,7 +430,7 @@ export class WorldTransitionManager {
         worldModule = await import('./MainHub.js');
         break;
     }
-    
+
     this.loadedAssets.set(worldId, worldModule);
     return worldModule;
   }
@@ -484,12 +492,11 @@ export class WorldTransitionManager {
       // Unload previous world assets for memory management
       const previousWorldId = this.currentWorldId;
       this.currentWorldId = targetWorldId;
-      
+
       // Delay unloading to avoid issues during transition
       setTimeout(() => {
         this.unloadWorldAssets(previousWorldId);
       }, 1000);
-
     } catch (error) {
       console.error('Error during world transition:', error);
     } finally {
@@ -501,9 +508,19 @@ export class WorldTransitionManager {
   async createThemeForWorld(worldId) {
     console.log(`Creating theme for world: ${worldId}`);
     try {
-      const dimensions = this.getCurrentWorldInstance()?.getDimensions() || { width: 3500, height: 1200 };
-      const theme = await WorldThemeFactory.create(worldId, this.game.canvas, dimensions);
-      console.log(`Theme created successfully for ${worldId}:`, theme.getThemeId());
+      const dimensions = this.getCurrentWorldInstance()?.getDimensions() || {
+        width: 3500,
+        height: 1200,
+      };
+      const theme = await WorldThemeFactory.create(
+        worldId,
+        this.game.canvas,
+        dimensions
+      );
+      console.log(
+        `Theme created successfully for ${worldId}:`,
+        theme.getThemeId()
+      );
       return theme;
     } catch (error) {
       console.error(`Failed to create theme for ${worldId}:`, error);
@@ -520,7 +537,7 @@ export class WorldTransitionManager {
     this.playerPositions.clear();
     this.loadedAssets.clear();
     this.currentTheme = null;
-    
+
     // Remove URL event listeners
     window.removeEventListener('popstate', this.handlePopState);
   }

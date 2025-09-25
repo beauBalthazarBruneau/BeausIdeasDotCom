@@ -25,6 +25,9 @@ function initGame() {
     // Create and start the game
     game = new Game(canvas);
 
+    // Expose game globally for testing and debugging
+    window.game = game;
+
     console.log('🎮 Portfolio Mario Game Initialized!');
     console.log(
       'Controls: Arrow Keys/WASD to move, Space/Up for double jump, F1 for debug'

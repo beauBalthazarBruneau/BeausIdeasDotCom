@@ -1,7 +1,12 @@
 // Jersey Shore Beach Theme
 // Main hub world with beach/boardwalk aesthetic
 
-import { WorldTheme, ThemedBackground, ThemedPlatformRenderer, ForegroundEffects } from '../WorldTheme.js';
+import {
+  WorldTheme,
+  ThemedBackground,
+  ThemedPlatformRenderer,
+  ForegroundEffects,
+} from '../WorldTheme.js';
 
 export class JerseyShoreTheme extends WorldTheme {
   getThemeId() {
@@ -26,26 +31,26 @@ export class JerseyShoreTheme extends WorldTheme {
         baseColor: '#CD853F',
         surfacePattern: 'wooden_planks',
         edgeStyle: 'weathered',
-        texture: 'boardwalk'
+        texture: 'boardwalk',
       },
       sand: {
         baseColor: '#F4A460',
         surfacePattern: 'grainy',
         edgeStyle: 'soft',
-        texture: 'sand'
+        texture: 'sand',
       },
       boardwalk: {
         baseColor: '#8B7355',
         surfacePattern: 'wooden_planks',
         edgeStyle: 'weathered',
-        texture: 'aged_wood'
+        texture: 'aged_wood',
       },
       pier: {
         baseColor: '#696969',
         surfacePattern: 'concrete',
         edgeStyle: 'worn',
-        texture: 'concrete'
-      }
+        texture: 'concrete',
+      },
     };
   }
 
@@ -56,7 +61,7 @@ export class JerseyShoreTheme extends WorldTheme {
       beachBalls: { frequency: 0.15, animated: true },
       lifeguardStands: { frequency: 0.1 },
       palmTrees: { frequency: 0.25 },
-      boardwalkLamps: { frequency: 0.4 }
+      boardwalkLamps: { frequency: 0.4 },
     };
   }
 
@@ -64,14 +69,14 @@ export class JerseyShoreTheme extends WorldTheme {
     return [
       { type: 'seagull_calls', frequency: 0.3 },
       { type: 'wind_particles', intensity: 0.4 },
-      { type: 'sun_glare', intensity: 0.5 }
+      { type: 'sun_glare', intensity: 0.5 },
     ];
   }
 
   getAudioTheme() {
     return {
       ambient: 'ocean_waves',
-      music: 'beach_relaxation'
+      music: 'beach_relaxation',
     };
   }
 }
@@ -84,9 +89,7 @@ class JerseyShoreBackground extends ThemedBackground {
   }
 
   async preloadImages() {
-    const imagesToLoad = [
-      { key: 'beach_house', src: '/assets/heritage.png' }
-    ];
+    const imagesToLoad = [{ key: 'beach_house', src: '/assets/heritage.png' }];
 
     for (const imageData of imagesToLoad) {
       try {
@@ -111,8 +114,8 @@ class JerseyShoreBackground extends ThemedBackground {
       elements: [
         { type: 'gradient_sky', colors: ['#87CEEB', '#E0F6FF', '#FFE4B5'] },
         { type: 'sun', x: this.levelWidth * 0.8, y: 100, animated: true },
-        { type: 'clouds', count: 8, animated: true }
-      ]
+        { type: 'clouds', count: 8, animated: true },
+      ],
     };
   }
 
@@ -123,8 +126,8 @@ class JerseyShoreBackground extends ThemedBackground {
       elements: [
         { type: 'ocean_horizon', y: 400 },
         { type: 'distant_ships', count: 2 },
-        { type: 'lighthouse', x: this.levelWidth * 0.9, y: 350 }
-      ]
+        { type: 'lighthouse', x: this.levelWidth * 0.9, y: 350 },
+      ],
     };
   }
 
@@ -136,8 +139,8 @@ class JerseyShoreBackground extends ThemedBackground {
         { type: 'beach_house', x: 400, y: 780, image: '/assets/heritage.png' }, // Moved up another 20px (800 - 20 = 780)
         { type: 'ocean_waves', animated: true },
         { type: 'beach_crowds', density: 0.3 },
-        { type: 'pier_structures', count: 3 }
-      ]
+        { type: 'pier_structures', count: 3 },
+      ],
     };
   }
 
@@ -148,18 +151,23 @@ class JerseyShoreBackground extends ThemedBackground {
       elements: [
         { type: 'beach_grass', density: 0.4 },
         { type: 'driftwood', count: 5 },
-        { type: 'seashells', density: 0.2 }
-      ]
+        { type: 'seashells', density: 0.2 },
+      ],
     };
   }
 
   drawSkyBackground(ctx, layer, parallaxX, parallaxY) {
     // Gradient sky from beach blue to sandy yellow
-    const gradient = ctx.createLinearGradient(0, -parallaxY, 0, this.canvas.height - parallaxY);
+    const gradient = ctx.createLinearGradient(
+      0,
+      -parallaxY,
+      0,
+      this.canvas.height - parallaxY
+    );
     gradient.addColorStop(0, '#87CEEB');
     gradient.addColorStop(0.6, '#E0F6FF');
     gradient.addColorStop(1, '#FFE4B5');
-    
+
     ctx.fillStyle = gradient;
     ctx.fillRect(
       -parallaxX,
@@ -196,7 +204,7 @@ class JerseyShoreBackground extends ThemedBackground {
   drawSun(ctx, element) {
     const time = Date.now() * 0.001;
     const pulse = Math.sin(time * 0.5) * 0.1 + 1;
-    
+
     ctx.save();
     ctx.shadowColor = '#FFD700';
     ctx.shadowBlur = 20;
@@ -211,9 +219,11 @@ class JerseyShoreBackground extends ThemedBackground {
     // Simple cloud drawing - can be enhanced
     ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
     for (let i = 0; i < element.count; i++) {
-      const x = (this.levelWidth / element.count) * i + Math.sin(Date.now() * 0.0005 + i) * 50;
+      const x =
+        (this.levelWidth / element.count) * i +
+        Math.sin(Date.now() * 0.0005 + i) * 50;
       const y = 50 + Math.sin(Date.now() * 0.0003 + i) * 20;
-      
+
       ctx.beginPath();
       ctx.arc(x, y, 25, 0, Math.PI * 2);
       ctx.arc(x + 25, y, 35, 0, Math.PI * 2);
@@ -235,10 +245,10 @@ class JerseyShoreBackground extends ThemedBackground {
     // Simple lighthouse
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(element.x, element.y, 20, 100);
-    
+
     ctx.fillStyle = '#FF0000';
     ctx.fillRect(element.x, element.y, 20, 20);
-    
+
     // Light beam
     const time = Date.now() * 0.005;
     if (Math.sin(time) > 0) {
@@ -260,23 +270,23 @@ class JerseyShoreBackground extends ThemedBackground {
     if (image && image.complete) {
       const x = element.x;
       const y = element.y;
-      
+
       // Scale to 50% size
       const scaledWidth = image.width * 0.5;
       const scaledHeight = image.height * 0.5;
-      
+
       ctx.save();
       ctx.imageSmoothingEnabled = false; // Keep pixel art crisp
-      
+
       // Draw image at 50% size with bottom touching the specified y coordinate
       ctx.drawImage(
         image,
-        x - scaledWidth / 2,  // Center horizontally
-        y - scaledHeight,     // Position so bottom of scaled image is at y coordinate
+        x - scaledWidth / 2, // Center horizontally
+        y - scaledHeight, // Position so bottom of scaled image is at y coordinate
         scaledWidth,
         scaledHeight
       );
-      
+
       ctx.restore();
     } else {
       // Simple fallback if image not loaded
@@ -307,20 +317,20 @@ class JerseyShorePlatformRenderer extends ThemedPlatformRenderer {
   drawBoardwalkPlanks(ctx, pos, width, height) {
     ctx.strokeStyle = '#654321';
     ctx.lineWidth = 1;
-    
+
     // Draw vertical plank lines
-    for (let x = pos.x - width/2; x < pos.x + width/2; x += 15) {
+    for (let x = pos.x - width / 2; x < pos.x + width / 2; x += 15) {
       ctx.beginPath();
-      ctx.moveTo(x, pos.y - height/2);
-      ctx.lineTo(x, pos.y + height/2);
+      ctx.moveTo(x, pos.y - height / 2);
+      ctx.lineTo(x, pos.y + height / 2);
       ctx.stroke();
     }
-    
+
     // Add weathering marks
     ctx.strokeStyle = 'rgba(101, 67, 33, 0.3)';
     for (let i = 0; i < 3; i++) {
-      const x = pos.x - width/2 + Math.random() * width;
-      const y = pos.y - height/2 + Math.random() * height;
+      const x = pos.x - width / 2 + Math.random() * width;
+      const y = pos.y - height / 2 + Math.random() * height;
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x + 10, y);
@@ -332,8 +342,8 @@ class JerseyShorePlatformRenderer extends ThemedPlatformRenderer {
     // Add sand grain effect
     ctx.fillStyle = 'rgba(218, 165, 32, 0.3)';
     for (let i = 0; i < 20; i++) {
-      const x = pos.x - width/2 + Math.random() * width;
-      const y = pos.y - height/2 + Math.random() * height;
+      const x = pos.x - width / 2 + Math.random() * width;
+      const y = pos.y - height / 2 + Math.random() * height;
       ctx.beginPath();
       ctx.arc(x, y, 1, 0, Math.PI * 2);
       ctx.fill();
@@ -344,11 +354,11 @@ class JerseyShorePlatformRenderer extends ThemedPlatformRenderer {
     // Draw wood grain lines
     ctx.strokeStyle = 'rgba(139, 115, 85, 0.5)';
     ctx.lineWidth = 0.5;
-    
-    for (let y = pos.y - height/2; y < pos.y + height/2; y += 3) {
+
+    for (let y = pos.y - height / 2; y < pos.y + height / 2; y += 3) {
       ctx.beginPath();
-      ctx.moveTo(pos.x - width/2, y + Math.sin(y * 0.1) * 2);
-      ctx.lineTo(pos.x + width/2, y + Math.sin(y * 0.1) * 2);
+      ctx.moveTo(pos.x - width / 2, y + Math.sin(y * 0.1) * 2);
+      ctx.lineTo(pos.x + width / 2, y + Math.sin(y * 0.1) * 2);
       ctx.stroke();
     }
   }
@@ -357,13 +367,13 @@ class JerseyShorePlatformRenderer extends ThemedPlatformRenderer {
     // Simple concrete texture with small cracks
     ctx.strokeStyle = 'rgba(85, 85, 85, 0.3)';
     ctx.lineWidth = 1;
-    
+
     for (let i = 0; i < 5; i++) {
-      const startX = pos.x - width/2 + Math.random() * width;
-      const startY = pos.y - height/2 + Math.random() * height;
+      const startX = pos.x - width / 2 + Math.random() * width;
+      const startY = pos.y - height / 2 + Math.random() * height;
       const endX = startX + (Math.random() - 0.5) * 20;
       const endY = startY + (Math.random() - 0.5) * 20;
-      
+
       ctx.beginPath();
       ctx.moveTo(startX, startY);
       ctx.lineTo(endX, endY);
@@ -388,20 +398,20 @@ class JerseyShoreForegroundEffects extends ForegroundEffects {
         vx: 1 + Math.random() * 2,
         vy: Math.random() * 0.5 - 0.25,
         life: Math.random() * 120,
-        maxLife: 120
+        maxLife: 120,
       });
     }
   }
 
   update(deltaTime) {
     super.update(deltaTime);
-    
+
     // Update wind particles
-    this.windParticles.forEach(particle => {
+    this.windParticles.forEach((particle) => {
       particle.x += particle.vx;
       particle.y += particle.vy;
       particle.life--;
-      
+
       if (particle.life <= 0 || particle.x > 850) {
         particle.x = -10;
         particle.y = Math.random() * 400;
@@ -412,10 +422,10 @@ class JerseyShoreForegroundEffects extends ForegroundEffects {
 
   draw(ctx, camera) {
     super.draw(ctx, camera);
-    
+
     // Draw wind particles (sand/salt in the air)
     ctx.fillStyle = 'rgba(244, 164, 96, 0.4)';
-    this.windParticles.forEach(particle => {
+    this.windParticles.forEach((particle) => {
       const alpha = particle.life / particle.maxLife;
       ctx.globalAlpha = alpha;
       ctx.beginPath();

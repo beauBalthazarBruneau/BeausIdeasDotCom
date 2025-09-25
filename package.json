@@ -10,12 +10,22 @@
     "lint": "eslint . --ext js,jsx,ts,tsx --report-unused-disable-directives",
     "lint:fix": "eslint . --ext js,jsx,ts,tsx --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test": "node automation/test-runner.js",
+    "test:watch": "node automation/watch-and-test.js",
+    "test:dev": "concurrently \"npm run dev\" \"npm run test:watch\"",
+    "mcp-ai": "node automation/mcp-ai-player.js",
+    "mcp-ai:dev": "concurrently \"npm run dev\" \"sleep 5 && npm run mcp-ai\"",
+    "analyze": "node analysis/gameplay-analysis.js",
+    "visual-test": "node analysis/simple-visual-test.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
+    "@playwright/test": "^1.55.0",
+    "concurrently": "^9.2.1",
     "eslint": "^9.9.0",
     "globals": "^15.9.0",
+    "playwright": "^1.55.0",
     "prettier": "^3.3.3",
     "terser": "^5.44.0",
     "vite": "^7.1.2"

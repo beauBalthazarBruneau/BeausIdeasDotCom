@@ -30,8 +30,8 @@ export class WorldTheme {
       default: {
         baseColor: '#8B4513',
         surfacePattern: 'none',
-        edgeStyle: 'simple'
-      }
+        edgeStyle: 'simple',
+      },
     };
   }
 
@@ -46,7 +46,7 @@ export class WorldTheme {
   getAudioTheme() {
     return {
       ambient: null,
-      music: null
+      music: null,
     };
   }
 }
@@ -64,7 +64,7 @@ export class ThemedBackground {
       this.createSkyLayer(),
       this.createDistantLayer(),
       this.createMidgroundLayer(),
-      this.createNeargroundLayer()
+      this.createNeargroundLayer(),
     ];
   }
 
@@ -72,7 +72,7 @@ export class ThemedBackground {
     return {
       name: 'sky',
       scrollSpeed: 0.1,
-      elements: []
+      elements: [],
     };
   }
 
@@ -80,7 +80,7 @@ export class ThemedBackground {
     return {
       name: 'distant',
       scrollSpeed: 0.3,
-      elements: []
+      elements: [],
     };
   }
 
@@ -88,7 +88,7 @@ export class ThemedBackground {
     return {
       name: 'midground',
       scrollSpeed: 0.5,
-      elements: []
+      elements: [],
     };
   }
 
@@ -96,12 +96,12 @@ export class ThemedBackground {
     return {
       name: 'nearground',
       scrollSpeed: 0.7,
-      elements: []
+      elements: [],
     };
   }
 
   draw(ctx, camera) {
-    this.layers.forEach(layer => {
+    this.layers.forEach((layer) => {
       this.drawLayer(ctx, layer, camera);
     });
   }
@@ -122,7 +122,7 @@ export class ThemedBackground {
     }
 
     // Draw all elements in this layer
-    layer.elements.forEach(element => {
+    layer.elements.forEach((element) => {
       this.drawElement(ctx, element);
     });
 
@@ -146,8 +146,8 @@ export class ThemedBackground {
 
   update(deltaTime) {
     // Update animated elements
-    this.layers.forEach(layer => {
-      layer.elements.forEach(element => {
+    this.layers.forEach((layer) => {
+      layer.elements.forEach((element) => {
         if (element.update) {
           element.update(deltaTime);
         }
@@ -198,7 +198,7 @@ export class ForegroundEffects {
   }
 
   update(deltaTime) {
-    this.effects.forEach(effect => {
+    this.effects.forEach((effect) => {
       if (effect.update) {
         effect.update(deltaTime);
       }
@@ -206,7 +206,7 @@ export class ForegroundEffects {
   }
 
   draw(ctx, camera) {
-    this.effects.forEach(effect => {
+    this.effects.forEach((effect) => {
       if (effect.draw) {
         effect.draw(ctx, camera);
       }
@@ -219,15 +219,17 @@ export class WorldThemeFactory {
     try {
       // Only load Jersey Shore theme for now, use default for others
       if (worldId === 'main-hub') {
-        const { JerseyShoreTheme } = await import('./themes/JerseyShoreTheme.js');
+        const { JerseyShoreTheme } = await import(
+          './themes/JerseyShoreTheme.js'
+        );
         return new JerseyShoreTheme(canvas, dimensions);
       }
-      
+
       // TODO: Add other theme imports as they are created
       // 'georgia-tech': UrbanAtlantaTheme,
-      // 'healthcare': UndergroundCaveTheme, 
+      // 'healthcare': UndergroundCaveTheme,
       // 'vibe-coding': TechnoBinaryTheme
-      
+
       console.log(`Theme not implemented for ${worldId}, using default`);
       return new WorldTheme(canvas, dimensions);
     } catch (error) {

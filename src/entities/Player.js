@@ -51,7 +51,7 @@ export class Player {
     this.physics.onCollisionStart((event) => {
       const pairs = event.pairs;
 
-      for (let pair of pairs) {
+      for (const pair of pairs) {
         const { bodyA, bodyB } = pair;
 
         if (bodyA === this.body || bodyB === this.body) {
@@ -64,10 +64,15 @@ export class Player {
           ) {
             // Simplified ground detection - check if player is moving downward or stable
             const playerBottom = this.body.position.y + this.height / 2;
-            const surfaceTop = otherBody.position.y - (otherBody.bounds.max.y - otherBody.bounds.min.y) / 2;
+            const surfaceTop =
+              otherBody.position.y -
+              (otherBody.bounds.max.y - otherBody.bounds.min.y) / 2;
 
             // Check if player is on top of surface (landing from above)
-            if (playerBottom <= surfaceTop + 5 && this.body.velocity.y >= -0.5) {
+            if (
+              playerBottom <= surfaceTop + 5 &&
+              this.body.velocity.y >= -0.5
+            ) {
               this.isGrounded = true;
               this.jumpsRemaining = this.maxJumps;
             }
@@ -97,7 +102,7 @@ export class Player {
     this.physics.onCollisionEnd((event) => {
       const pairs = event.pairs;
 
-      for (let pair of pairs) {
+      for (const pair of pairs) {
         const { bodyA, bodyB } = pair;
 
         if (bodyA === this.body || bodyB === this.body) {

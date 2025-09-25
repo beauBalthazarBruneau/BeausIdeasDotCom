@@ -27,7 +27,7 @@ jobs:
         run: npm run lint
 
       - name: Check Prettier formatting
-        run: npm run format
+        run: npm run format:check
 
       - name: Run build to ensure everything works
         run: npm run build
