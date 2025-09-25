@@ -1,4 +1,5 @@
 import { gsap } from 'gsap';
+import { isMobile } from '@utils/responsive';
 
 export class Camera {
   constructor(canvas) {
@@ -269,8 +270,20 @@ export class Camera {
     // Calculate and set camera frame directly
     if (window.game && window.game.player) {
       const target = window.game.player;
-      const targetScreenX = this.canvas.width * 0.25; // 25% from left
-      const targetScreenY = this.canvas.height * 0.5;  // 50% from top
+
+      // Use responsive state manager
+
+      // Position player based on screen type
+      let targetScreenX, targetScreenY;
+      if (isMobile()) {
+        // Mobile: Center player horizontally, position in bottom half
+        targetScreenX = this.canvas.width * 0.5;  // 50% from left (center)
+        targetScreenY = this.canvas.height * 0.25; // 25% from top (upper quarter)
+      } else {
+        // Desktop: Keep current positioning
+        targetScreenX = this.canvas.width * 0.25; // 25% from left
+        targetScreenY = this.canvas.height * 0.5;  // 50% from top
+      }
 
       // Calculate camera position: player world - desired screen position
       const cameraX = target.x - targetScreenX;
@@ -278,9 +291,10 @@ export class Camera {
 
       console.log('Setting camera frame directly:', {
         screenSize: { width: this.canvas.width, height: this.canvas.height },
+        deviceType: isMobile() ? 'mobile' : 'desktop',
         playerWorld: { x: target.x, y: target.y },
         desiredScreenPos: { x: targetScreenX, y: targetScreenY },
-        desiredPercentage: { x: '25%', y: '50%' },
+        desiredPercentage: isMobile() ? { x: '50%', y: '25%' } : { x: '25%', y: '50%' },
         cameraPosition: { x: cameraX, y: cameraY },
         zoom: zoomLevel
       });
