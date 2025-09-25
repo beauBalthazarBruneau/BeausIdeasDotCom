@@ -90,6 +90,58 @@ class JerseyShoreBackground extends ThemedBackground {
     this.preloadImages();
   }
 
+  // Override to use custom 5-layer Jersey Shore system
+  async getCustomLayers() {
+    // Import responsive utility for mobile/desktop detection
+    const { isMobile } = await import('@utils/responsive.js');
+
+    // Responsive text positioning and scaling
+    const isMobileDevice = isMobile();
+    const textY = isMobileDevice ? 20 : 80;
+    const leftSideX = isMobileDevice ? textY : 50; // textX = textY for mobile
+
+    // Scale reduction for mobile (75% smaller)
+    const mobileScaleReduction = isMobileDevice ? 0.4 : 1;
+    const largeTextScale = 2 * mobileScaleReduction;
+    const smallTextScale = 0.75 * mobileScaleReduction;
+
+    return [
+      // Sky layer (slowest parallax)
+      this.createLayer('sky', 0.1, [
+        { type: 'gradient_sky', colors: ['#87CEEB', '#E0F6FF', '#FFE4B5'] },
+        { type: 'sun', x: this.levelWidth * 0.8, y: 100, animated: true },
+        { type: 'clouds', count: 8, animated: true },
+      ]),
+
+      // Distant layer
+      this.createLayer('distant', 0.25, [
+        // Sprite-based pixel text (responsive)
+        { type: 'pixeltext', method: 'sprite', text: 'BEAU', x: leftSideX, y: textY, scale: largeTextScale, color: '#808080', spacing: 12 * mobileScaleReduction },
+        { type: 'pixeltext', method: 'sprite', text: 'BRUNEAU', x: leftSideX, y: textY + (150 * mobileScaleReduction), scale: largeTextScale, color: '#808080', spacing: 12 * mobileScaleReduction },
+        { type: 'pixeltext', method: 'sprite', text: 'A PERSONAL PORTFOLIO', x: leftSideX, y: textY + (300 * mobileScaleReduction), scale: smallTextScale, color: '#606060', spacing: 6 * mobileScaleReduction },
+      ]),
+
+      // Landmarks layer (NEW - for major landmarks)
+      this.createLayer('landmarks', 0.35, [
+        { type: 'lighthouse', x: this.levelWidth * 0.9, y: 350 },
+      ]),
+
+      // Midground beach activities
+      this.createLayer('midground', 0.5, [
+        { type: 'beach_crowds', density: 0.3 },
+        { type: 'pier_structures', count: 3 },
+        { type: 'beach_grass', density: 0.4 },
+        { type: 'driftwood', count: 5 },
+        { type: 'seashells', density: 0.2 },
+      ]),
+
+      // Gameplay foreground (same as platforms - no parallax)
+      this.createLayer('foreground', 1.0, [
+        { type: 'beach_house', x: 400, y: 720, image: '/assets/heritage.png' },
+      ])
+    ];
+  }
+
   async preloadImages() {
     const imagesToLoad = [{ key: 'beach_house', src: '/assets/heritage.png' }];
 
@@ -109,61 +161,6 @@ class JerseyShoreBackground extends ThemedBackground {
     }
   }
 
-  createSkyLayer() {
-    const textY = 120; // Position in sky
-    const leftSideX = 50; // Far left for sprite-based
-
-    return {
-      name: 'sky',
-      scrollSpeed: 0.1,
-      elements: [
-        { type: 'gradient_sky', colors: ['#87CEEB', '#E0F6FF', '#FFE4B5'] },
-        { type: 'sun', x: this.levelWidth * 0.8, y: 100, animated: true },
-        { type: 'clouds', count: 8, animated: true },
-
-        // Sprite-based pixel text
-        { type: 'pixeltext', method: 'sprite', text: 'BEAU', x: leftSideX, y: textY, scale: 2, color: '#808080', spacing: 12 },
-        { type: 'pixeltext', method: 'sprite', text: 'BRUNEAU', x: leftSideX, y: textY + 120, scale: 2, color: '#808080', spacing: 12 },
-      ],
-    };
-  }
-
-  createDistantLayer() {
-    return {
-      name: 'distant',
-      scrollSpeed: 0.3,
-      elements: [
-        { type: 'ocean_horizon', y: 400 },
-        { type: 'distant_ships', count: 2 },
-        { type: 'lighthouse', x: this.levelWidth * 0.9, y: 350 },
-      ],
-    };
-  }
-
-  createMidgroundLayer() {
-    return {
-      name: 'midground',
-      scrollSpeed: 0.5,
-      elements: [
-        { type: 'beach_house', x: 400, y: 780, image: '/assets/heritage.png' }, // Moved up another 20px (800 - 20 = 780)
-        { type: 'ocean_waves', animated: true },
-        { type: 'beach_crowds', density: 0.3 },
-        { type: 'pier_structures', count: 3 },
-      ],
-    };
-  }
-
-  createNeargroundLayer() {
-    return {
-      name: 'nearground',
-      scrollSpeed: 0.7,
-      elements: [
-        { type: 'beach_grass', density: 0.4 },
-        { type: 'driftwood', count: 5 },
-        { type: 'seashells', density: 0.2 },
-      ],
-    };
-  }
 
   drawSkyBackground(ctx, layer, parallaxX, parallaxY) {
     // Gradient sky from beach blue to sandy yellow
@@ -311,6 +308,8 @@ class JerseyShoreBackground extends ThemedBackground {
     const { text, x, y, color, scale, spacing } = element;
     this.pixelText.drawSpriteText(ctx, text, x, y, scale, color, spacing);
   }
+
+
 }
 
 class JerseyShorePlatformRenderer extends ThemedPlatformRenderer {
