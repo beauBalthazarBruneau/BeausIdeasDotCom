@@ -26,12 +26,14 @@ export class ResponsiveManager {
 
         // Dispatch custom event if state changed
         if (wasMobile !== this.isMobile) {
-          window.dispatchEvent(new CustomEvent('responsiveStateChange', {
-            detail: {
-              isMobile: this.isMobile,
-              wasMobile: wasMobile
-            }
-          }));
+          window.dispatchEvent(
+            new CustomEvent('responsiveStateChange', {
+              detail: {
+                isMobile: this.isMobile,
+                wasMobile: wasMobile,
+              },
+            })
+          );
         }
       }, 150);
     });

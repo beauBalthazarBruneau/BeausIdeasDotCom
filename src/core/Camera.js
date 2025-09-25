@@ -277,12 +277,12 @@ export class Camera {
       let targetScreenX, targetScreenY;
       if (isMobile()) {
         // Mobile: Center player horizontally, position in bottom half
-        targetScreenX = this.canvas.width * 0.5;  // 50% from left (center)
+        targetScreenX = this.canvas.width * 0.5; // 50% from left (center)
         targetScreenY = this.canvas.height * 0.25; // 25% from top (upper quarter)
       } else {
         // Desktop: Keep current positioning
         targetScreenX = this.canvas.width * 0.25; // 25% from left
-        targetScreenY = this.canvas.height * 0.5;  // 50% from top
+        targetScreenY = this.canvas.height * 0.5; // 50% from top
       }
 
       // Calculate camera position: player world - desired screen position
@@ -294,9 +294,11 @@ export class Camera {
         deviceType: isMobile() ? 'mobile' : 'desktop',
         playerWorld: { x: target.x, y: target.y },
         desiredScreenPos: { x: targetScreenX, y: targetScreenY },
-        desiredPercentage: isMobile() ? { x: '50%', y: '25%' } : { x: '25%', y: '50%' },
+        desiredPercentage: isMobile()
+          ? { x: '50%', y: '25%' }
+          : { x: '25%', y: '50%' },
         cameraPosition: { x: cameraX, y: cameraY },
-        zoom: zoomLevel
+        zoom: zoomLevel,
       });
 
       // Set camera position and zoom directly - no animation, no boundaries
@@ -310,7 +312,7 @@ export class Camera {
       // Verify the calculation worked
       console.log('Player should now be at screen:', {
         x: target.x - this.x,
-        y: target.y - this.y
+        y: target.y - this.y,
       });
     } else {
       // Fallback to regular zoom if no player found
