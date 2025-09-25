@@ -31,24 +31,19 @@ export class Camera {
     this.offsetX = this.canvas.width / 2;
     this.offsetY = this.canvas.height / 2;
 
-    // Modal mode - when modal is shown, position player using world coordinates
-    this.modalMode = false;
+    // Camera mode state
+    this.mode = 'follow'; // 'follow' | 'modal'
   }
 
   follow(target) {
-    if (this.modalMode) {
-      // Modal mode: Position player at specific screen coordinates (column 2, row 2)
-      const targetScreenX = this.canvas.width / 3; // Column 2 center (W/3)
-      const targetScreenY = (2 * this.canvas.height) / 3; // Row 2 center (2H/3)
-
-      // Calculate camera position so player appears at those screen coordinates
-      this.targetX = target.x - targetScreenX;
-      this.targetY = target.y - targetScreenY;
-    } else {
-      // Normal mode: Center player in viewport
-      this.targetX = target.x - this.offsetX;
-      this.targetY = target.y - this.offsetY;
+    if (this.mode !== 'follow') {
+      // Not in follow mode - camera is controlled elsewhere
+      return;
     }
+
+    // Follow mode: Center player in viewport
+    this.targetX = target.x - this.offsetX;
+    this.targetY = target.y - this.offsetY;
 
     // Apply boundaries
     this.targetX = Math.max(
@@ -254,25 +249,59 @@ export class Camera {
     this.maxY = maxY;
   }
 
-  // Enter modal mode - position player in left half of screen
+  // Enter modal mode - switch to modal state
   enterModalMode() {
-    this.modalMode = true;
-    console.log('Camera entering modal mode - centering player in left half');
+    this.mode = 'modal';
+    console.log('Camera entering modal mode');
   }
 
-  // Exit modal mode - return to normal centering
+  // Exit modal mode - return to follow state
   exitModalMode() {
-    this.modalMode = false;
-    console.log('Camera exiting modal mode - returning to normal centering');
+    this.mode = 'follow';
+    console.log('Camera exiting modal mode - returning to follow');
   }
 
   // Combined zoom and modal positioning for showing modal
   zoomToPlayerWithModal(zoomLevel, duration = 0.8) {
-    // Enter modal mode first
+    // Enter modal mode first (this stops follow() from updating camera)
     this.enterModalMode();
 
-    // Then zoom
-    this.zoomToPlayer(zoomLevel, duration);
+    // Calculate and set camera frame directly
+    if (window.game && window.game.player) {
+      const target = window.game.player;
+      const targetScreenX = this.canvas.width * 0.25; // 25% from left
+      const targetScreenY = this.canvas.height * 0.5;  // 50% from top
+
+      // Calculate camera position: player world - desired screen position
+      const cameraX = target.x - targetScreenX;
+      const cameraY = target.y - targetScreenY;
+
+      console.log('Setting camera frame directly:', {
+        screenSize: { width: this.canvas.width, height: this.canvas.height },
+        playerWorld: { x: target.x, y: target.y },
+        desiredScreenPos: { x: targetScreenX, y: targetScreenY },
+        desiredPercentage: { x: '25%', y: '50%' },
+        cameraPosition: { x: cameraX, y: cameraY },
+        zoom: zoomLevel
+      });
+
+      // Set camera position and zoom directly - no animation, no boundaries
+      this.x = cameraX;
+      this.y = cameraY;
+      this.targetX = cameraX;
+      this.targetY = cameraY;
+      this.zoom = zoomLevel;
+      this.targetZoom = zoomLevel;
+
+      // Verify the calculation worked
+      console.log('Player should now be at screen:', {
+        x: target.x - this.x,
+        y: target.y - this.y
+      });
+    } else {
+      // Fallback to regular zoom if no player found
+      this.zoomToPlayer(zoomLevel, duration);
+    }
   }
 
   // Combined zoom out and exit modal mode for hiding modal
