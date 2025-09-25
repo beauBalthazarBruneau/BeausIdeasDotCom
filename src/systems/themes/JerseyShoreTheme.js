@@ -116,9 +116,36 @@ class JerseyShoreBackground extends ThemedBackground {
       // Distant layer
       this.createLayer('distant', 0.25, [
         // Sprite-based pixel text (responsive)
-        { type: 'pixeltext', method: 'sprite', text: 'BEAU', x: leftSideX, y: textY, scale: largeTextScale, color: '#808080', spacing: 12 * mobileScaleReduction },
-        { type: 'pixeltext', method: 'sprite', text: 'BRUNEAU', x: leftSideX, y: textY + (150 * mobileScaleReduction), scale: largeTextScale, color: '#808080', spacing: 12 * mobileScaleReduction },
-        { type: 'pixeltext', method: 'sprite', text: 'A PERSONAL PORTFOLIO', x: leftSideX, y: textY + (300 * mobileScaleReduction), scale: smallTextScale, color: '#606060', spacing: 6 * mobileScaleReduction },
+        {
+          type: 'pixeltext',
+          method: 'sprite',
+          text: 'BEAU',
+          x: leftSideX,
+          y: textY,
+          scale: largeTextScale,
+          color: '#808080',
+          spacing: 12 * mobileScaleReduction,
+        },
+        {
+          type: 'pixeltext',
+          method: 'sprite',
+          text: 'BRUNEAU',
+          x: leftSideX,
+          y: textY + 150 * mobileScaleReduction,
+          scale: largeTextScale,
+          color: '#808080',
+          spacing: 12 * mobileScaleReduction,
+        },
+        {
+          type: 'pixeltext',
+          method: 'sprite',
+          text: 'A PERSONAL PORTFOLIO',
+          x: leftSideX,
+          y: textY + 300 * mobileScaleReduction,
+          scale: smallTextScale,
+          color: '#606060',
+          spacing: 6 * mobileScaleReduction,
+        },
       ]),
 
       // Landmarks layer (NEW - for major landmarks)
@@ -138,7 +165,7 @@ class JerseyShoreBackground extends ThemedBackground {
       // Gameplay foreground (same as platforms - no parallax)
       this.createLayer('foreground', 1.0, [
         { type: 'beach_house', x: 400, y: 720, image: '/assets/heritage.png' },
-      ])
+      ]),
     ];
   }
 
@@ -160,7 +187,6 @@ class JerseyShoreBackground extends ThemedBackground {
       }
     }
   }
-
 
   drawSkyBackground(ctx, layer, parallaxX, parallaxY) {
     // Gradient sky from beach blue to sandy yellow
@@ -308,8 +334,6 @@ class JerseyShoreBackground extends ThemedBackground {
     const { text, x, y, color, scale, spacing } = element;
     this.pixelText.drawSpriteText(ctx, text, x, y, scale, color, spacing);
   }
-
-
 }
 
 class JerseyShorePlatformRenderer extends ThemedPlatformRenderer {

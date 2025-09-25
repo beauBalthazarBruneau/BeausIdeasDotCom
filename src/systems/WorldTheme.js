@@ -94,7 +94,7 @@ export class ThemedBackground {
       hasBackground: options.hasBackground || false,
       backgroundColor: options.backgroundColor || null,
       gradient: options.gradient || null,
-      ...options
+      ...options,
     };
   }
 
@@ -172,9 +172,17 @@ export class ThemedBackground {
 
     if (layer.gradient) {
       // Gradient background
-      const gradient = ctx.createLinearGradient(0, -parallaxY, 0, height - parallaxY);
+      const gradient = ctx.createLinearGradient(
+        0,
+        -parallaxY,
+        0,
+        height - parallaxY
+      );
       layer.gradient.forEach((stop, index) => {
-        gradient.addColorStop(stop.position || index / (layer.gradient.length - 1), stop.color);
+        gradient.addColorStop(
+          stop.position || index / (layer.gradient.length - 1),
+          stop.color
+        );
       });
       ctx.fillStyle = gradient;
     } else if (layer.backgroundColor) {

@@ -13,7 +13,7 @@ export class PixelText {
     // Define letter patterns (1 = filled, 0 = empty)
     // 6x8 pixel grid for each letter
     const letterPatterns = {
-      'A': [
+      A: [
         ' 1111 ',
         '1    1',
         '1    1',
@@ -21,9 +21,9 @@ export class PixelText {
         '1    1',
         '1    1',
         '1    1',
-        '      '
+        '      ',
       ],
-      'B': [
+      B: [
         '11111 ',
         '1    1',
         '1    1',
@@ -31,9 +31,9 @@ export class PixelText {
         '1    1',
         '1    1',
         '11111 ',
-        '      '
+        '      ',
       ],
-      'C': [
+      C: [
         ' 11111',
         '1     ',
         '1     ',
@@ -41,9 +41,9 @@ export class PixelText {
         '1     ',
         '1     ',
         ' 11111',
-        '      '
+        '      ',
       ],
-      'D': [
+      D: [
         '11111 ',
         '1    1',
         '1    1',
@@ -51,9 +51,9 @@ export class PixelText {
         '1    1',
         '1    1',
         '11111 ',
-        '      '
+        '      ',
       ],
-      'E': [
+      E: [
         '111111',
         '1     ',
         '1     ',
@@ -61,9 +61,9 @@ export class PixelText {
         '1     ',
         '1     ',
         '111111',
-        '      '
+        '      ',
       ],
-      'F': [
+      F: [
         '111111',
         '1     ',
         '1     ',
@@ -71,9 +71,9 @@ export class PixelText {
         '1     ',
         '1     ',
         '1     ',
-        '      '
+        '      ',
       ],
-      'G': [
+      G: [
         ' 11111',
         '1     ',
         '1     ',
@@ -81,9 +81,9 @@ export class PixelText {
         '1    1',
         '1    1',
         ' 11111',
-        '      '
+        '      ',
       ],
-      'H': [
+      H: [
         '1    1',
         '1    1',
         '1    1',
@@ -91,9 +91,9 @@ export class PixelText {
         '1    1',
         '1    1',
         '1    1',
-        '      '
+        '      ',
       ],
-      'I': [
+      I: [
         '11111',
         '  1   ',
         '  1   ',
@@ -101,9 +101,9 @@ export class PixelText {
         '  1   ',
         '  1   ',
         '11111',
-        '      '
+        '      ',
       ],
-      'J': [
+      J: [
         '111111',
         '   11 ',
         '   11 ',
@@ -111,9 +111,9 @@ export class PixelText {
         '   11 ',
         '1  11 ',
         ' 1111 ',
-        '      '
+        '      ',
       ],
-      'K': [
+      K: [
         '1    1',
         '1   1 ',
         '1  1  ',
@@ -121,9 +121,9 @@ export class PixelText {
         '1  1  ',
         '1   1 ',
         '1    1',
-        '      '
+        '      ',
       ],
-      'L': [
+      L: [
         '1     ',
         '1     ',
         '1     ',
@@ -131,9 +131,9 @@ export class PixelText {
         '1     ',
         '1     ',
         '111111',
-        '      '
+        '      ',
       ],
-      'M': [
+      M: [
         '1    1',
         '11  11',
         '1 11 1',
@@ -141,9 +141,9 @@ export class PixelText {
         '1    1',
         '1    1',
         '1    1',
-        '      '
+        '      ',
       ],
-      'N': [
+      N: [
         '1    1',
         '11   1',
         '1 1  1',
@@ -151,9 +151,9 @@ export class PixelText {
         '1   11',
         '1    1',
         '1    1',
-        '      '
+        '      ',
       ],
-      'O': [
+      O: [
         ' 1111 ',
         '1    1',
         '1    1',
@@ -161,9 +161,9 @@ export class PixelText {
         '1    1',
         '1    1',
         ' 1111 ',
-        '      '
+        '      ',
       ],
-      'P': [
+      P: [
         '11111 ',
         '1    1',
         '1    1',
@@ -171,9 +171,9 @@ export class PixelText {
         '1     ',
         '1     ',
         '1     ',
-        '      '
+        '      ',
       ],
-      'Q': [
+      Q: [
         ' 1111 ',
         '1    1',
         '1    1',
@@ -181,9 +181,9 @@ export class PixelText {
         '1  1 1',
         '1   11',
         ' 11111',
-        '      '
+        '      ',
       ],
-      'R': [
+      R: [
         '11111 ',
         '1    1',
         '1    1',
@@ -191,9 +191,9 @@ export class PixelText {
         '1  1  ',
         '1   1 ',
         '1    1',
-        '      '
+        '      ',
       ],
-      'S': [
+      S: [
         ' 11111',
         '1     ',
         '1     ',
@@ -201,9 +201,9 @@ export class PixelText {
         '     1',
         '     1',
         '11111 ',
-        '      '
+        '      ',
       ],
-      'T': [
+      T: [
         '111111',
         '  1  ',
         '  1  ',
@@ -211,9 +211,9 @@ export class PixelText {
         '  1  ',
         '  1  ',
         '  1  ',
-        '      '
+        '      ',
       ],
-      'U': [
+      U: [
         '1    1',
         '1    1',
         '1    1',
@@ -221,9 +221,9 @@ export class PixelText {
         '1    1',
         '1    1',
         ' 1111 ',
-        '      '
+        '      ',
       ],
-      'V': [
+      V: [
         '1    1',
         '1    1',
         '1    1',
@@ -231,9 +231,9 @@ export class PixelText {
         '1    1',
         ' 1  1 ',
         '  11  ',
-        '      '
+        '      ',
       ],
-      'W': [
+      W: [
         '1    1',
         '1    1',
         '1    1',
@@ -241,9 +241,9 @@ export class PixelText {
         '1 11 1',
         '11  11',
         '1    1',
-        '      '
+        '      ',
       ],
-      'X': [
+      X: [
         '1    1',
         ' 1  1 ',
         '  1  ',
@@ -251,18 +251,10 @@ export class PixelText {
         '  1  ',
         ' 1  1 ',
         '1    1',
-        '      '
+        '      ',
       ],
-      'Y': [
-        '1    1',
-        '1    1',
-        ' 1  1 ',
-        '  1   ',
-        '  1   ',
-        '  1   ',
-        '      '
-      ],
-      'Z': [
+      Y: ['1    1', '1    1', ' 1  1 ', '  1   ', '  1   ', '  1   ', '      '],
+      Z: [
         '111111',
         '    1 ',
         '   1  ',
@@ -270,7 +262,7 @@ export class PixelText {
         ' 1    ',
         '1     ',
         '111111',
-        '      '
+        '      ',
       ],
       ' ': [
         '      ',
@@ -280,8 +272,8 @@ export class PixelText {
         '      ',
         '      ',
         '      ',
-        '      '
-      ]
+        '      ',
+      ],
     };
 
     // Convert patterns to sprite data
@@ -290,7 +282,7 @@ export class PixelText {
         pattern,
         width: letterWidth,
         height: letterHeight,
-        blockSize
+        blockSize,
       });
     });
   }
@@ -317,21 +309,25 @@ export class PixelText {
     return sprite.width * scale;
   }
 
-
-
   // Draw sprite-based text
   drawSpriteText(ctx, text, x, y, scale = 1, color = '#808080', spacing = 8) {
     let currentX = x;
 
     for (let i = 0; i < text.length; i++) {
       const char = text[i];
-      const letterWidth = this.drawSpriteLetter(ctx, char, currentX, y, scale, color);
-      currentX += letterWidth + (spacing * scale);
+      const letterWidth = this.drawSpriteLetter(
+        ctx,
+        char,
+        currentX,
+        y,
+        scale,
+        color
+      );
+      currentX += letterWidth + spacing * scale;
     }
 
     return currentX - x; // Return total width
   }
-
 
   // Get text dimensions for positioning
   getTextWidth(text, blockSize = 8, spacing = 8) {

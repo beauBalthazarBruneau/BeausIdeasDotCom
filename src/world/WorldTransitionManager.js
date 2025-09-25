@@ -107,10 +107,10 @@ export class WorldTransitionManager {
         let cameraX;
         if (isMobile()) {
           // Mobile: player at center of screen
-          cameraX = spawnPosition.x - (this.game.canvas.width * 0.5);
+          cameraX = spawnPosition.x - this.game.canvas.width * 0.5;
         } else {
           // Desktop: player at 10% from left edge of screen
-          cameraX = spawnPosition.x - (this.game.canvas.width * 0.1);
+          cameraX = spawnPosition.x - this.game.canvas.width * 0.1;
         }
 
         // Position platform bottom at bottom of screen
