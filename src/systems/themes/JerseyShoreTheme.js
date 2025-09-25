@@ -7,6 +7,7 @@ import {
   ThemedPlatformRenderer,
   ForegroundEffects,
 } from '../WorldTheme.js';
+import { PixelText } from '../../utils/PixelText.js';
 
 export class JerseyShoreTheme extends WorldTheme {
   getThemeId() {
@@ -85,6 +86,7 @@ class JerseyShoreBackground extends ThemedBackground {
   constructor(canvas, levelWidth, theme) {
     super(canvas, levelWidth, theme);
     this.images = new Map();
+    this.pixelText = new PixelText();
     this.preloadImages();
   }
 
@@ -108,6 +110,9 @@ class JerseyShoreBackground extends ThemedBackground {
   }
 
   createSkyLayer() {
+    const textY = 120; // Position in sky
+    const leftSideX = 50; // Far left for sprite-based
+
     return {
       name: 'sky',
       scrollSpeed: 0.1,
@@ -115,6 +120,10 @@ class JerseyShoreBackground extends ThemedBackground {
         { type: 'gradient_sky', colors: ['#87CEEB', '#E0F6FF', '#FFE4B5'] },
         { type: 'sun', x: this.levelWidth * 0.8, y: 100, animated: true },
         { type: 'clouds', count: 8, animated: true },
+
+        // Sprite-based pixel text
+        { type: 'pixeltext', method: 'sprite', text: 'BEAU', x: leftSideX, y: textY, scale: 2, color: '#808080', spacing: 12 },
+        { type: 'pixeltext', method: 'sprite', text: 'BRUNEAU', x: leftSideX, y: textY + 120, scale: 2, color: '#808080', spacing: 12 },
       ],
     };
   }
@@ -196,6 +205,9 @@ class JerseyShoreBackground extends ThemedBackground {
         break;
       case 'beach_house':
         this.drawBeachHouse(ctx, element);
+        break;
+      case 'pixeltext':
+        this.drawPixelText(ctx, element);
         break;
       // Add more element drawing methods as needed
     }
@@ -293,6 +305,11 @@ class JerseyShoreBackground extends ThemedBackground {
       ctx.fillStyle = '#D2B48C';
       ctx.fillRect(element.x - 20, element.y - 30, 40, 30); // Also scaled down fallback
     }
+  }
+
+  drawPixelText(ctx, element) {
+    const { text, x, y, color, scale, spacing } = element;
+    this.pixelText.drawSpriteText(ctx, text, x, y, scale, color, spacing);
   }
 }
 
