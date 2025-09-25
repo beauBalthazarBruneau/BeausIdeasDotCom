@@ -56,16 +56,46 @@ export class ThemedBackground {
     this.canvas = canvas;
     this.levelWidth = levelWidth;
     this.theme = theme;
-    this.layers = this.createThemedLayers();
+    this.layers = [];
+    this.layersReady = false;
+    this.initializeLayers();
   }
 
-  createThemedLayers() {
-    return [
+  async initializeLayers() {
+    this.layers = await this.createThemedLayers();
+    this.layersReady = true;
+  }
+
+  async createThemedLayers() {
+    // Default 4-layer system that themes can override
+    const defaultLayers = [
       this.createSkyLayer(),
       this.createDistantLayer(),
       this.createMidgroundLayer(),
       this.createNeargroundLayer(),
     ];
+
+    // Allow themes to add more layers or customize
+    const customLayers = await this.getCustomLayers();
+    return customLayers.length > 0 ? customLayers : defaultLayers;
+  }
+
+  // Override this in themes to define custom layer structure
+  async getCustomLayers() {
+    return [];
+  }
+
+  // Flexible layer factory method
+  createLayer(name, scrollSpeed, elements = [], options = {}) {
+    return {
+      name,
+      scrollSpeed,
+      elements,
+      hasBackground: options.hasBackground || false,
+      backgroundColor: options.backgroundColor || null,
+      gradient: options.gradient || null,
+      ...options,
+    };
   }
 
   createSkyLayer() {
@@ -101,6 +131,8 @@ export class ThemedBackground {
   }
 
   draw(ctx, camera) {
+    if (!this.layersReady) return;
+
     this.layers.forEach((layer) => {
       this.drawLayer(ctx, layer, camera);
     });
@@ -116,9 +148,13 @@ export class ThemedBackground {
     // Apply parallax transform
     ctx.translate(-parallaxX, -parallaxY);
 
-    // Draw layer background if it's the sky
+    // Draw layer background based on layer configuration
     if (layer.name === 'sky') {
+      // Sky layer always has background
       this.drawSkyBackground(ctx, layer, parallaxX, parallaxY);
+    } else if (layer.hasBackground) {
+      // Custom layer backgrounds
+      this.drawLayerBackground(ctx, layer, parallaxX, parallaxY);
     }
 
     // Draw all elements in this layer
@@ -127,6 +163,34 @@ export class ThemedBackground {
     });
 
     ctx.restore();
+  }
+
+  // Generic layer background renderer
+  drawLayerBackground(ctx, layer, parallaxX, parallaxY) {
+    const width = this.canvas.width + parallaxX * 2;
+    const height = this.canvas.height + parallaxY * 2;
+
+    if (layer.gradient) {
+      // Gradient background
+      const gradient = ctx.createLinearGradient(
+        0,
+        -parallaxY,
+        0,
+        height - parallaxY
+      );
+      layer.gradient.forEach((stop, index) => {
+        gradient.addColorStop(
+          stop.position || index / (layer.gradient.length - 1),
+          stop.color
+        );
+      });
+      ctx.fillStyle = gradient;
+    } else if (layer.backgroundColor) {
+      // Solid color background
+      ctx.fillStyle = layer.backgroundColor;
+    }
+
+    ctx.fillRect(-parallaxX, -parallaxY, width, height);
   }
 
   drawSkyBackground(ctx, layer, parallaxX, parallaxY) {

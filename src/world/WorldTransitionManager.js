@@ -95,6 +95,32 @@ export class WorldTransitionManager {
     // Position player if provided
     if (this.game.player && spawnPosition) {
       this.game.player.setPosition(spawnPosition.x, spawnPosition.y);
+
+      // Initialize camera to prevent parallax sliding on load
+      if (this.game.camera) {
+        const dimensions = this.currentWorld.getDimensions();
+
+        // Import responsive utility for mobile/desktop detection
+        const { isMobile } = await import('@utils/responsive.js');
+
+        // Position player based on device type
+        let cameraX;
+        if (isMobile()) {
+          // Mobile: player at center of screen
+          cameraX = spawnPosition.x - this.game.canvas.width * 0.5;
+        } else {
+          // Desktop: player at 10% from left edge of screen
+          cameraX = spawnPosition.x - this.game.canvas.width * 0.1;
+        }
+
+        // Position platform bottom at bottom of screen
+        const cameraY = dimensions.groundLevel - this.game.canvas.height + 60; // +60 for platform height
+
+        this.game.camera.x = cameraX;
+        this.game.camera.y = cameraY;
+        this.game.camera.targetX = cameraX;
+        this.game.camera.targetY = cameraY;
+      }
     }
 
     // Update camera boundaries if camera exists
