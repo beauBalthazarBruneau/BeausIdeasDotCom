@@ -25,7 +25,7 @@ export class ProjectModal {
       left: 0;
       width: 100%;
       height: 100%;
-      background: transparent;
+      background: rgba(0, 0, 0, 0.3);
       display: none;
       z-index: 1000;
       pointer-events: none;
@@ -162,12 +162,16 @@ export class ProjectModal {
     };
   }
 
-  show(projectData, game = null) {
+  show(projectData, game = null, collectibleData = null) {
     if (this.isVisible) return;
 
     this.currentProject = projectData;
     this.currentGame = game; // Store game reference
+    this.currentCollectible = collectibleData; // Store collectible data
     this.populateModal(projectData);
+
+    // Add collectible sprite to modal if available
+    this.addCollectibleSprite();
 
     // Update event handlers with current game reference
     if (this.updateGameReference) {
@@ -182,6 +186,13 @@ export class ProjectModal {
       game.pause(); // Pause game updates and input
       game.camera.zoomToPlayerWithModal(1.5, 0.8); // 1.5x zoom, 0.8s duration, positioned in left half
     }
+
+    // Animate overlay fade in
+    gsap.to(this.modalElement, {
+      opacity: 1,
+      duration: 0.4,
+      ease: 'power2.out',
+    });
 
     // Animate in - slide from right
     gsap.to(this.modal, {
@@ -203,7 +214,109 @@ export class ProjectModal {
     console.log('Showing project modal for:', projectData.title);
   }
 
+  addCollectibleSprite() {
+    // Remove any existing collectible sprite
+    const existingSprite = document.getElementById('modal-collectible-sprite');
+    if (existingSprite) {
+      existingSprite.remove();
+    }
+
+    if (
+      !this.currentCollectible ||
+      !this.currentCollectible.spriteLoaded ||
+      !this.currentCollectible.sprite
+    ) {
+      return;
+    }
+
+    // Create canvas for collectible sprite (4x scale = 160x160)
+    const canvas = document.createElement('canvas');
+    canvas.id = 'modal-collectible-sprite';
+    canvas.width = 160;
+    canvas.height = 160;
+    canvas.style.cssText = `
+      position: fixed;
+      bottom: 50%;
+      left: 25%;
+      transform: translate(-50%, 50%);
+      z-index: 1001;
+      pointer-events: none;
+    `;
+
+    const ctx = canvas.getContext('2d');
+
+    // Apply intense effects like in the collectible
+    ctx.save();
+
+    // Center the drawing (4x scale)
+    ctx.translate(80, 80);
+
+    // Intense shadow effect (scaled up)
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+    ctx.shadowBlur = 50;
+    ctx.shadowOffsetX = 12;
+    ctx.shadowOffsetY = 12;
+
+    // Draw shadow layer (4x scale = 160x160)
+    ctx.drawImage(this.currentCollectible.sprite, -80, -80, 160, 160);
+
+    // Intense white glow (scaled up)
+    ctx.shadowColor = 'rgba(255, 255, 255, 1.0)';
+    ctx.shadowBlur = 60;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
+    // Draw glow layer (4x scale = 160x160)
+    ctx.drawImage(this.currentCollectible.sprite, -80, -80, 160, 160);
+
+    // Golden glow (scaled up)
+    ctx.shadowColor = 'rgba(255, 215, 0, 0.8)';
+    ctx.shadowBlur = 40;
+
+    // Draw final sprite (4x scale = 160x160)
+    ctx.drawImage(this.currentCollectible.sprite, -80, -80, 160, 160);
+
+    ctx.restore();
+
+    // Add canvas to modal overlay (not modal itself)
+    this.modalElement.appendChild(canvas);
+
+    // Animate the collectible sprite in
+    gsap.fromTo(
+      canvas,
+      {
+        scale: 0,
+        rotation: -180,
+        opacity: 0,
+      },
+      {
+        scale: 1,
+        rotation: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: 'back.out(1.7)',
+        delay: 0.2,
+      }
+    );
+
+    // Add floating animation
+    gsap.to(canvas, {
+      y: -10,
+      duration: 2,
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1,
+    });
+  }
+
   hide(game = null) {
+    // Remove collectible sprite
+    const collectibleSprite = document.getElementById(
+      'modal-collectible-sprite'
+    );
+    if (collectibleSprite) {
+      collectibleSprite.remove();
+    }
     if (!this.isVisible) return;
 
     // Resume game and zoom camera back out and exit modal mode if game reference is provided
@@ -211,6 +324,13 @@ export class ProjectModal {
       game.resume(); // Resume game updates and input
       game.camera.zoomOutFromModal(0.5); // 0.5s duration to zoom back out and exit modal mode
     }
+
+    // Animate overlay fade out
+    gsap.to(this.modalElement, {
+      opacity: 0,
+      duration: 0.3,
+      ease: 'power2.in',
+    });
 
     // Animate out - slide to right
     gsap.to(this.modal, {

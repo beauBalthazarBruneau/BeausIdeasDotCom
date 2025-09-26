@@ -193,7 +193,7 @@ export class MysteryBox {
     this.collectibleSpawned = true;
 
     // Create collectible above the mystery box
-    const collectibleX = this.x + (this.width - 16) / 2; // Center the 16px collectible
+    const collectibleX = this.x + (this.width - 40) / 2; // Center the 40px collectible
     const collectibleY = this.y - 20; // Start above the box
 
     this.collectible = new Collectible(

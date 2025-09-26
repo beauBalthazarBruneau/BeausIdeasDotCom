@@ -25,9 +25,19 @@ export class Collectible {
     this.game = game;
 
     // Visual properties
-    this.width = 16;
-    this.height = 16;
-    this.color = '#000000'; // Simple black box for now
+    this.width = 40;
+    this.height = 40;
+    this.color = '#000000'; // Fallback color
+
+    // Sprite properties
+    this.sprite = null;
+    this.spriteLoaded = false;
+    this.spriteError = false;
+
+    // Load sprite image if collectible type is available
+    if (projectData && projectData.collectible) {
+      this.loadSprite(projectData.collectible);
+    }
 
     // Animation properties
     this.bobOffset = 0;
@@ -80,6 +90,20 @@ export class Collectible {
     );
   }
 
+  loadSprite(collectibleType) {
+    this.sprite = new Image();
+    this.sprite.onload = () => {
+      this.spriteLoaded = true;
+      this.spriteError = false;
+    };
+    this.sprite.onerror = () => {
+      this.spriteLoaded = false;
+      this.spriteError = true;
+      console.warn(`Failed to load collectible sprite: ${collectibleType}.png`);
+    };
+    this.sprite.src = `/images/collectibles/${collectibleType}.png`;
+  }
+
   update(deltaTime) {
     if (this.collected) return;
 
@@ -107,14 +131,71 @@ export class Collectible {
     ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
     ctx.scale(this.scale, this.scale);
 
-    // Draw simple black box (for now)
-    ctx.fillStyle = this.color;
-    ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+    // Draw sprite if loaded, otherwise fallback to black box
+    if (this.spriteLoaded && this.sprite) {
+      // Add intense shadow effect
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+      ctx.shadowBlur = 25;
+      ctx.shadowOffsetX = 6;
+      ctx.shadowOffsetY = 6;
 
-    // Add a subtle highlight for visibility
-    ctx.strokeStyle = '#333333';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(-this.width / 2, -this.height / 2, this.width, this.height);
+      // Draw shadow layer
+      ctx.drawImage(
+        this.sprite,
+        -this.width / 2,
+        -this.height / 2,
+        this.width,
+        this.height
+      );
+
+      // Add intense glow effect
+      ctx.shadowColor = 'rgba(255, 255, 255, 1.0)';
+      ctx.shadowBlur = 30;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+
+      // Draw glow layer
+      ctx.drawImage(
+        this.sprite,
+        -this.width / 2,
+        -this.height / 2,
+        this.width,
+        this.height
+      );
+
+      // Add colored glow for extra pop
+      ctx.shadowColor = 'rgba(255, 215, 0, 0.8)'; // Golden glow
+      ctx.shadowBlur = 20;
+
+      // Draw final sprite
+      ctx.drawImage(
+        this.sprite,
+        -this.width / 2,
+        -this.height / 2,
+        this.width,
+        this.height
+      );
+
+      // Reset shadow properties
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+    } else {
+      // Fallback rendering
+      ctx.fillStyle = this.color;
+      ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+
+      // Add a subtle highlight for visibility
+      ctx.strokeStyle = '#333333';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(
+        -this.width / 2,
+        -this.height / 2,
+        this.width,
+        this.height
+      );
+    }
 
     ctx.restore();
   }
@@ -130,9 +211,12 @@ export class Collectible {
     // Play collection sound
     this.audioManager.playMysteryBoxComplete();
 
-    // Show project modal with zoom effect
+    // Show project modal with zoom effect and collectible sprite
     if (this.projectModal) {
-      this.projectModal.show(this.projectData, this.game);
+      this.projectModal.show(this.projectData, this.game, {
+        sprite: this.sprite,
+        spriteLoaded: this.spriteLoaded,
+      });
     }
 
     // Create collection particles
