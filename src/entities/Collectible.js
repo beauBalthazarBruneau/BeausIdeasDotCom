@@ -216,6 +216,7 @@ export class Collectible {
       this.projectModal.show(this.projectData, this.game, {
         sprite: this.sprite,
         spriteLoaded: this.spriteLoaded,
+        collectibleType: this.projectData.collectible,
       });
     }
 

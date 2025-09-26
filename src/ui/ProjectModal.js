@@ -221,14 +221,32 @@ export class ProjectModal {
       existingSprite.remove();
     }
 
-    if (
-      !this.currentCollectible ||
-      !this.currentCollectible.spriteLoaded ||
-      !this.currentCollectible.sprite
-    ) {
+    if (!this.currentCollectible || !this.currentCollectible.collectibleType) {
       return;
     }
 
+    // Try to load larger version first, fallback to regular sprite
+    this.loadLargeCollectibleSprite();
+  }
+
+  loadLargeCollectibleSprite() {
+    const collectibleType = this.currentCollectible.collectibleType;
+
+    // Try loading larger version first
+    const largeSprite = new Image();
+    largeSprite.onload = () => {
+      this.renderCollectibleSprite(largeSprite);
+    };
+    largeSprite.onerror = () => {
+      // Fallback to regular sprite if large version fails
+      if (this.currentCollectible.spriteLoaded && this.currentCollectible.sprite) {
+        this.renderCollectibleSprite(this.currentCollectible.sprite);
+      }
+    };
+    largeSprite.src = `/images/collectibles/${collectibleType}-125.png`;
+  }
+
+  renderCollectibleSprite(spriteImage) {
     // Create canvas for collectible sprite (4x scale = 160x160)
     const canvas = document.createElement('canvas');
     canvas.id = 'modal-collectible-sprite';
@@ -258,7 +276,7 @@ export class ProjectModal {
     ctx.shadowOffsetY = 12;
 
     // Draw shadow layer (4x scale = 160x160)
-    ctx.drawImage(this.currentCollectible.sprite, -80, -80, 160, 160);
+    ctx.drawImage(spriteImage, -80, -80, 160, 160);
 
     // Intense white glow (scaled up)
     ctx.shadowColor = 'rgba(255, 255, 255, 1.0)';
@@ -267,14 +285,14 @@ export class ProjectModal {
     ctx.shadowOffsetY = 0;
 
     // Draw glow layer (4x scale = 160x160)
-    ctx.drawImage(this.currentCollectible.sprite, -80, -80, 160, 160);
+    ctx.drawImage(spriteImage, -80, -80, 160, 160);
 
     // Golden glow (scaled up)
     ctx.shadowColor = 'rgba(255, 215, 0, 0.8)';
     ctx.shadowBlur = 40;
 
     // Draw final sprite (4x scale = 160x160)
-    ctx.drawImage(this.currentCollectible.sprite, -80, -80, 160, 160);
+    ctx.drawImage(spriteImage, -80, -80, 160, 160);
 
     ctx.restore();
 
