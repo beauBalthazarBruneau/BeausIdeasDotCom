@@ -174,11 +174,17 @@ export class Game {
     this.debugMode = !this.debugMode;
     this.physics.toggleDebug();
 
+    // Update world debug mode for invisible platforms
+    const currentWorldInstance = this.worldTransitionManager.getCurrentWorld();
+    if (currentWorldInstance && currentWorldInstance.setDebugMode) {
+      currentWorldInstance.setDebugMode(this.debugMode);
+    }
+
     const debugInfo = document.getElementById('debug-info');
     if (debugInfo) {
       if (this.debugMode) {
         debugInfo.classList.add('visible');
-        console.log('Debug mode ON');
+        console.log('Debug mode ON - Invisible platforms now visible');
       } else {
         debugInfo.classList.remove('visible');
         console.log('Debug mode OFF');
@@ -638,6 +644,12 @@ export class Game {
     // Update themed background (for animated elements like clouds)
     if (this.background) {
       this.background.update(deltaTime);
+    }
+
+    // Update current world (for animated platforms and other world-specific updates)
+    const currentWorldInstance = this.worldTransitionManager.getCurrentWorld();
+    if (currentWorldInstance && currentWorldInstance.update) {
+      currentWorldInstance.update(deltaTime);
     }
 
     // Update mystery boxes and handle collisions
