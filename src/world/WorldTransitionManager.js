@@ -81,7 +81,7 @@ export class WorldTransitionManager {
 
     // Load main hub (the original level)
     const MainHub = await import('./MainHub.js');
-    this.currentWorld = new MainHub.MainHub(this.game.physics);
+    this.currentWorld = new MainHub.MainHub(this.game.physics, this.game);
 
     // Create theme for main hub
     this.currentTheme = await this.createThemeForWorld('main-hub');
