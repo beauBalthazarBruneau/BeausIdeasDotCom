@@ -74,51 +74,55 @@ export class ProjectModal {
         <h2 id="project-title" style="
           color: #ccc;
           font-size: 24px;
-          margin: 0 0 10px 0;
+          margin: 0 0 20px 0;
           text-align: center;
           font-family: monospace;
         "></h2>
-        
-        <div id="project-subtitle" style="
-          color: #aaa;
-          font-size: 16px;
-          text-align: center;
-          margin-bottom: 20px;
-        "></div>
-        
-        <div id="project-image-container" style="
-          text-align: center;
-          margin-bottom: 20px;
-        ">
-          <img id="project-image" style="
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-          ">
-        </div>
-        
-        <div id="project-description" style="
+
+        <div id="project-content" style="
           line-height: 1.6;
-          margin-bottom: 20px;
           color: #ddd;
+          overflow-y: auto;
+          height: calc(100% - 60px);
+          padding-right: 10px;
+          margin-right: -10px;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
         "></div>
-        
-        <div id="project-technologies" style="
-          margin-bottom: 20px;
-        ">
-          <h4 style="color: #bbb; margin-bottom: 10px; font-family: monospace;">Technologies:</h4>
-          <div id="tech-tags" style="
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-          "></div>
-        </div>
-        
-        <div id="project-links" style="
-          text-align: center;
-          margin-top: 25px;
-        "></div>
+      </div>
+      <style>
+        #project-content::-webkit-scrollbar {
+          display: none;
+        }
+        #project-content img {
+          max-width: 100%;
+          height: auto;
+          border-radius: 8px;
+          margin: 10px 0;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        #project-content a {
+          color: #4A9EFF;
+          text-decoration: none;
+          transition: color 0.3s ease;
+        }
+        #project-content a:hover {
+          color: #66B3FF;
+        }
+        #project-content blockquote {
+          background: rgba(255, 255, 255, 0.05);
+          border-left: 4px solid #4A9EFF;
+          margin: 15px 0;
+          padding: 10px 15px;
+          font-style: italic;
+          border-radius: 0 8px 8px 0;
+        }
+        #project-content h2, #project-content h3, #project-content h4 {
+          color: #fff;
+          margin-top: 20px;
+          margin-bottom: 10px;
+        }
+      </style>
       </div>
     `;
 
@@ -226,88 +230,47 @@ export class ProjectModal {
   }
 
   populateModal(project) {
-    // Title and subtitle
+    // Title
     document.getElementById('project-title').textContent = project.title;
-    document.getElementById('project-subtitle').textContent =
-      project.subtitle || '';
 
-    // Image
-    const imageContainer = document.getElementById('project-image-container');
-    const imageElement = document.getElementById('project-image');
-    if (project.image) {
-      imageElement.src = project.image;
-      imageElement.alt = project.title;
-      imageContainer.style.display = 'block';
-    } else {
-      imageContainer.style.display = 'none';
-    }
+    // Rich content - support both new 'content' field and legacy 'description' field
+    const contentContainer = document.getElementById('project-content');
+    const content =
+      project.content || project.description || 'No content available.';
 
-    // Description
-    document.getElementById('project-description').textContent =
-      project.description;
+    // For now, treat content as HTML (in the future, could add markdown parsing)
+    // Basic XSS protection - sanitize dangerous elements
+    const sanitizedContent = this.sanitizeHTML(content);
+    contentContainer.innerHTML = sanitizedContent;
+  }
 
-    // Technologies
-    const techContainer = document.getElementById('tech-tags');
-    techContainer.innerHTML = '';
+  // Basic HTML sanitization to prevent XSS attacks
+  sanitizeHTML(html) {
+    // Create a temporary div to parse the HTML
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
 
-    if (project.collectible) {
-      // Split collectible string into individual technologies
-      const technologies = project.collectible
-        .split(/[,&+]/)
-        .map((tech) => tech.trim());
+    // Remove potentially dangerous elements and attributes
+    const dangerousElements = ['script', 'iframe', 'object', 'embed', 'form'];
+    dangerousElements.forEach((tag) => {
+      const elements = temp.querySelectorAll(tag);
+      elements.forEach((el) => el.remove());
+    });
 
-      technologies.forEach((tech) => {
-        const tag = document.createElement('span');
-        tag.style.cssText = `
-          background: linear-gradient(135deg, #666, #888);
-          color: #fff;
-          padding: 4px 12px;
-          border-radius: 15px;
-          font-size: 12px;
-          font-weight: bold;
-          text-transform: uppercase;
-          font-family: monospace;
-        `;
-        tag.textContent = tech;
-        techContainer.appendChild(tag);
-      });
-    }
+    // Remove dangerous attributes
+    const allElements = temp.querySelectorAll('*');
+    allElements.forEach((el) => {
+      // Remove event handlers and dangerous attributes
+      const attrs = el.attributes;
+      for (let i = attrs.length - 1; i >= 0; i--) {
+        const attr = attrs[i];
+        if (attr.name.startsWith('on') || attr.name === 'javascript:') {
+          el.removeAttribute(attr.name);
+        }
+      }
+    });
 
-    // Links
-    const linksContainer = document.getElementById('project-links');
-    linksContainer.innerHTML = '';
-
-    if (project.links && project.links.length > 0) {
-      project.links.forEach((link) => {
-        const linkButton = document.createElement('a');
-        linkButton.href = link.url;
-        linkButton.target = '_blank';
-        linkButton.rel = 'noopener noreferrer';
-        linkButton.textContent = link.title;
-        linkButton.style.cssText = `
-          display: inline-block;
-          background: linear-gradient(135deg, #FF6B6B, #FF5722);
-          color: white;
-          padding: 12px 24px;
-          margin: 0 8px;
-          border-radius: 25px;
-          text-decoration: none;
-          font-weight: bold;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-          box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-        `;
-
-        linkButton.addEventListener('mouseenter', () => {
-          gsap.to(linkButton, { scale: 1.05, duration: 0.2 });
-        });
-
-        linkButton.addEventListener('mouseleave', () => {
-          gsap.to(linkButton, { scale: 1, duration: 0.2 });
-        });
-
-        linksContainer.appendChild(linkButton);
-      });
-    }
+    return temp.innerHTML;
   }
 
   destroy() {

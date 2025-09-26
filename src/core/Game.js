@@ -12,6 +12,7 @@ import { MysteryBox } from '../entities/MysteryBox.js';
 import { Collectible } from '../entities/Collectible.js';
 import {
   ProjectManager,
+  WorldManager,
   MysteryBoxStateManager,
 } from '../managers/ProjectData.js';
 import { UI, ProjectModal } from '../ui/index.js';
@@ -212,84 +213,42 @@ export class Game {
     });
   }
 
-  // Create tutorial mystery box
+  // Create mystery boxes for main hub world
   createMysteryBoxes() {
-    console.log('Creating tutorial mystery box');
+    console.log('Creating mystery boxes for main hub world');
 
-    // Tutorial "project" data
-    const tutorialData = {
-      id: 'tutorial',
-      title: 'Welcome to Mario Portfolio!',
-      description:
-        'Learn how to navigate this interactive portfolio game and discover my projects across different worlds.',
-      longDescription: `Welcome to my interactive portfolio! This is a Mario-style platformer where you can explore my projects across different themed worlds.
-
-🎮 **How to Play:**
-• Use ARROW KEYS or WASD to move
-• Press SPACE or UP ARROW to jump (double jump available!)
-• Hit mystery boxes from below by jumping underneath them
-• Collect the items that appear to learn about projects
-• Enter doors to explore different themed worlds
-
-🌟 **What You'll Find:**
-• **Georgia Tech World** - Academic and research projects
-• **Healthcare World** - Medical and health-related applications
-• **Vibe Coding World** - Personal coding projects and experiments
-
-Each world contains mystery boxes with detailed information about specific projects, including technologies used, challenges overcome, and links to live demos or repositories.
-
-🎯 **Goal:** Explore all the worlds and discover the full range of my technical skills and project experience!
-
-Good luck, and have fun exploring!`,
-      technologies: [
-        'JavaScript',
-        'HTML5 Canvas',
-        'Matter.js Physics',
-        'GSAP Animations',
-      ],
-      status: 'Active',
-      category: 'Tutorial',
-      world: 'main-hub',
-      collectible: '🎓 Tutorial Complete',
-      links: {
-        demo: window.location.href,
-        github: '#',
-      },
-      features: [
-        'Interactive Mario-style platformer gameplay',
-        'Physics-based character movement and collisions',
-        'Multiple themed worlds to explore',
-        'Dynamic mystery box system for project discovery',
-        'Responsive design for various screen sizes',
-      ],
-      challenges: [
-        'Implementing smooth physics-based movement',
-        'Creating responsive canvas-based UI',
-        'Managing game state across multiple worlds',
-        'Optimizing performance for smooth 60fps gameplay',
-      ],
-    };
-
-    // Create tutorial mystery box at the beginning of the main world
-    const tutorialBox = new MysteryBox(
-      250, // X position - near the start but after spawn
-      450, // Y position - floating above platforms
-      this,
-      {
-        project: tutorialData,
-        audioManager: this.audioManager,
-      }
-    );
-
-    // Check if tutorial has been completed
-    const savedState = this.mysteryBoxStateManager.getState('tutorial');
-    if (savedState !== 'inactive') {
-      tutorialBox.setState(savedState);
+    // Get main hub world projects from JSON data
+    const mainWorld = WorldManager.getWorldById('main');
+    if (!mainWorld || !mainWorld.projects) {
+      console.warn('No main world or projects found');
+      return;
     }
 
-    this.mysteryBoxes.push(tutorialBox);
+    // Create mystery box for each project in the main world
+    mainWorld.projects.forEach((project) => {
+      const mysteryBox = new MysteryBox(
+        project.position.x,
+        project.position.y,
+        this,
+        {
+          project: project,
+          audioManager: this.audioManager,
+        }
+      );
 
-    console.log('Created tutorial mystery box');
+      // Check if mystery box has been interacted with
+      const savedState = this.mysteryBoxStateManager.getState(project.id);
+      if (savedState !== 'inactive') {
+        mysteryBox.setState(savedState);
+      }
+
+      this.mysteryBoxes.push(mysteryBox);
+      console.log(`Created mystery box for project: ${project.title}`);
+    });
+
+    console.log(
+      `Created ${mainWorld.projects.length} mystery boxes for main hub world`
+    );
   }
 
   gameLoop(currentTime) {
