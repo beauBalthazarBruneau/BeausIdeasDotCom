@@ -239,7 +239,10 @@ export class ProjectModal {
     };
     largeSprite.onerror = () => {
       // Fallback to regular sprite if large version fails
-      if (this.currentCollectible.spriteLoaded && this.currentCollectible.sprite) {
+      if (
+        this.currentCollectible.spriteLoaded &&
+        this.currentCollectible.sprite
+      ) {
         this.renderCollectibleSprite(this.currentCollectible.sprite);
       }
     };
