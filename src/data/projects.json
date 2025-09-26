@@ -9,10 +9,8 @@
         {
           "id": "tutorial",
           "title": "Welcome to Beau's Portfolio!",
-          "subtitle": "Learn how to navigate this interactive portfolio game",
-          "description": "Learn how to navigate this interactive portfolio game and discover my projects across different worlds.",
           "content": "<p>While redesigning my portfolio, I struggled to imagine how to bridge content from <strong>so many different worlds</strong> onto a single website. As my career progresses, I don't want to stop sharing the content from my previous lives.</p><p>So I've created this <strong>retro platformer</strong> where you can explore my ideas and projects across my different lives and worlds.</p><h3>🎮 How to Play</h3><ul><li>Use <strong>ARROW KEYS</strong> or <strong>WASD</strong> to move</li><li>Press <strong>SPACE</strong> or <strong>UP ARROW</strong> to jump (double jump available!)</li><li>Hit <strong>mystery boxes from below</strong> by jumping underneath them</li><li>Collect the items that appear to learn about projects</li><li>Enter <strong>doors</strong> to explore different themed worlds</li></ul><blockquote><p><strong>🎯 Goal:</strong> Explore all the worlds and discover the full range of Beau's Ideas!</p></blockquote>",
-          "collectible": "tutorial-complete",
+          "collectible": "white-sunglasses",
           "position": { "x": 200, "y": 430 }
         }
       ]
@@ -26,39 +24,29 @@
         {
           "id": "slack-bot",
           "title": "Slack Bot",
-          "subtitle": "An intelligent Slack bot for team productivity and automation",
-          "image": "/images/projects/slack-bot/hero.jpg",
-          "description": "An intelligent Slack bot designed to enhance team productivity through automation and smart integrations.\n\nKey features:\n• Automated task management and reminders\n• Integration with popular development tools\n• Custom slash commands and interactive components\n• Team analytics and reporting\n• Smart notification management\n\nBuilt with Node.js and the Slack API to provide seamless team collaboration enhancement.",
           "content": "<div style='text-align: center; margin-bottom: 20px;'><img src='/images/projects/slack-bot/hero.jpg' alt='Slack Bot Interface' style='border-radius: 12px;'/></div><p>An intelligent Slack bot designed to <strong>enhance team productivity</strong> through automation and smart integrations.</p><h3>🚀 Key Features</h3><ul><li><strong>Automated Task Management</strong> - Smart reminders and task tracking</li><li><strong>Development Tool Integration</strong> - Seamless connection with GitHub, Jira, and more</li><li><strong>Custom Slash Commands</strong> - Interactive components for team workflows</li><li><strong>Team Analytics</strong> - Comprehensive reporting and insights</li><li><strong>Smart Notifications</strong> - Intelligent filtering and prioritization</li></ul><h3>⚡ Technical Stack</h3><p>Built with <strong>Node.js</strong> and the official <strong>Slack API</strong> to provide seamless team collaboration enhancement.</p><div style='text-align: center; margin-top: 25px;'><a href='https://github.com/beaubruno/slack-bot' target='_blank' style='display: inline-block; background: linear-gradient(135deg, #FF6B6B, #FF5722); color: white; padding: 12px 24px; margin: 0 8px; border-radius: 25px; text-decoration: none; font-weight: bold;'>View Code</a><a href='https://slack.com/apps' target='_blank' style='display: inline-block; background: linear-gradient(135deg, #4A154B, #350d36); color: white; padding: 12px 24px; margin: 0 8px; border-radius: 25px; text-decoration: none; font-weight: bold;'>Slack App Store</a></div>",
-          "collectible": "mystery-box",
+          "collectible": "fashion-robot",
           "position": { "x": 280, "y": 430 }
         },
         {
           "id": "movie-party",
           "title": "Movie Party",
-          "subtitle": "A social movie-watching platform for synchronized viewing experiences",
-          "image": "/images/projects/movie-party/room.jpg",
-          "description": "A social platform that enables friends to watch movies together remotely with perfect synchronization.\n\nCore features:\n• Synchronized video playbook across devices\n• Real-time chat during movies\n• Room creation and invitation system\n• Support for multiple video sources\n• User profiles and watch history\n• Mobile and desktop compatibility\n\nBuilt with modern web technologies to create seamless shared viewing experiences.",
           "content": "<div style='text-align: center; margin-bottom: 20px;'><img src='/images/projects/movie-party/room.jpg' alt='Movie Party Room Interface'/></div><h2>🎬 Movie Party</h2><p>A <em>social platform</em> that enables friends to watch movies together remotely with <strong>perfect synchronization</strong>.</p><h3>🚀 Core Features</h3><ul><li><strong>Synchronized Video Playback</strong> - Watch together across all devices with millisecond precision</li><li><strong>Real-time Chat</strong> - Share reactions and comments during the movie</li><li><strong>Room Management</strong> - Easy room creation and invitation system</li><li><strong>Multiple Video Sources</strong> - Support for YouTube, Netflix, and custom uploads</li><li><strong>User Profiles</strong> - Track watch history and favorite genres</li><li><strong>Cross-Platform</strong> - Works seamlessly on mobile and desktop</li></ul><h3>💻 Technical Architecture</h3><p>Built with modern web technologies for optimal performance:</p><ul><li><strong>Frontend</strong>: React.js with WebSocket real-time communication</li><li><strong>Backend</strong>: Node.js with Express and Socket.io</li><li><strong>Database</strong>: MongoDB for user data and room management</li><li><strong>Video Sync</strong>: Custom synchronization engine with sub-second accuracy</li><li><strong>Deployment</strong>: Docker containers on AWS with auto-scaling</li></ul><h3>🎯 User Experience</h3><p>The platform focuses on creating an <strong>authentic shared viewing experience</strong>:</p><blockquote><p><em>\"It feels just like being in the same room watching together!\"</em> - Beta User</p></blockquote><h4>Key UX Innovations:</h4><ol><li><strong>One-Click Join</strong> - No complicated setup, just share a link</li><li><strong>Smart Buffering</strong> - Automatically handles different internet speeds</li><li><strong>Reaction System</strong> - Express emotions with quick emoji reactions</li><li><strong>Watch Parties</strong> - Schedule future viewing sessions</li></ol><h3>📊 Impact & Usage</h3><ul><li><strong>10,000+</strong> active users during beta</li><li><strong>500+</strong> simultaneous movie parties per day</li><li><strong>99.9%</strong> synchronization accuracy</li><li><strong>4.8/5</strong> average user rating</li></ul><p>The platform has successfully brought people together during remote times, creating lasting memories and connections through shared entertainment experiences.</p><div style='text-align: center; margin-top: 30px;'><a href='https://movieparty.app' target='_blank' style='display: inline-block; background: linear-gradient(135deg, #FF6B6B, #FF5722); color: white; padding: 12px 24px; margin: 0 8px; border-radius: 25px; text-decoration: none; font-weight: bold;'>Try Movie Party</a><a href='https://github.com/beaubruno/movie-party' target='_blank' style='display: inline-block; background: linear-gradient(135deg, #333, #555); color: white; padding: 12px 24px; margin: 0 8px; border-radius: 25px; text-decoration: none; font-weight: bold;'>View Source</a></div>",
-          "collectible": "star",
+          "collectible": "popcorn-logo",
           "position": { "x": 380, "y": 430 }
         },
         {
           "id": "goofy-atl-skate",
           "title": "GOOFY ATL Skate App",
-          "subtitle": "A mobile app for the Atlanta skateboarding community",
-          "image": "/images/projects/goofy-atl/map.jpg",
-          "description": "A mobile application connecting the Atlanta skateboarding community with local spots, events, and fellow skaters.\n\nCommunity features:\n• Interactive map of skate spots\n• Event creation and discovery\n• Photo and video sharing\n• Skater profiles and connections\n• Spot reviews and ratings\n• Push notifications for events\n\nBuilt with React Native to serve both iOS and Android users in the Atlanta skateboarding scene.",
-          "collectible": "coin",
+          "content": "A mobile application connecting the Atlanta skateboarding community with local spots, events, and fellow skaters.\n\nCommunity features:\n• Interactive map of skate spots\n• Event creation and discovery\n• Photo and video sharing\n• Skater profiles and connections\n• Spot reviews and ratings\n• Push notifications for events\n\nBuilt with React Native to serve both iOS and Android users in the Atlanta skateboarding scene.",
+          "collectible": "skateboard",
           "position": { "x": 480, "y": 430 }
         },
         {
           "id": "sacco",
           "title": "Sacco",
-          "subtitle": "A financial management platform for savings and credit cooperatives",
-          "image": "/images/projects/sacco/dashboard.jpg",
-          "description": "A comprehensive financial management platform designed specifically for savings and credit cooperatives (SACCOs).\n\nFinancial features:\n• Member account management\n• Loan processing and tracking\n• Savings account administration\n• Financial reporting and analytics\n• Mobile banking integration\n• Regulatory compliance tools\n\nBuilt to modernize and streamline SACCO operations while maintaining security and regulatory compliance.",
-          "collectible": "gem",
+          "content": "A comprehensive financial management platform designed specifically for savings and credit cooperatives (SACCOs).\n\nFinancial features:\n• Member account management\n• Loan processing and tracking\n• Savings account administration\n• Financial reporting and analytics\n• Mobile banking integration\n• Regulatory compliance tools\n\nBuilt to modernize and streamline SACCO operations while maintaining security and regulatory compliance.",
+          "collectible": "football",
           "position": { "x": 780, "y": 430 }
         }
       ]
@@ -72,19 +60,15 @@
         {
           "id": "clinical-trial-tech",
           "title": "Clinical Trial Tech Landscape",
-          "subtitle": "Interactive visualization of the clinical trial technology ecosystem",
-          "image": "/images/projects/clinical-tech/network.jpg",
-          "description": "An interactive platform mapping the complex landscape of clinical trial technologies and their relationships.\n\nVisualization features:\n• Interactive network diagrams\n• Company and technology profiles\n• Market trend analysis\n• Investment tracking\n• Regulatory compliance mapping\n• API for data integration\n\nDesigned to help professionals navigate the complex clinical trial technology ecosystem.",
-          "collectible": "trophy",
+          "content": "An interactive platform mapping the complex landscape of clinical trial technologies and their relationships.\n\nVisualization features:\n• Interactive network diagrams\n• Company and technology profiles\n• Market trend analysis\n• Investment tracking\n• Regulatory compliance mapping\n• API for data integration\n\nDesigned to help professionals navigate the complex clinical trial technology ecosystem.",
+          "collectible": "treasure-map",
           "position": { "x": 680, "y": 430 }
         },
         {
           "id": "laymens-lab",
           "title": "Laymen's Lab",
-          "subtitle": "Educational platform making complex topics accessible to everyone",
-          "image": "/images/projects/laymens-lab/course.jpg",
-          "description": "An educational platform designed to break down complex topics into digestible, easy-to-understand content for everyone.\n\nEducational features:\n• Interactive learning modules\n• Visual explanations and animations\n• Progress tracking and achievements\n• Community discussion forums\n• Expert-reviewed content\n• Multilingual support\n\nBuilt to democratize education and make learning accessible regardless of background or experience level.",
-          "collectible": "book",
+          "content": "An educational platform designed to break down complex topics into digestible, easy-to-understand content for everyone.\n\nEducational features:\n• Interactive learning modules\n• Visual explanations and animations\n• Progress tracking and achievements\n• Community discussion forums\n• Expert-reviewed content\n• Multilingual support\n\nBuilt to democratize education and make learning accessible regardless of background or experience level.",
+          "collectible": "microphone",
           "position": { "x": 580, "y": 430 }
         }
       ]
@@ -98,19 +82,15 @@
         {
           "id": "Diploma",
           "title": "Bachelor's degree of Biomedical Engineering",
-          "subtitle": "and certificate of Entrepreneurship",
-          "image": "/images/projects/diploma/diploma.jpg",
-          "description": "My degree from Georgia Tech. With a mixed bag of experiences, lessons, and successes and failures.",
+          "content": "My degree from Georgia Tech and a and certificate of Entrepreneurship. With a mixed bag of experiences, lessons, and successes and failures.",
           "collectible": "diploma",
           "position": { "x": 680, "y": 430 }
         },
         {
           "id": "atGeorgiaTech",
           "title": "Content Creator for Georgia Tech Social Media",
-          "subtitle": "across snapchat + instagram",
-          "image": "/images/projects/github/github.jpg",
-          "description": "Portfolio of my favorite content that I created for Georgia Tech's Instagram, Snapchat, and TikTok.",
-          "collectible": "iphone",
+          "content": "Portfolio of my favorite content that I created for Georgia Tech's Instagram, Snapchat, and TikTok.",
+          "collectible": "camera",
           "position": { "x": 580, "y": 430 }
         }
       ]
