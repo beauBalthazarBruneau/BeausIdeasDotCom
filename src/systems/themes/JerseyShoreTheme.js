@@ -26,45 +26,6 @@ export class JerseyShoreTheme extends WorldTheme {
     return new JerseyShoreForegroundEffects(this);
   }
 
-  getPlatformMaterials() {
-    return {
-      default: {
-        baseColor: '#CD853F',
-        surfacePattern: 'wooden_planks',
-        edgeStyle: 'weathered',
-        texture: 'boardwalk',
-      },
-      sand: {
-        baseColor: '#F4A460',
-        surfacePattern: 'grainy',
-        edgeStyle: 'soft',
-        texture: 'sand',
-      },
-      boardwalk: {
-        baseColor: '#8B7355',
-        surfacePattern: 'wooden_planks',
-        edgeStyle: 'weathered',
-        texture: 'aged_wood',
-      },
-      pier: {
-        baseColor: '#696969',
-        surfacePattern: 'concrete',
-        edgeStyle: 'worn',
-        texture: 'concrete',
-      },
-    };
-  }
-
-  getDecorationTypes() {
-    return {
-      seagulls: { frequency: 0.3, animated: true },
-      umbrellas: { frequency: 0.2, colors: ['#FF6B6B', '#4ECDC4', '#45B7D1'] },
-      beachBalls: { frequency: 0.15, animated: true },
-      lifeguardStands: { frequency: 0.1 },
-      palmTrees: { frequency: 0.25 },
-      boardwalkLamps: { frequency: 0.4 },
-    };
-  }
 
   getForegroundEffects() {
     return [
@@ -108,7 +69,7 @@ class JerseyShoreBackground extends ThemedBackground {
     return [
       // Sky layer (slowest parallax)
       this.createLayer('sky', 0.1, [
-        { type: 'gradient_sky', colors: ['#87CEEB', '#E0F6FF', '#FFE4B5'] },
+        { type: 'gradient_sky', colors: ['#6BA6CD', '#B8D4E3', '#D4C5A9'] },
         { type: 'sun', x: this.levelWidth * 0.8, y: 100, animated: true },
         { type: 'clouds', count: 8, animated: true },
       ]),
@@ -165,12 +126,16 @@ class JerseyShoreBackground extends ThemedBackground {
       // Gameplay foreground (same as platforms - no parallax)
       this.createLayer('foreground', 1.0, [
         { type: 'beach_house', x: 400, y: 720, image: '/assets/heritage.png' },
+        { type: 'modern_house', x: 800, y: 720, image: '/assets/house.png' },
       ]),
     ];
   }
 
   async preloadImages() {
-    const imagesToLoad = [{ key: 'beach_house', src: '/assets/heritage.png' }];
+    const imagesToLoad = [
+      { key: 'beach_house', src: '/assets/heritage.png' },
+      { key: 'modern_house', src: '/assets/house.png' }
+    ];
 
     for (const imageData of imagesToLoad) {
       try {
@@ -181,24 +146,24 @@ class JerseyShoreBackground extends ThemedBackground {
           img.onerror = reject;
         });
         this.images.set(imageData.key, img);
-        console.log(`Loaded beach house image`);
+        console.log(`Loaded ${imageData.key} image`);
       } catch (error) {
-        console.warn(`Failed to load beach house image:`, error);
+        console.warn(`Failed to load ${imageData.key} image:`, error);
       }
     }
   }
 
   drawSkyBackground(ctx, layer, parallaxX, parallaxY) {
-    // Gradient sky from beach blue to sandy yellow
+    // Gradient sky with moderately darker tones
     const gradient = ctx.createLinearGradient(
       0,
       -parallaxY,
       0,
       this.canvas.height - parallaxY
     );
-    gradient.addColorStop(0, '#87CEEB');
-    gradient.addColorStop(0.6, '#E0F6FF');
-    gradient.addColorStop(1, '#FFE4B5');
+    gradient.addColorStop(0, '#6BA6CD');
+    gradient.addColorStop(0.6, '#B8D4E3');
+    gradient.addColorStop(1, '#D4C5A9');
 
     ctx.fillStyle = gradient;
     ctx.fillRect(
@@ -214,20 +179,17 @@ class JerseyShoreBackground extends ThemedBackground {
       case 'sun':
         this.drawSun(ctx, element);
         break;
-      case 'clouds':
-        this.drawClouds(ctx, element);
+      case 'ocean_horizon':
+        this.drawOceanHorizon(ctx, element);
         break;
       case 'ocean_horizon':
         this.drawOceanHorizon(ctx, element);
         break;
-      case 'ocean_waves':
-        this.drawOceanWaves(ctx, element);
-        break;
-      case 'lighthouse':
-        this.drawLighthouse(ctx, element);
-        break;
       case 'beach_house':
         this.drawBeachHouse(ctx, element);
+        break;
+      case 'modern_house':
+        this.drawModernHouse(ctx, element);
         break;
       case 'pixeltext':
         this.drawPixelText(ctx, element);
@@ -327,6 +289,36 @@ class JerseyShoreBackground extends ThemedBackground {
       // Simple fallback if image not loaded
       ctx.fillStyle = '#D2B48C';
       ctx.fillRect(element.x - 20, element.y - 30, 40, 30); // Also scaled down fallback
+    }
+  }
+
+  drawModernHouse(ctx, element) {
+    const image = this.images.get('modern_house');
+    if (image && image.complete) {
+      const x = element.x;
+      const y = element.y;
+
+      // Scale to 2.5x size
+      const scaledWidth = image.width * 1.5;
+      const scaledHeight = image.height * 1.5;
+
+      ctx.save();
+      ctx.imageSmoothingEnabled = false;
+
+      // Draw image at 2.5x size with bottom touching the specified y coordinate
+      ctx.drawImage(
+        image,
+        x - scaledWidth / 2, // Center horizontally
+        y - scaledHeight, // Position so bottom of scaled image is at y coordinate
+        scaledWidth,
+        scaledHeight
+      );
+
+      ctx.restore();
+    } else {
+      // Fallback box
+      ctx.fillStyle = '#B0C4DE';
+      ctx.fillRect(element.x - 20, element.y - 30, 40, 30);
     }
   }
 
