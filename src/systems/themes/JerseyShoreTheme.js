@@ -26,7 +26,6 @@ export class JerseyShoreTheme extends WorldTheme {
     return new JerseyShoreForegroundEffects(this);
   }
 
-
   getForegroundEffects() {
     return [
       { type: 'seagull_calls', frequency: 0.3 },
@@ -134,7 +133,7 @@ class JerseyShoreBackground extends ThemedBackground {
   async preloadImages() {
     const imagesToLoad = [
       { key: 'heritage', src: '/assets/heritage.png' },
-      { key: '108', src: '/assets/108.png' }
+      { key: '108', src: '/assets/108.png' },
     ];
 
     for (const imageData of imagesToLoad) {
@@ -176,9 +175,6 @@ class JerseyShoreBackground extends ThemedBackground {
 
   drawElement(ctx, element) {
     switch (element.type) {
-      case 'ocean_horizon':
-        this.drawOceanHorizon(ctx, element);
-        break;
       case 'ocean_horizon':
         this.drawOceanHorizon(ctx, element);
         break;
