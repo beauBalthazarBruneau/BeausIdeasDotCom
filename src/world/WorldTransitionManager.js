@@ -250,19 +250,19 @@ export class WorldTransitionManager {
     const doorConfigs = [
       {
         worldId: 'vibe-coding',
-        position: { x: 800, y: 520 },
+        position: { x: 2800, y: 520 },
         themeColor: '#00D4FF',
         name: 'Vibe Coding',
       },
       {
         worldId: 'healthcare',
-        position: { x: 1200, y: 520 },
+        position: { x: 3200, y: 520 },
         themeColor: '#FF5722',
         name: 'Healthcare',
       },
       {
         worldId: 'georgia-tech',
-        position: { x: 1600, y: 520 },
+        position: { x: 3600, y: 520 },
         themeColor: '#B3A369',
         name: 'Georgia Tech',
       },
@@ -288,9 +288,9 @@ export class WorldTransitionManager {
   getProgressionSpawnPoint(fromWorldId) {
     // Return to a position further along the main world based on which world was completed
     const spawnPoints = {
-      'vibe-coding': { x: 900, y: 550 }, // Just past the Vibe Coding door
-      healthcare: { x: 1300, y: 550 }, // Just past the Healthcare door
-      'georgia-tech': { x: 1700, y: 550 }, // Just past the Georgia Tech door
+      'vibe-coding': { x: 2900, y: 550 }, // Just past the Vibe Coding door
+      healthcare: { x: 3300, y: 550 }, // Just past the Healthcare door
+      'georgia-tech': { x: 3700, y: 550 }, // Just past the Georgia Tech door
     };
 
     return spawnPoints[fromWorldId] || { x: 100, y: 550 };
