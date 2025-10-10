@@ -22,138 +22,25 @@ export class MainHub {
     this.platformFactory = new PlatformFactory(physics, game);
     this.platformRenderer = new PlatformRenderer(game);
 
-    // Level dimensions - expanded to accommodate door positions
-    this.width = 3500; // Increased width for door spacing
+    // Level dimensions - single continuous platform world
+    this.width = 5000; // Full 5000px width
     this.height = 1200;
     this.groundLevel = 650; // Platform centers at 650
 
-    // Hub level data with sections for different doors - now with enhanced platform features
+    // Simplified level data with single continuous platform
     this.levelData = {
-      // Starting area - tutorial/intro with basic ground
-      startingArea: {
+      mainPlatform: {
         platforms: [
           {
-            id: 'start-ground',
-            x: 0,
+            id: 'continuous-ground',
+            x: 2500, // Center the platform at middle of 5000px world
             y: this.groundLevel,
-            width: 800,
+            width: 5000, // Single platform spanning entire world
             height: 60,
             type: PLATFORM_TYPES.ROAD,
           },
         ],
         decorations: [],
-      },
-
-      // World doors area - where entry doors are located
-      worldDoorsArea: {
-        platforms: [
-          {
-            id: 'doors-ground',
-            x: 800,
-            y: this.groundLevel,
-            width: 1200,
-            height: 60,
-            type: PLATFORM_TYPES.ROAD,
-          },
-        ],
-        decorations: [],
-      },
-
-      // Elevated section - jumping challenges with enhanced platforms
-      elevatedSection: {
-        platforms: [
-          {
-            id: 'elevated-ground',
-            x: 2100,
-            y: this.groundLevel,
-            width: 500,
-            height: 60,
-            type: PLATFORM_TYPES.ROAD,
-          },
-          // Demo: Floating platform with bobbing animation
-          {
-            id: 'floating-demo',
-            x: 2300,
-            y: this.groundLevel - 100,
-            width: 120,
-            height: 20,
-            type: PLATFORM_TYPES.FLOATING,
-          },
-          // Demo: Rotating platform
-          {
-            id: 'rotating-demo',
-            x: 2000,
-            y: this.groundLevel - 150,
-            width: 80,
-            height: 20,
-            type: PLATFORM_TYPES.ROTATING,
-          },
-        ],
-        decorations: [
-          { type: 'cloud', x: 2200, y: this.groundLevel - 300 },
-          { type: 'cloud', x: 2400, y: this.groundLevel - 320 },
-        ],
-      },
-
-      // Canyon crossing - challenging platforming with moving platforms
-      canyonCrossing: {
-        platforms: [
-          {
-            id: 'canyon-ground',
-            x: 2700,
-            y: this.groundLevel,
-            width: 400,
-            height: 60,
-            type: PLATFORM_TYPES.ROAD,
-          },
-          // Demo: Moving platform (horizontal)
-          {
-            id: 'moving-horizontal-demo',
-            x: 2850,
-            y: this.groundLevel - 120,
-            width: 100,
-            height: 20,
-            type: PLATFORM_TYPES.MOVING,
-          },
-          // Demo: Invisible platform (easter egg)
-          {
-            id: 'invisible-demo',
-            x: 2950,
-            y: this.groundLevel - 80,
-            width: 80,
-            height: 20,
-            type: PLATFORM_TYPES.INVISIBLE,
-          },
-        ],
-        decorations: [],
-      },
-
-      // Victory area - final destination
-      victoryArea: {
-        platforms: [
-          {
-            id: 'victory-ground',
-            x: 3200,
-            y: this.groundLevel,
-            width: 400,
-            height: 60,
-            type: PLATFORM_TYPES.VICTORY,
-          },
-          // Demo: Breakable platform
-          {
-            id: 'breakable-demo',
-            x: 3100,
-            y: this.groundLevel - 80,
-            width: 60,
-            height: 20,
-            type: PLATFORM_TYPES.BREAKABLE,
-          },
-        ],
-        decorations: [
-          { type: 'flag', x: 3350, y: this.groundLevel - 180 },
-          { type: 'tree', x: 3150, y: this.groundLevel - 60 },
-          { type: 'tree', x: 3450, y: this.groundLevel - 60 },
-        ],
       },
     };
 
@@ -163,7 +50,7 @@ export class MainHub {
   }
 
   createDecorations() {
-    // Create decorative elements from level data
+    // Create decorative elements from simplified level data
     Object.values(this.levelData).forEach((area) => {
       if (area.decorations) {
         area.decorations.forEach((decoration) => {
@@ -174,16 +61,11 @@ export class MainHub {
   }
 
   createLevel() {
-    // Create all platforms from level data using the new platform factory
+    // Create all platforms from simplified level data
     Object.values(this.levelData).forEach((area) => {
       area.platforms.forEach((platformData) => {
         this.createPlatform(platformData);
       });
-
-      // Store checkpoint areas for later use
-      if (area.checkpoint) {
-        this.checkpointAreas.push(area.checkpoint);
-      }
     });
   }
 
