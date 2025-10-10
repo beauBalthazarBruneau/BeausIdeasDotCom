@@ -125,16 +125,16 @@ class JerseyShoreBackground extends ThemedBackground {
 
       // Gameplay foreground (same as platforms - no parallax)
       this.createLayer('foreground', 1.0, [
-        { type: 'beach_house', x: 400, y: 720, image: '/assets/heritage.png' },
-        { type: 'modern_house', x: 800, y: 720, image: '/assets/house.png' },
+        { type: 'heritage', x: 400, y: 720, image: '/assets/heritage.png' },
+        { type: '108', x: 800, y: 720, image: '/assets/108.png' },
       ]),
     ];
   }
 
   async preloadImages() {
     const imagesToLoad = [
-      { key: 'beach_house', src: '/assets/heritage.png' },
-      { key: 'modern_house', src: '/assets/house.png' }
+      { key: 'heritage', src: '/assets/heritage.png' },
+      { key: '108', src: '/assets/108.png' }
     ];
 
     for (const imageData of imagesToLoad) {
@@ -176,20 +176,17 @@ class JerseyShoreBackground extends ThemedBackground {
 
   drawElement(ctx, element) {
     switch (element.type) {
-      case 'sun':
-        this.drawSun(ctx, element);
-        break;
       case 'ocean_horizon':
         this.drawOceanHorizon(ctx, element);
         break;
       case 'ocean_horizon':
         this.drawOceanHorizon(ctx, element);
         break;
-      case 'beach_house':
-        this.drawBeachHouse(ctx, element);
+      case 'heritage':
+        this.drawHeritage(ctx, element);
         break;
-      case 'modern_house':
-        this.drawModernHouse(ctx, element);
+      case '108':
+        this.draw108(ctx, element);
         break;
       case 'pixeltext':
         this.drawPixelText(ctx, element);
@@ -262,8 +259,8 @@ class JerseyShoreBackground extends ThemedBackground {
     }
   }
 
-  drawBeachHouse(ctx, element) {
-    const image = this.images.get('beach_house');
+  drawHeritage(ctx, element) {
+    const image = this.images.get('heritage');
     if (image && image.complete) {
       const x = element.x;
       const y = element.y;
@@ -292,8 +289,8 @@ class JerseyShoreBackground extends ThemedBackground {
     }
   }
 
-  drawModernHouse(ctx, element) {
-    const image = this.images.get('modern_house');
+  draw108(ctx, element) {
+    const image = this.images.get('108');
     if (image && image.complete) {
       const x = element.x;
       const y = element.y;
