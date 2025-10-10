@@ -62,16 +62,14 @@ export class Player {
             otherBody.label === 'platform' ||
             otherBody.label === 'mysteryBox'
           ) {
-            // Simplified ground detection - check if player is moving downward or stable
+            // More robust ground detection - check if player is landing on or touching surface
             const playerBottom = this.body.position.y + this.height / 2;
-            const surfaceTop =
-              otherBody.position.y -
-              (otherBody.bounds.max.y - otherBody.bounds.min.y) / 2;
+            const surfaceTop = otherBody.position.y - (otherBody.bounds.max.y - otherBody.bounds.min.y) / 2;
 
-            // Check if player is on top of surface (landing from above)
+            // Check if player is on top of surface (more lenient landing detection)
             if (
-              playerBottom <= surfaceTop + 5 &&
-              this.body.velocity.y >= -0.5
+              playerBottom <= surfaceTop + 10 && // More lenient distance threshold
+              this.body.velocity.y >= -2.0       // More lenient velocity threshold
             ) {
               this.isGrounded = true;
               this.jumpsRemaining = this.maxJumps;
