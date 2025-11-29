@@ -1,0 +1,43 @@
+{
+  "id": "healthcare",
+  "name": "Healthcare World",
+  "description": "Medical technology and clinical research innovation platforms",
+  "dimensions": {
+    "width": 2000,
+    "height": 1200,
+    "groundLevel": 600
+  },
+  "platforms": [
+    {
+      "id": "healthcare-ground",
+      "x": 1000,
+      "y": 600,
+      "width": 2000,
+      "height": 60,
+      "type": "medical-ground"
+    }
+  ],
+  "mysteryBoxes": {
+    "enabled": true,
+    "startX": 300,
+    "spacing": 400,
+    "y": 450
+  },
+  "decorations": [
+    { "type": "medical-pillar", "x": 100, "y": 450 },
+    { "type": "medical-pillar", "x": 1900, "y": 450 },
+    { "type": "health-cloud", "x": 500, "y": 300 },
+    { "type": "health-cloud", "x": 1200, "y": 320 },
+    { "type": "health-cloud", "x": 1600, "y": 280 }
+  ],
+  "doors": {
+    "exit": {
+      "x": 1850,
+      "y": 550,
+      "targetWorld": "jersey-shore",
+      "doorType": "exit",
+      "themeColor": "#FF5722",
+      "name": "Return to Hub"
+    }
+  }
+}

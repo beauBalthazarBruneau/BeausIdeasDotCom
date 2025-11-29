@@ -56,7 +56,7 @@ export default defineConfig({
           systems: [
             'src/systems/AudioManager.js',
             'src/systems/ParticleSystem.js',
-            'src/systems/Background.js',
+            'src/systems/BackgroundRenderer.js',
           ],
         },
       },

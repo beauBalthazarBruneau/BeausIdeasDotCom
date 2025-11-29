@@ -192,34 +192,192 @@ Currently working on adding assets to the main hub and positioning them correctl
 5. Add world-specific decorative elements
 6. Test world transitions and visual consistency
 
-### 4. Production Optimization (POR-10)
+### 4. Mobile & Responsive Support (POR-10)
+**Status**: Backlog
+**Priority**: HIGH
+**Estimated Effort**: 2-3 weeks
+**Linear Issue**: POR-10
+
+**Goal**: Make the game fully functional on mobile devices while maintaining all desktop functionality.
+
+#### Touch Controls System
+**Priority**: CRITICAL
+
+- ❌ **Virtual Joystick** (bottom right corner)
+  - D-pad style control for left/right movement
+  - Visual feedback on touch
+  - Smooth drag-to-move mechanics
+  - Configurable sensitivity
+  - Works in both landscape and portrait
+
+- ❌ **Jump Button** (bottom left or tap-anywhere)
+  - Large touch target for easy access
+  - Visual feedback on press
+  - Double-jump support
+  - Option: tap anywhere on screen to jump (excluding joystick area)
+
+- ❌ **Touch Gestures**
+  - Swipe up for jump (alternative control)
+  - Pinch to zoom (optional)
+  - Two-finger tap for debug menu (optional)
+
+#### Responsive Layout
+**Priority**: HIGH
+
+- ❌ **Canvas Scaling**
+  - Automatically adjust game canvas to screen size
+  - Maintain aspect ratio (or allow flexible)
+  - Handle device rotation (landscape ↔ portrait)
+  - Safe area insets for notched devices
+
+- ❌ **Portrait Orientation Support**
+  - Adjust camera view for vertical screens
+  - Reposition UI elements (joystick, jump button)
+  - Project modal repositioning (top half instead of right half)
+  - Smaller viewport requires adjusted camera zoom
+
+- ❌ **Landscape Optimization**
+  - Full-width gameplay
+  - UI controls in corners
+  - Modal positioning (right half as designed)
+
+#### Mobile-Specific Camera Behavior
+**Priority**: HIGH
+
+- ❌ **Touch-friendly Camera Controls**
+  - Center player in viewport differently on mobile
+  - Larger camera boundaries to show more context
+  - Smoother panning for touch interaction
+  - Optional: pinch-to-zoom support
+
+- ❌ **Modal Camera Adjustments**
+  - Portrait: Player in bottom center, modal on top
+  - Landscape: Player in left center, modal on right
+  - Smooth camera transitions when modal opens/closes
+
+#### Touch-Friendly UI Elements
+**Priority**: MEDIUM
+
+- ❌ **Larger Touch Targets**
+  - Minimum 44x44px touch areas (Apple HIG standard)
+  - Increase button sizes for modal interactions
+  - Spacing between interactive elements
+
+- ❌ **Visual Feedback**
+  - Haptic feedback for jumps/collisions (if supported)
+  - Visual button press states
+  - Touch ripple effects
+
+- ❌ **HUD Adjustments**
+  - Scale UI text for readability on small screens
+  - Reposition progress indicators
+  - Mobile-optimized mystery box interaction prompts
+
+#### Performance Optimization for Mobile
+**Priority**: HIGH
+
+- ❌ **Frame Rate Management**
+  - Target 30fps on mobile (60fps on high-end devices)
+  - Automatic quality scaling based on device performance
+  - Reduce particle effects on low-end devices
+  - Simplified shadows/effects on mobile
+
+- ❌ **Asset Optimization**
+  - Lower resolution textures for mobile
+  - Lazy load world assets
+  - Compressed audio files
+  - Sprite atlases for better performance
+
+- ❌ **Memory Management**
+  - Aggressive cleanup of unused assets
+  - Limit particle count on mobile
+  - Monitor and optimize physics bodies
+
+#### Browser & Device Compatibility
+**Priority**: HIGH
+
+- ❌ **iOS Safari Compatibility**
+  - Audio autoplay workarounds
+  - Viewport meta tag configuration
+  - Safe area handling (notch, home indicator)
+  - PWA support (Add to Home Screen)
+
+- ❌ **Android Browser Support**
+  - Chrome, Firefox, Samsung Internet testing
+  - Back button handling
+  - Full-screen API
+  - WebView compatibility
+
+- ❌ **Touch Event Handling**
+  - Prevent default scroll/zoom behaviors
+  - Multi-touch support
+  - Gesture conflict resolution
+
+#### Testing Requirements
+**Priority**: MEDIUM
+
+- ❌ **Device Testing Matrix**
+  - iPhone (SE, 12, 14, 15) - iOS 15+
+  - iPad (Pro, Air) - both orientations
+  - Android phones (Pixel, Samsung) - Android 10+
+  - Android tablets
+  - Various screen sizes (320px to 1024px width)
+
+- ❌ **Feature Testing**
+  - Touch controls responsiveness
+  - Canvas rendering performance
+  - Audio playback on mobile
+  - Modal interactions
+  - World transitions
+  - Progress persistence
+
+#### Implementation Phases
+
+**Phase 1: Core Touch Controls** (Week 1)
+1. Implement virtual joystick
+2. Add jump button
+3. Basic touch event handling
+4. Test on iOS and Android
+
+**Phase 2: Responsive Layout** (Week 1-2)
+1. Canvas auto-scaling
+2. Portrait/landscape support
+3. UI repositioning
+4. Camera adjustments
+
+**Phase 3: Performance & Polish** (Week 2-3)
+1. Frame rate optimization
+2. Asset optimization
+3. Browser compatibility fixes
+4. Haptic feedback
+5. Visual polish
+
+**Phase 4: Testing & Refinement** (Week 3)
+1. Cross-device testing
+2. Performance profiling
+3. Bug fixes
+4. User testing feedback
+
+#### Technical Considerations
+
+- **Input System**: Extend `InputHandler.js` to support touch events alongside keyboard
+- **UI Layer**: Create new `TouchControls.js` component
+- **Responsive Utils**: Enhance `src/utils/responsive.js` with touch detection
+- **Camera Logic**: Update `Camera.js` for mobile-specific behavior
+- **Modal System**: Update `ProjectModal.js` for responsive positioning
+
+### 5. Performance Optimization
 **Status**: Backlog
 **Priority**: MEDIUM
-**Estimated Effort**: 1-2 weeks
+**Estimated Effort**: 1 week
 
-#### Mobile & Responsive Support
-- ❌ Touch controls implementation
-  - Virtual joystick (bottom right)
-  - Tap to jump (anywhere else)
-- ❌ Portrait orientation support
-- ❌ Responsive modal positioning
-- ❌ Mobile camera behavior
-- ❌ Touch-friendly UI elements
-
-#### Performance Optimization
 - ❌ Asset loading optimization
 - ❌ Lazy loading for world assets
-- ❌ Frame rate optimization (target: 60fps desktop, 30fps mobile)
-- ❌ Asset compression and optimization
 - ❌ Code splitting enhancements
+- ❌ Build size reduction
+- ❌ Service worker for offline play (PWA)
 
-#### Browser Compatibility
-- ❌ Cross-browser audio testing
-- ❌ Safari-specific fixes
-- ❌ Mobile browser compatibility
-- ❌ Fallback mechanisms
-
-### 5. Maintenance Mode (POR-13)
+### 6. Maintenance Mode (POR-13)
 **Status**: Backlog
 **Priority**: LOW
 **Estimated Effort**: 2 hours
@@ -283,7 +441,7 @@ Precision movement controls for automated testing:
 1. ⚠️ Complete collectible assets (7 remaining)
 2. ⚠️ Implement 3 world themes
 3. ⚠️ Finish project modal integration
-4. ⚠️ Mobile/responsive support
+4. 🚨 **Mobile/responsive support (HIGH PRIORITY)**
 5. 🔧 Production optimization
 
 ---
@@ -301,10 +459,14 @@ Precision movement controls for automated testing:
 3. **Healthcare theme** - Second sub-world theme implementation
 
 ### Medium Term (Next Month)
-1. **Georgia Tech theme** - Final world theme
-2. **Mobile support** - Touch controls and responsive design
-3. **Performance optimization** - Asset loading, code splitting, frame rate
-4. **Production testing** - Cross-browser and device testing
+1. **Mobile & Responsive Support** - Touch controls, virtual joystick, responsive layout (2-3 weeks)
+   - Phase 1: Core touch controls (virtual joystick, jump button)
+   - Phase 2: Responsive layout (canvas scaling, orientation support)
+   - Phase 3: Performance optimization (frame rate, asset optimization)
+   - Phase 4: Cross-device testing
+2. **Georgia Tech theme** - Final world theme
+3. **Performance optimization** - Asset loading, code splitting, PWA
+4. **Production testing** - Cross-browser compatibility
 
 ### Pre-Launch
 1. **Final polish** - Animation smoothing, visual consistency

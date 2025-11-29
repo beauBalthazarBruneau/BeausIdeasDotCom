@@ -41,14 +41,14 @@ export class ProjectModal {
       background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
       border-radius: 15px;
       padding: 30px;
-      width: ${isMobile() ? '90%' : '45%'};
-      height: 90vh;
+      width: calc(50% - 40px);
+      height: calc(100vh - 40px);
       overflow-y: auto;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
       border: 2px solid #666;
       position: fixed;
-      top: 5vh;
-      right: ${isMobile() ? '5%' : '2.5%'};
+      top: 20px;
+      right: 20px;
       font-family: monospace;
       color: white;
       transform: translateX(100%);

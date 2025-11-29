@@ -1,0 +1,229 @@
+{
+  "id": "jersey-shore",
+  "name": "Jersey Shore - Main Hub",
+  "description": "The main hub world - explore all portfolio projects",
+  "dimensions": {
+    "width": 3500,
+    "height": 1200,
+    "groundLevel": 650
+  },
+  "spawnPoint": {
+    "x": 200,
+    "y": 550,
+    "mobileY": 350
+  },
+  "background": {
+    "sky": {
+      "type": "gradient",
+      "colors": ["#87CEEB", "#E0F6FF", "#FFE4B5"]
+    },
+    "layers": [
+      {
+        "name": "sky",
+        "scrollSpeed": 0.1,
+        "elements": [
+          {
+            "type": "sun",
+            "x": 2800,
+            "y": 100,
+            "size": 30,
+            "color": "#FFD700",
+            "animated": true
+          },
+          {
+            "type": "clouds",
+            "count": 8,
+            "animated": true
+          }
+        ]
+      },
+      {
+        "name": "title",
+        "scrollSpeed": 0.25,
+        "elements": [
+          {
+            "type": "pixeltext",
+            "text": "BEAU",
+            "x": 50,
+            "y": 80,
+            "scale": 2,
+            "color": "#808080",
+            "spacing": 12,
+            "mobileScale": 0.8,
+            "mobileY": 60,
+            "mobileX": 60
+          },
+          {
+            "type": "pixeltext",
+            "text": "BRUNEAU",
+            "x": 50,
+            "y": 230,
+            "scale": 2,
+            "color": "#808080",
+            "spacing": 12,
+            "mobileScale": 0.8,
+            "mobileY": 180,
+            "mobileX": 60
+          },
+          {
+            "type": "pixeltext",
+            "text": "A PERSONAL PORTFOLIO",
+            "x": 50,
+            "y": 380,
+            "scale": 0.75,
+            "color": "#606060",
+            "spacing": 6,
+            "mobileScale": 0.3,
+            "mobileY": 280,
+            "mobileX": 60
+          }
+        ]
+      },
+      {
+        "name": "landmarks",
+        "scrollSpeed": 0.35,
+        "elements": [
+          {
+            "type": "lighthouse",
+            "x": 3150,
+            "y": 350
+          }
+        ]
+      },
+      {
+        "name": "foreground",
+        "scrollSpeed": 1.0,
+        "elements": [
+          {
+            "type": "image",
+            "src": "heritage.png",
+            "x": 400,
+            "y": 720,
+            "scale": 0.5
+          }
+        ]
+      }
+    ]
+  },
+  "platforms": [
+    {
+      "id": "start-ground",
+      "x": 0,
+      "y": 650,
+      "width": 800,
+      "height": 60,
+      "type": "road"
+    },
+    {
+      "id": "doors-ground",
+      "x": 800,
+      "y": 650,
+      "width": 1200,
+      "height": 60,
+      "type": "road"
+    },
+    {
+      "id": "elevated-ground",
+      "x": 2100,
+      "y": 650,
+      "width": 500,
+      "height": 60,
+      "type": "road"
+    },
+    {
+      "id": "floating-demo",
+      "x": 2300,
+      "y": 550,
+      "width": 120,
+      "height": 20,
+      "type": "floating"
+    },
+    {
+      "id": "rotating-demo",
+      "x": 2000,
+      "y": 500,
+      "width": 80,
+      "height": 20,
+      "type": "rotating"
+    },
+    {
+      "id": "canyon-ground",
+      "x": 2700,
+      "y": 650,
+      "width": 400,
+      "height": 60,
+      "type": "road"
+    },
+    {
+      "id": "moving-horizontal-demo",
+      "x": 2850,
+      "y": 530,
+      "width": 100,
+      "height": 20,
+      "type": "moving"
+    },
+    {
+      "id": "invisible-demo",
+      "x": 2950,
+      "y": 570,
+      "width": 80,
+      "height": 20,
+      "type": "invisible"
+    },
+    {
+      "id": "victory-ground",
+      "x": 3200,
+      "y": 650,
+      "width": 400,
+      "height": 60,
+      "type": "victory"
+    },
+    {
+      "id": "breakable-demo",
+      "x": 3100,
+      "y": 570,
+      "width": 60,
+      "height": 20,
+      "type": "breakable"
+    }
+  ],
+  "mysteryBoxes": {
+    "enabled": true,
+    "startX": 300,
+    "spacing": 200,
+    "y": 500
+  },
+  "decorations": [
+    { "type": "cloud", "x": 2200, "y": 350 },
+    { "type": "cloud", "x": 2400, "y": 330 },
+    { "type": "flag", "x": 3350, "y": 470 },
+    { "type": "tree", "x": 3150, "y": 590 },
+    { "type": "tree", "x": 3450, "y": 590 }
+  ],
+  "doors": {
+    "vibe-coding": {
+      "x": 1000,
+      "y": 600,
+      "targetWorld": "vibe-coding",
+      "doorType": "entry",
+      "themeColor": "#00D4FF",
+      "name": "Vibe Coding"
+    },
+    "healthcare": {
+      "x": 1400,
+      "y": 600,
+      "targetWorld": "healthcare",
+      "doorType": "entry",
+      "themeColor": "#FF5722",
+      "name": "Healthcare"
+    },
+    "georgia-tech": {
+      "x": 1800,
+      "y": 600,
+      "targetWorld": "georgia-tech",
+      "doorType": "entry",
+      "themeColor": "#B3A369",
+      "name": "Georgia Tech"
+    }
+  }
+}

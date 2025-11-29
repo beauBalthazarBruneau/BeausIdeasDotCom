@@ -4,7 +4,7 @@ import { Camera } from './Camera.js';
 import { Physics } from './Physics.js';
 import { Player } from '../entities/Player.js';
 import { ParticleSystem, Particle } from '../systems/ParticleSystem.js';
-import { Level } from '../world/Level.js';
+// Level.js removed - now using JSON-based WorldLoader system
 import { WorldTransitionManager } from '../world/WorldTransitionManager.js';
 // import { Background } from '../systems/Background.js'; // Replaced by theme system
 import { AudioManager } from '../systems/AudioManager.js';
@@ -16,6 +16,9 @@ import {
   MysteryBoxStateManager,
 } from '../managers/ProjectData.js';
 import { UI, ProjectModal } from '../ui/index.js';
+import { RotationPrompt } from '../ui/RotationPrompt.js';
+import { TouchControls } from '../ui/TouchControls.js';
+import { isTouchDevice } from '../utils/responsive.js';
 import { gsap } from 'gsap';
 
 export class Game {
@@ -53,17 +56,20 @@ export class Game {
     this.worldTransitionManager = new WorldTransitionManager(this);
     this.doors = []; // Array to track doors in current world
 
-    // Initialize with fallback level for now (will be replaced by world system)
-    this.level = new Level(this.physics);
+    // Level has been replaced by JSON-based WorldLoader system
+    // this.level will be set by WorldTransitionManager during initialization
 
     // Background will be created by theme system when worlds load
     this.background = null;
 
-    // Set spawn point and death system from level
-    this.spawnPoint = this.level.getSpawnPoint();
-    this.deathY = this.level.getDimensions().groundLevel + 200; // Below ground level
+    // Level will be set during world initialization
+    this.level = null;
 
-    // Create player at level spawn point
+    // Temporary spawn point - will be overridden by world loading
+    this.spawnPoint = { x: 200, y: 350 };
+    this.deathY = 850; // Default death boundary
+
+    // Create player at temporary spawn point (will be repositioned by world loading)
     this.player = new Player(
       this.spawnPoint.x,
       this.spawnPoint.y,
@@ -89,12 +95,9 @@ export class Game {
     this.projectModal = new ProjectModal();
 
     // Set up camera boundaries based on level
-    this.camera.setBoundaries(
-      0,
-      this.level.getDimensions().width,
-      -200,
-      this.level.getDimensions().groundLevel
-    );
+    // Camera boundaries will be set by world loading
+    // Temporary boundaries for initialization
+    this.camera.setBoundaries(0, 3500, -200, 650);
 
     // Setup player event listeners for audio and effects
     this.setupPlayerEvents();
@@ -105,6 +108,15 @@ export class Game {
     // Setup audio controls
     this.setupAudioControls();
 
+    // Initialize rotation prompt for touch devices
+    if (isTouchDevice()) {
+      this.rotationPrompt = new RotationPrompt();
+      this.rotationPrompt.create();
+    }
+
+    // Initialize touch controls for mobile
+    this.touchControls = new TouchControls(this);
+
     // Start game loop
     this.gameLoop = this.gameLoop.bind(this);
     requestAnimationFrame(this.gameLoop);
@@ -112,6 +124,11 @@ export class Game {
     // Handle resize
     this.handleResize();
     window.addEventListener('resize', () => this.handleResize());
+
+    // Also listen to visualViewport resize for mobile browsers (especially iOS Safari)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => this.handleResize());
+    }
   }
 
   setupCanvas() {
@@ -121,8 +138,15 @@ export class Game {
 
   resizeCanvas() {
     // Get viewport dimensions
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
+    // On iOS Safari, use visualViewport if available to get actual visible area
+    let viewportWidth = window.innerWidth;
+    let viewportHeight = window.innerHeight;
+
+    // Use visual viewport API if available (better for mobile browsers)
+    if (window.visualViewport) {
+      viewportWidth = window.visualViewport.width;
+      viewportHeight = window.visualViewport.height;
+    }
 
     // Set canvas to full viewport
     this.canvas.width = viewportWidth;
@@ -203,20 +227,18 @@ export class Game {
     this.resizeCanvas();
     this.camera.resize(this.canvas.width, this.canvas.height);
 
-    // Resize themed background if available
-    const currentTheme = this.worldTransitionManager.getCurrentTheme();
-    if (currentTheme && this.background) {
-      this.background.resize(this.canvas);
+    // Resize world background if available
+    const currentWorld = this.worldTransitionManager.getCurrentWorldInstance();
+    if (currentWorld && currentWorld.background) {
+      currentWorld.background.resize(this.canvas);
     }
   }
 
   // Initialize main hub world
   async initializeMainHub() {
     console.log('Initializing main hub world');
-    this.level = await this.worldTransitionManager.transitionToMainHub({
-      x: 100,
-      y: 550,
-    });
+    // Pass null to use spawn point from JSON config (which has mobile support)
+    this.level = await this.worldTransitionManager.transitionToMainHub(null);
   }
 
   // Create mystery boxes for main hub world
@@ -286,38 +308,22 @@ export class Game {
     this.ctx.fillStyle = '#87CEEB';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Get current theme and draw themed background
-    const currentTheme = this.worldTransitionManager.getCurrentTheme();
-    if (currentTheme) {
-      // Create background if not exists or if theme changed
-      if (!this.background || this.lastThemeId !== currentTheme.getThemeId()) {
-        this.background = currentTheme.createBackground();
-        this.lastThemeId = currentTheme.getThemeId();
-        console.log(`Created themed background: ${this.lastThemeId}`);
-      }
-      // Draw themed background
-      this.background.draw(this.ctx, this.camera);
+    // Get current world and draw its background
+    const currentWorld = this.worldTransitionManager.getCurrentWorldInstance();
+
+    if (currentWorld && currentWorld.background) {
+      // Draw world background
+      currentWorld.background.draw(this.ctx, this.camera);
     }
 
     // Apply camera transform for world objects
     this.camera.apply(this.ctx);
 
-    // Draw current world with themed platform renderer
-    const currentWorld = this.worldTransitionManager.getCurrentWorldInstance();
-
-    if (currentWorld && currentTheme) {
-      // Use themed platform renderer if available
-      if (currentWorld.drawWithTheme) {
-        currentWorld.drawWithTheme(this.ctx, currentTheme);
-      } else {
-        // Fallback to regular drawing
-        currentWorld.draw(this.ctx);
-      }
-    } else if (currentWorld) {
+    // Draw current world platforms and decorations
+    if (currentWorld) {
       currentWorld.draw(this.ctx);
-    } else {
-      this.level.draw(this.ctx);
     }
+    // No fallback to this.level needed - world system handles all drawing
 
     // Draw mystery boxes
     this.mysteryBoxes.forEach((mysteryBox) => mysteryBox.draw(this.ctx));
@@ -633,7 +639,7 @@ export class Game {
     const currentWorld = this.worldTransitionManager.getCurrentWorldInstance();
     const worldWidth = currentWorld
       ? currentWorld.getDimensions().width
-      : this.level.getDimensions().width;
+      : 3500; // Default width if no world loaded yet
     this.particleSystem.update(
       deltaTime,
       this.camera,
@@ -641,15 +647,16 @@ export class Game {
       this.gameTime
     );
 
-    // Update themed background (for animated elements like clouds)
-    if (this.background) {
-      this.background.update(deltaTime);
-    }
-
-    // Update current world (for animated platforms and other world-specific updates)
-    const currentWorldInstance = this.worldTransitionManager.getCurrentWorld();
-    if (currentWorldInstance && currentWorldInstance.update) {
-      currentWorldInstance.update(deltaTime);
+    // Update world background and world-specific updates
+    if (currentWorld) {
+      // Update background (for animated elements like clouds)
+      if (currentWorld.background) {
+        currentWorld.background.update(deltaTime);
+      }
+      // Update world (for animated platforms and other world-specific updates)
+      if (currentWorld.update) {
+        currentWorld.update(deltaTime);
+      }
     }
 
     // Update mystery boxes and handle collisions
@@ -683,6 +690,11 @@ export class Game {
     // Update camera to follow player
     this.camera.follow(this.player);
     this.camera.update();
+
+    // Update touch controls (e.g., update jump button disabled state)
+    if (this.touchControls) {
+      this.touchControls.update();
+    }
   }
 
   // Enhanced respawn with audio and screen shake
@@ -805,7 +817,7 @@ export class Game {
     this.worldTransitionManager.clearAllWorlds();
 
     // Return to main hub
-    this.worldTransitionManager.currentWorldId = 'main-hub';
+    this.worldTransitionManager.currentWorldId = 'jersey-shore';
     this.initializeMainHub();
 
     // Show feedback

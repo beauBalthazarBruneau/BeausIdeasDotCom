@@ -2,15 +2,13 @@
 // Handles world state, transitions, and player position management
 
 import { WorldManager } from '../managers/ProjectData.js';
-import { WorldThemeFactory } from '../systems/WorldTheme.js';
 import { WorldLoader } from './WorldLoader.js';
 
 export class WorldTransitionManager {
   constructor(game) {
     this.game = game;
-    this.currentWorldId = 'main-hub';
+    this.currentWorldId = 'jersey-shore';
     this.currentWorld = null;
-    this.currentTheme = null; // Current world theme
     this.worlds = new Map();
     this.playerPositions = new Map();
     this.loadedAssets = new Map(); // Track loaded world assets
@@ -21,7 +19,7 @@ export class WorldTransitionManager {
     this.initialLevelCleared = false; // Flag to prevent multiple clears
 
     // Initialize main hub position tracking
-    this.playerPositions.set('main-hub', { x: 100, y: 550 });
+    this.playerPositions.set('jersey-shore', { x: 200, y: 350 });
 
     // Initialize URL routing
     this.initializeUrlRouting();
@@ -40,11 +38,6 @@ export class WorldTransitionManager {
     return this.currentWorld;
   }
 
-  // Get current world theme
-  getCurrentTheme() {
-    return this.currentTheme;
-  }
-
   // Get current world ID
   getCurrentWorldId() {
     return this.currentWorldId;
@@ -52,7 +45,7 @@ export class WorldTransitionManager {
 
   // Check if currently in main hub
   isInMainHub() {
-    return this.currentWorldId === 'main-hub';
+    return this.currentWorldId === 'jersey-shore';
   }
 
   // Save current player position
@@ -75,23 +68,26 @@ export class WorldTransitionManager {
 
   // Transition to main hub
   async transitionToMainHub(spawnPosition) {
-    console.log('Loading main hub world');
+    console.log('Loading main hub world (jersey-shore)');
 
     // Only clear initial Level, don't clear if we're already in MainHub
     this.clearInitialLevel();
 
-    // Load main hub (the original level)
-    const MainHub = await import('./MainHub.js');
-    this.currentWorld = new MainHub.MainHub(this.game.physics, this.game);
+    // Load main hub as jersey-shore world using JSON system
+    const WorldLoader = await import('./WorldLoader.js');
+    this.currentWorld = await WorldLoader.WorldLoader.loadWorld(
+      'jersey-shore',
+      this.game.physics,
+      this
+    );
 
-    // Create theme for main hub
-    this.currentTheme = await this.createThemeForWorld('main-hub');
-
-    // Create entry doors for sub-worlds
-    await this.createMainHubDoors();
-
-    // Recreate mystery boxes in main hub
-    this.game.createMysteryBoxes();
+    // Use JSON spawn point if no position provided
+    if (!spawnPosition && this.currentWorld.config.spawnPoint) {
+      const { isTouchDevice } = await import('@utils/responsive.js');
+      const sp = this.currentWorld.config.spawnPoint;
+      const spawnY = isTouchDevice() && sp.mobileY ? sp.mobileY : sp.y;
+      spawnPosition = { x: sp.x, y: spawnY };
+    }
 
     // Position player if provided
     if (this.game.player && spawnPosition) {
@@ -152,9 +148,6 @@ export class WorldTransitionManager {
       this.game.physics,
       this
     );
-
-    // Create theme for sub-world
-    this.currentTheme = await this.createThemeForWorld(worldId);
 
     // Position player at spawn point
     this.game.player.setPosition(spawnPosition.x, spawnPosition.y);
@@ -256,9 +249,14 @@ export class WorldTransitionManager {
     ];
 
     doorConfigs.forEach((config) => {
+      // Adjust spawn point for mobile - spawn higher to ensure visibility
+      const isMobileDevice = typeof navigator !== 'undefined' &&
+                            ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+      const spawnY = isMobileDevice ? 350 : 550;
+
       const door = new Door(config.position.x, config.position.y, this, {
         targetWorld: config.worldId,
-        spawnPoint: { x: 100, y: 550 },
+        spawnPoint: { x: 100, y: spawnY },
         doorType: 'entry',
         themeColor: config.themeColor,
         name: config.name,
@@ -333,7 +331,7 @@ export class WorldTransitionManager {
     this.worlds.clear();
     this.playerPositions.clear();
     // Reset to main hub defaults
-    this.playerPositions.set('main-hub', { x: 100, y: 550 });
+    this.playerPositions.set('jersey-shore', { x: 200, y: 350 });
   }
 
   // Initialize URL-based routing
@@ -371,7 +369,7 @@ export class WorldTransitionManager {
 
   // Validate world ID
   isValidWorldId(worldId) {
-    return ['main-hub', 'vibe-coding', 'healthcare', 'georgia-tech'].includes(
+    return ['jersey-shore', 'vibe-coding', 'healthcare', 'georgia-tech'].includes(
       worldId
     );
   }
@@ -412,7 +410,7 @@ export class WorldTransitionManager {
   // Get display name for world
   getWorldDisplayName(worldId) {
     const names = {
-      'main-hub': 'Main Hub',
+      'jersey-shore': 'Jersey Shore Hub',
       'vibe-coding': 'Vibe Coding World',
       healthcare: 'Healthcare World',
       'georgia-tech': 'Georgia Tech World',
@@ -468,7 +466,7 @@ export class WorldTransitionManager {
       }
 
       // Handle world-specific transitions
-      if (targetWorldId === 'main-hub') {
+      if (targetWorldId === 'jersey-shore') {
         await this.transitionToMainHub(newPosition);
       } else {
         await this.transitionToSubWorld(targetWorldId, newPosition);
@@ -494,39 +492,12 @@ export class WorldTransitionManager {
     }
   }
 
-  // Create theme for a world
-  async createThemeForWorld(worldId) {
-    console.log(`Creating theme for world: ${worldId}`);
-    try {
-      const dimensions = this.getCurrentWorldInstance()?.getDimensions() || {
-        width: 3500,
-        height: 1200,
-      };
-      const theme = await WorldThemeFactory.create(
-        worldId,
-        this.game.canvas,
-        dimensions
-      );
-      console.log(
-        `Theme created successfully for ${worldId}:`,
-        theme.getThemeId()
-      );
-      return theme;
-    } catch (error) {
-      console.error(`Failed to create theme for ${worldId}:`, error);
-      // Return default theme as fallback
-      const { WorldTheme } = await import('../systems/WorldTheme.js');
-      return new WorldTheme(this.game.canvas, { width: 3500, height: 1200 });
-    }
-  }
-
   // Cleanup
   destroy() {
     this.clearCurrentWorld();
     this.worlds.clear();
     this.playerPositions.clear();
     this.loadedAssets.clear();
-    this.currentTheme = null;
 
     // Remove URL event listeners
     window.removeEventListener('popstate', this.handlePopState);

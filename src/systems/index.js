@@ -3,4 +3,4 @@
 
 export { ParticleSystem, Particle } from './ParticleSystem.js';
 export { AudioManager } from './AudioManager.js';
-export { Background } from './Background.js';
+export { BackgroundRenderer } from './BackgroundRenderer.js';

@@ -1,0 +1,43 @@
+{
+  "id": "georgia-tech",
+  "name": "Georgia Tech World",
+  "description": "Academic projects and research from Georgia Institute of Technology",
+  "dimensions": {
+    "width": 2000,
+    "height": 1200,
+    "groundLevel": 600
+  },
+  "platforms": [
+    {
+      "id": "gt-ground",
+      "x": 1000,
+      "y": 600,
+      "width": 2000,
+      "height": 60,
+      "type": "academic-ground"
+    }
+  ],
+  "mysteryBoxes": {
+    "enabled": true,
+    "startX": 300,
+    "spacing": 400,
+    "y": 450
+  },
+  "decorations": [
+    { "type": "academic-pillar", "x": 100, "y": 450 },
+    { "type": "academic-pillar", "x": 1900, "y": 450 },
+    { "type": "academic-cloud", "x": 500, "y": 300 },
+    { "type": "academic-cloud", "x": 1200, "y": 320 },
+    { "type": "academic-cloud", "x": 1600, "y": 280 }
+  ],
+  "doors": {
+    "exit": {
+      "x": 1850,
+      "y": 550,
+      "targetWorld": "jersey-shore",
+      "doorType": "exit",
+      "themeColor": "#B3A369",
+      "name": "Return to Hub"
+    }
+  }
+}

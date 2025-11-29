@@ -1,8 +1,8 @@
 {
   "worlds": {
-    "main": {
-      "id": "main",
-      "name": "Main World",
+    "jersey-shore": {
+      "id": "jersey-shore",
+      "name": "Jersey Shore - Main Hub",
       "description": "The starting world with tutorial and navigation help",
       "theme_color": "#FFD700",
       "projects": [

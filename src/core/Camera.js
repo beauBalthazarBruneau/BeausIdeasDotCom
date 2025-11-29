@@ -42,17 +42,28 @@ export class Camera {
       return;
     }
 
-    // Follow mode: Center player in viewport
-    this.targetX = target.x - this.offsetX;
-    this.targetY = target.y - this.offsetY;
+    // Follow mode: Position player with offset to show more ground on mobile
+    // Import responsive utility
+    const isMobileDevice = typeof navigator !== 'undefined' &&
+                          ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 
-    // Apply boundaries
+    // On mobile, shift camera up to show more ground (player appears higher on screen)
+    // Increase offset to 300px for better ground visibility
+    const verticalOffset = isMobileDevice ? this.offsetY - 300 : this.offsetY;
+
+    this.targetX = target.x - this.offsetX;
+    this.targetY = target.y - verticalOffset;
+
+    // Apply boundaries (adjust minY for mobile to allow more ground visibility)
+    // Allow camera to go much lower on mobile to ensure platform is visible
+    const effectiveMinY = isMobileDevice ? -500 : this.minY;
+
     this.targetX = Math.max(
       this.minX,
       Math.min(this.maxX - this.canvas.width, this.targetX)
     );
     this.targetY = Math.max(
-      this.minY,
+      effectiveMinY,
       Math.min(this.maxY - this.canvas.height, this.targetY)
     );
   }

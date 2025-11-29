@@ -1,0 +1,43 @@
+{
+  "id": "vibe-coding",
+  "name": "Vibe Coding World",
+  "description": "Explore software development, automation, and technical innovation projects",
+  "dimensions": {
+    "width": 2000,
+    "height": 1200,
+    "groundLevel": 600
+  },
+  "platforms": [
+    {
+      "id": "vibe-coding-ground",
+      "x": 1000,
+      "y": 600,
+      "width": 2000,
+      "height": 60,
+      "type": "tech-ground"
+    }
+  ],
+  "mysteryBoxes": {
+    "enabled": true,
+    "startX": 300,
+    "spacing": 400,
+    "y": 450
+  },
+  "decorations": [
+    { "type": "tech-pillar", "x": 100, "y": 450 },
+    { "type": "tech-pillar", "x": 1900, "y": 450 },
+    { "type": "digital-cloud", "x": 500, "y": 300 },
+    { "type": "digital-cloud", "x": 1200, "y": 320 },
+    { "type": "digital-cloud", "x": 1600, "y": 280 }
+  ],
+  "doors": {
+    "exit": {
+      "x": 1850,
+      "y": 550,
+      "targetWorld": "jersey-shore",
+      "doorType": "exit",
+      "themeColor": "#00D4FF",
+      "name": "Return to Hub"
+    }
+  }
+}

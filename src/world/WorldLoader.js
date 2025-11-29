@@ -3,7 +3,8 @@
 
 import { Bodies } from 'matter-js';
 import { WorldManager } from '../managers/ProjectData.js';
-import worldConfigs from '../data/worlds.json';
+import { createPlatform, drawPlatform } from './Platform.js';
+import { BackgroundRenderer } from '../systems/BackgroundRenderer.js';
 
 export class WorldLoader {
   /**
@@ -14,13 +15,32 @@ export class WorldLoader {
    * @returns {Object} World instance with all necessary methods
    */
   static async loadWorld(worldId, physics, worldTransitionManager) {
-    const config = worldConfigs[worldId];
+    // Load world-specific config from its own directory
+    const configPath = `/src/data/worlds/${worldId}/config.json`;
+    let config;
 
-    if (!config) {
+    try {
+      const response = await fetch(configPath);
+      if (!response.ok) {
+        throw new Error(`Failed to load world config: ${response.statusText}`);
+      }
+      config = await response.json();
+    } catch (error) {
+      console.error(`Error loading world ${worldId}:`, error);
       throw new Error(`World configuration not found for: ${worldId}`);
     }
 
     console.log(`Loading world: ${config.name} (${worldId})`);
+
+    // Load background from JSON config
+    const background = config.background
+      ? new BackgroundRenderer(
+          worldTransitionManager.game.canvas,
+          config.dimensions,
+          config.background,
+          worldId // Pass worldId for asset path prefixing
+        )
+      : null;
 
     // Create world instance
     const world = {
@@ -32,6 +52,7 @@ export class WorldLoader {
       boundaries: new Map(),
       decorativeElements: config.decorations || [],
       projects: WorldManager.getProjectsByWorld(worldId),
+      background, // Add background to world
 
       // World API methods
       getDimensions: function () {
@@ -46,15 +67,7 @@ export class WorldLoader {
 
       drawPlatforms: function (ctx) {
         this.platforms.forEach((platform) => {
-          const { body, data } = platform;
-          const pos = body.position;
-          const { width, height, type } = data;
-
-          ctx.save();
-          WorldLoader.setPlatformStyle(ctx, type, worldId);
-          ctx.fillRect(pos.x - width / 2, pos.y - height / 2, width, height);
-          WorldLoader.drawPlatformDetails(ctx, pos, width, height, type, worldId);
-          ctx.restore();
+          drawPlatform(ctx, platform, worldId);
         });
       },
 
@@ -191,21 +204,27 @@ export class WorldLoader {
     const { Door } = await import('../entities/Door.js');
     const { doors } = world.config;
 
-    if (doors.exit) {
-      const { x, y, targetWorld, doorType, themeColor, name } = doors.exit;
+    if (!doors) return;
 
-      const exitDoor = new Door(x, y, world.worldTransitionManager, {
+    // Initialize doors array if needed
+    world.worldTransitionManager.game.doors =
+      world.worldTransitionManager.game.doors || [];
+
+    // Handle both exit doors and entry doors (for main hub)
+    Object.entries(doors).forEach(([doorKey, doorConfig]) => {
+      const { x, y, targetWorld, doorType, themeColor, name } = doorConfig;
+
+      const door = new Door(x, y, world.worldTransitionManager, {
         targetWorld,
         doorType,
         themeColor,
         name,
+        spawnPoint: doorConfig.spawnPoint,
       });
 
-      world.worldTransitionManager.game.doors =
-        world.worldTransitionManager.game.doors || [];
-      world.worldTransitionManager.game.doors.push(exitDoor);
-      world.physics.addBody(`door-exit-${world.id}`, exitDoor.body);
-    }
+      world.worldTransitionManager.game.doors.push(door);
+      world.physics.addBody(`door-${doorKey}-${world.id}`, door.body);
+    });
   }
 
   /**
@@ -214,6 +233,16 @@ export class WorldLoader {
   static setPlatformStyle(ctx, type, worldId) {
     // Define platform styles per world and type
     const styles = {
+      'jersey-shore': {
+        road: '#8B7355',
+        floating: '#CD853F',
+        rotating: '#DEB887',
+        moving: '#D2691E',
+        breakable: '#F4A460',
+        invisible: 'rgba(255, 255, 255, 0.1)',
+        victory: '#FFD700',
+        default: '#8B7355',
+      },
       'vibe-coding': {
         'tech-ground': '#2F4F4F',
         floating: '#00D4FF',
