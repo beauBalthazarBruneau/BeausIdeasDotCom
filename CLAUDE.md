@@ -66,9 +66,11 @@ The codebase follows a modular architecture with clean separation of concerns:
 
 **Input Handling**: `src/core/InputHandler.js` manages WASD/Arrow keys, Space/Jump, F1 debug toggle, and audio controls (M/+/-/B)
 
-**World System**: Multi-world architecture with themed levels (GeorgiaTech, Healthcare, VibeCoding) managed by WorldTransitionManager
+**World System**: Multi-world architecture with themed levels (GeorgiaTech, Healthcare, VibeCoding) managed by WorldTransitionManager. Worlds are defined in `src/data/worlds.json` and loaded dynamically via WorldLoader class for data-driven configuration. Supports URL-based world routing (e.g., `?world=healthcare`) for direct world access.
 
 **Audio**: Howler.js-based AudioManager with auto-start on user interaction, spatial audio, and browser compatibility handling
+
+**Project Data**: Portfolio projects defined in `src/data/projects.json`, organized by world. Managed via ProjectManager and WorldManager classes in `src/managers/ProjectData.js`
 
 ### Import Path Aliases
 
@@ -82,6 +84,7 @@ The project uses Vite path aliases for clean imports:
 '@world' → './src/world'
 '@ui' → './src/ui'
 '@managers' → './src/managers'
+'@data' → './src/data'
 '@utils' → './src/utils'
 '@constants' → './src/constants'
 ```
@@ -111,9 +114,9 @@ The project uses Vite path aliases for clean imports:
 
 **Entity System**: Player physics-based movement with double-jump, ground detection via collision events, particle effects integration
 
-**Mystery Box Interaction**: Two-state system - hit from below spawns collectibles, standing on top acts as platform
+**Mystery Box Interaction**: Three-state system - `inactive` (shows ?), `hit` (empty after being hit), `completed` (shows project name). Hit from below spawns collectibles, standing on top acts as platform.
 
-**Project Portfolio Integration**: Mystery boxes represent portfolio projects with states (inactive/hit/completed) and persistent progress via localStorage
+**Project Portfolio Integration**: Mystery boxes represent portfolio projects with states (inactive/hit/completed) and persistent progress via localStorage. State managed by MysteryBoxStateManager.
 
 **Multi-layer Parallax**: Background system with 5 layers (sky, mountains, clouds, hills, trees) at different parallax speeds
 

@@ -3,6 +3,7 @@
 
 import { WorldManager } from '../managers/ProjectData.js';
 import { WorldThemeFactory } from '../systems/WorldTheme.js';
+import { WorldLoader } from './WorldLoader.js';
 
 export class WorldTransitionManager {
   constructor(game) {
@@ -145,26 +146,12 @@ export class WorldTransitionManager {
     // Clear current world content
     this.clearCurrentWorld();
 
-    // Use preloaded assets for better performance
-    const worldModule = await this.preloadWorldAssets(worldId);
-    let WorldClass;
-
-    switch (worldId) {
-      case 'vibe-coding':
-        WorldClass = worldModule.VibeCodingWorld;
-        break;
-      case 'healthcare':
-        WorldClass = worldModule.HealthcareWorld;
-        break;
-      case 'georgia-tech':
-        WorldClass = worldModule.GeorgiaTechWorld;
-        break;
-      default:
-        throw new Error(`Unknown world: ${worldId}`);
-    }
-
-    // Create world instance
-    this.currentWorld = new WorldClass(this.game.physics, this);
+    // Load world using WorldLoader (JSON-driven)
+    this.currentWorld = await WorldLoader.loadWorld(
+      worldId,
+      this.game.physics,
+      this
+    );
 
     // Create theme for sub-world
     this.currentTheme = await this.createThemeForWorld(worldId);
@@ -433,42 +420,19 @@ export class WorldTransitionManager {
     return names[worldId] || 'Unknown World';
   }
 
-  // Preload world assets for better performance
+  // Preload world assets for better performance (now simplified with WorldLoader)
   async preloadWorldAssets(worldId) {
-    if (this.loadedAssets.has(worldId)) {
-      return this.loadedAssets.get(worldId);
-    }
-
-    console.log(`Preloading assets for ${worldId}`);
-    let worldModule;
-
-    switch (worldId) {
-      case 'vibe-coding':
-        worldModule = await import('./worlds/VibeCodingWorld.js');
-        break;
-      case 'healthcare':
-        worldModule = await import('./worlds/HealthcareWorld.js');
-        break;
-      case 'georgia-tech':
-        worldModule = await import('./worlds/GeorgiaTechWorld.js');
-        break;
-      case 'main-hub':
-        worldModule = await import('./MainHub.js');
-        break;
-    }
-
-    this.loadedAssets.set(worldId, worldModule);
-    return worldModule;
+    // WorldLoader handles loading directly from JSON
+    // No need to preload individual world class modules anymore
+    console.log(`WorldLoader will handle ${worldId} dynamically`);
+    return null;
   }
 
   // Unload unused world assets to free memory
   unloadWorldAssets(worldId) {
-    if (worldId !== this.currentWorldId && this.loadedAssets.has(worldId)) {
-      console.log(`Unloading assets for ${worldId}`);
-      this.loadedAssets.delete(worldId);
-      // Force garbage collection hint
-      if (window.gc) window.gc();
-    }
+    // With WorldLoader, memory management is simpler
+    // No cached class modules to unload
+    console.log(`WorldLoader automatically manages memory for ${worldId}`);
   }
 
   // Enhanced transition method with URL updates
