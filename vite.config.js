@@ -7,15 +7,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '@core': fileURLToPath(new URL('./src/core', import.meta.url)),
-      '@entities': fileURLToPath(new URL('./src/entities', import.meta.url)),
-      '@systems': fileURLToPath(new URL('./src/systems', import.meta.url)),
+      '@game': fileURLToPath(new URL('./src/game', import.meta.url)),
+      '@rendering': fileURLToPath(new URL('./src/rendering', import.meta.url)),
       '@world': fileURLToPath(new URL('./src/world', import.meta.url)),
-      '@ui': fileURLToPath(new URL('./src/ui', import.meta.url)),
-      '@managers': fileURLToPath(new URL('./src/managers', import.meta.url)),
       '@data': fileURLToPath(new URL('./src/data', import.meta.url)),
       '@utils': fileURLToPath(new URL('./src/utils', import.meta.url)),
-      '@constants': fileURLToPath(new URL('./src/constants', import.meta.url)),
     },
   },
 
@@ -41,22 +37,22 @@ export default defineConfig({
           // Vendor chunk for third-party libraries
           vendor: ['matter-js', 'gsap', 'howler'],
 
-          // Core game engine chunk
-          core: [
-            'src/core/Game.js',
-            'src/core/Physics.js',
-            'src/core/Camera.js',
-            'src/core/InputHandler.js',
+          // Game engine chunk
+          game: [
+            'src/game/Game.js',
+            'src/game/Physics.js',
+            'src/game/Camera.js',
+            'src/game/InputHandler.js',
+            'src/game/Player.js',
+            'src/game/Platform.js',
           ],
 
-          // Game entities chunk
-          entities: ['src/entities/Player.js', 'src/entities/Collectible.js'],
-
-          // Game systems chunk
-          systems: [
-            'src/systems/AudioManager.js',
-            'src/systems/ParticleSystem.js',
-            'src/systems/BackgroundRenderer.js',
+          // Rendering chunk
+          rendering: [
+            'src/rendering/Audio.js',
+            'src/rendering/Particles.js',
+            'src/rendering/Background.js',
+            'src/rendering/UI.js',
           ],
         },
       },

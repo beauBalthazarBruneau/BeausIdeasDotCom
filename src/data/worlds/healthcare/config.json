@@ -21,7 +21,7 @@
     "enabled": true,
     "startX": 300,
     "spacing": 400,
-    "y": 450
+    "y": 400
   },
   "decorations": [
     { "type": "medical-pillar", "x": 100, "y": 450 },
@@ -33,7 +33,7 @@
   "doors": {
     "exit": {
       "x": 1850,
-      "y": 550,
+      "y": 530,
       "targetWorld": "jersey-shore",
       "doorType": "exit",
       "themeColor": "#FF5722",

@@ -1,5 +1,5 @@
 import { gsap } from 'gsap';
-import { isMobile } from '@utils/responsive';
+import { isMobile } from '../utils/responsive.js';
 
 export class Camera {
   constructor(canvas) {

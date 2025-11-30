@@ -1,4 +1,4 @@
-import { Game } from './core/Game.js';
+import { Game } from './game/Game.js';
 
 // Check for dev mode and handle maintenance overlay
 function handleMaintenanceMode() {

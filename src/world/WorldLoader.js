@@ -2,9 +2,9 @@
 // Replaces individual world classes with data-driven approach
 
 import { Bodies } from 'matter-js';
-import { WorldManager } from '../managers/ProjectData.js';
-import { createPlatform, drawPlatform } from './Platform.js';
-import { BackgroundRenderer } from '../systems/BackgroundRenderer.js';
+import { WorldManager as WorldDataManager } from './ProjectData.js';
+import { createPlatform, drawPlatform } from '../game/Platform.js';
+import { Background } from '../rendering/Background.js';
 
 export class WorldLoader {
   /**
@@ -34,7 +34,7 @@ export class WorldLoader {
 
     // Load background from JSON config
     const background = config.background
-      ? new BackgroundRenderer(
+      ? new Background(
           worldTransitionManager.game.canvas,
           config.dimensions,
           config.background,
@@ -51,7 +51,7 @@ export class WorldLoader {
       platforms: new Map(),
       boundaries: new Map(),
       decorativeElements: config.decorations || [],
-      projects: WorldManager.getProjectsByWorld(worldId),
+      projects: WorldDataManager.getProjectsByWorld(worldId),
       background, // Add background to world
 
       // World API methods
@@ -173,7 +173,7 @@ export class WorldLoader {
    * Create mystery boxes from project data
    */
   static async createMysteryBoxes(world) {
-    const { MysteryBox } = await import('../entities/MysteryBox.js');
+    const { MysteryBox } = await import('../game/MysteryBox.js');
     const { startX, spacing, y } = world.config.mysteryBoxes;
 
     world.projects.forEach((project, index) => {
@@ -201,7 +201,7 @@ export class WorldLoader {
    * Create doors for world transitions
    */
   static async createDoors(world) {
-    const { Door } = await import('../entities/Door.js');
+    const { Door } = await import('../game/Door.js');
     const { doors } = world.config;
 
     if (!doors) return;

@@ -1,9 +1,9 @@
-// BackgroundRenderer - Generic renderer that draws backgrounds from JSON config
+// Background - Generic renderer that draws backgrounds from JSON config
 // Fully data-driven approach - no world-specific code needed
 
-import { PixelText } from '../utils/PixelText.js';
+import { PixelText } from './PixelText.js';
 
-export class BackgroundRenderer {
+export class Background {
   constructor(canvas, dimensions, backgroundConfig, worldId) {
     this.canvas = canvas;
     this.dimensions = dimensions;

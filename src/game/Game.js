@@ -2,23 +2,23 @@
 import { InputHandler } from './InputHandler.js';
 import { Camera } from './Camera.js';
 import { Physics } from './Physics.js';
-import { Player } from '../entities/Player.js';
-import { ParticleSystem, Particle } from '../systems/ParticleSystem.js';
+import { Player } from './Player.js';
+import { Particles, Particle } from '../rendering/Particles.js';
 // Level.js removed - now using JSON-based WorldLoader system
-import { WorldTransitionManager } from '../world/WorldTransitionManager.js';
-// import { Background } from '../systems/Background.js'; // Replaced by theme system
-import { AudioManager } from '../systems/AudioManager.js';
-import { MysteryBox } from '../entities/MysteryBox.js';
-import { Collectible } from '../entities/Collectible.js';
+import { WorldManager as WorldTransitionManager } from '../world/WorldManager.js';
+// import { Background } from '../rendering/Background.js'; // Replaced by theme system
+import { Audio } from '../rendering/Audio.js';
+import { MysteryBox } from './MysteryBox.js';
+import { Collectible } from './Collectible.js';
 import {
   ProjectManager,
   WorldManager,
   MysteryBoxStateManager,
-} from '../managers/ProjectData.js';
-import { UI } from '../ui/UI.js';
-import { ProjectModal } from '../ui/ProjectModal.js';
-import { RotationPrompt } from '../ui/RotationPrompt.js';
-import { TouchControls } from '../ui/TouchControls.js';
+} from '../world/ProjectData.js';
+import { UI } from '../rendering/UI.js';
+import { Modal } from '../rendering/Modal.js';
+import { RotationPrompt } from '../rendering/RotationPrompt.js';
+import { TouchControls } from '../rendering/TouchControls.js';
 import { isTouchDevice } from '../utils/responsive.js';
 import { gsap } from 'gsap';
 
@@ -51,7 +51,7 @@ export class Game {
     this.inputHandler = new InputHandler();
     this.physics = new Physics(canvas, { debug: this.debugMode });
     this.camera = new Camera(canvas);
-    this.particleSystem = new ParticleSystem();
+    this.particleSystem = new Particles();
 
     // Initialize world transition system
     this.worldTransitionManager = new WorldTransitionManager(this);
@@ -82,7 +82,7 @@ export class Game {
     this.initializeMainHub();
 
     // Initialize audio manager
-    this.audioManager = new AudioManager();
+    this.audioManager = new Audio();
 
     // Initialize mystery box system
     this.mysteryBoxStateManager = new MysteryBoxStateManager();
@@ -93,7 +93,7 @@ export class Game {
     this.ui = new UI(canvas, this.audioManager, this.mysteryBoxStateManager);
 
     // Initialize project modal
-    this.projectModal = new ProjectModal();
+    this.projectModal = new Modal();
 
     // Set up camera boundaries based on level
     // Camera boundaries will be set by world loading

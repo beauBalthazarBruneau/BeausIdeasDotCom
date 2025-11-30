@@ -2,9 +2,9 @@
 // Displays full project information when a collectible is collected
 
 import { gsap } from 'gsap';
-import { isMobile } from '@utils/responsive';
+import { isMobile } from '../utils/responsive.js';
 
-export class ProjectModal {
+export class Modal {
   constructor() {
     this.isVisible = false;
     this.modalElement = null;

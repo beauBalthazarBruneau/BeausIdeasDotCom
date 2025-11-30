@@ -57,7 +57,7 @@ export class Particle {
   }
 }
 
-export class ParticleSystem {
+export class Particles {
   constructor() {
     this.particles = [];
     this.environmentalParticles = [];

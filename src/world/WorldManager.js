@@ -1,10 +1,10 @@
 // World Transition Manager
 // Handles world state, transitions, and player position management
 
-import { WorldManager } from '../managers/ProjectData.js';
+import { WorldManager as WorldDataManager } from './ProjectData.js';
 import { WorldLoader } from './WorldLoader.js';
 
-export class WorldTransitionManager {
+export class WorldManager {
   constructor(game) {
     this.game = game;
     this.currentWorldId = 'jersey-shore';
@@ -24,7 +24,7 @@ export class WorldTransitionManager {
     // Initialize URL routing
     this.initializeUrlRouting();
 
-    console.log('WorldTransitionManager initialized');
+    console.log('WorldManager initialized');
   }
 
   // Register a world instance
@@ -70,8 +70,13 @@ export class WorldTransitionManager {
   async transitionToMainHub(spawnPosition) {
     console.log('Loading main hub world (jersey-shore)');
 
-    // Only clear initial Level, don't clear if we're already in MainHub
+    // Clear initial Level on first load only
     this.clearInitialLevel();
+
+    // Clear current world if we're transitioning from another world
+    if (this.currentWorldId !== 'jersey-shore' && this.currentWorld) {
+      this.clearCurrentWorld();
+    }
 
     // Load main hub as jersey-shore world using JSON system
     const WorldLoader = await import('./WorldLoader.js');
@@ -222,7 +227,7 @@ export class WorldTransitionManager {
 
   // Create entry doors in main hub
   async createMainHubDoors() {
-    const { Door } = await import('../entities/Door.js');
+    const { Door } = await import('../game/Door.js');
 
     this.game.doors = this.game.doors || [];
 

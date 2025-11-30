@@ -1,6 +1,6 @@
 import { Howl, Howler } from 'howler';
 
-export class AudioManager {
+export class Audio {
   constructor() {
     this.sounds = new Map();
     this.music = null;

@@ -191,7 +191,7 @@
     "enabled": true,
     "startX": 300,
     "spacing": 200,
-    "y": 500
+    "y": 400
   },
   "decorations": [
     { "type": "cloud", "x": 2200, "y": 350 },
@@ -203,7 +203,7 @@
   "doors": {
     "vibe-coding": {
       "x": 1000,
-      "y": 600,
+      "y": 580,
       "targetWorld": "vibe-coding",
       "doorType": "entry",
       "themeColor": "#00D4FF",
@@ -211,7 +211,7 @@
     },
     "healthcare": {
       "x": 1400,
-      "y": 600,
+      "y": 580,
       "targetWorld": "healthcare",
       "doorType": "entry",
       "themeColor": "#FF5722",
@@ -219,7 +219,7 @@
     },
     "georgia-tech": {
       "x": 1800,
-      "y": 600,
+      "y": 580,
       "targetWorld": "georgia-tech",
       "doorType": "entry",
       "themeColor": "#B3A369",
