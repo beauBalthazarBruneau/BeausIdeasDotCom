@@ -15,7 +15,8 @@ import {
   WorldManager,
   MysteryBoxStateManager,
 } from '../managers/ProjectData.js';
-import { UI, ProjectModal } from '../ui/index.js';
+import { UI } from '../ui/UI.js';
+import { ProjectModal } from '../ui/ProjectModal.js';
 import { RotationPrompt } from '../ui/RotationPrompt.js';
 import { TouchControls } from '../ui/TouchControls.js';
 import { isTouchDevice } from '../utils/responsive.js';
