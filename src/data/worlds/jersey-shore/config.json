@@ -5,12 +5,12 @@
   "dimensions": {
     "width": 3500,
     "height": 1200,
-    "groundLevel": 650
+    "groundLevel": 600
   },
   "spawnPoint": {
     "x": 200,
-    "y": 550,
-    "mobileY": 350
+    "y": 500,
+    "mobileY": 300
   },
   "background": {
     "sky": {
@@ -107,26 +107,10 @@
   },
   "platforms": [
     {
-      "id": "start-ground",
-      "x": 0,
-      "y": 650,
-      "width": 800,
-      "height": 60,
-      "type": "road"
-    },
-    {
-      "id": "doors-ground",
-      "x": 800,
-      "y": 650,
-      "width": 1200,
-      "height": 60,
-      "type": "road"
-    },
-    {
-      "id": "elevated-ground",
-      "x": 2100,
-      "y": 650,
-      "width": 500,
+      "id": "main-ground",
+      "x": 1750,
+      "y": 600,
+      "width": 3500,
       "height": 60,
       "type": "road"
     },
@@ -147,14 +131,6 @@
       "type": "rotating"
     },
     {
-      "id": "canyon-ground",
-      "x": 2700,
-      "y": 650,
-      "width": 400,
-      "height": 60,
-      "type": "road"
-    },
-    {
       "id": "moving-horizontal-demo",
       "x": 2850,
       "y": 530,
@@ -169,14 +145,6 @@
       "width": 80,
       "height": 20,
       "type": "invisible"
-    },
-    {
-      "id": "victory-ground",
-      "x": 3200,
-      "y": 650,
-      "width": 400,
-      "height": 60,
-      "type": "victory"
     },
     {
       "id": "breakable-demo",
@@ -203,7 +171,7 @@
   "doors": {
     "vibe-coding": {
       "x": 1000,
-      "y": 580,
+      "y": 480,
       "targetWorld": "vibe-coding",
       "doorType": "entry",
       "themeColor": "#00D4FF",
@@ -211,7 +179,7 @@
     },
     "healthcare": {
       "x": 1400,
-      "y": 580,
+      "y": 480,
       "targetWorld": "healthcare",
       "doorType": "entry",
       "themeColor": "#FF5722",
@@ -219,7 +187,7 @@
     },
     "georgia-tech": {
       "x": 1800,
-      "y": 580,
+      "y": 480,
       "targetWorld": "georgia-tech",
       "doorType": "entry",
       "themeColor": "#B3A369",

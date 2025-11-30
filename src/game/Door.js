@@ -163,11 +163,12 @@ export class Door {
     // Trigger hover effect
     this.hoverEffect = 1;
 
-    // Trigger world transition
+    // Trigger world transition - pass door position for return spawning
     this.worldTransitionManager.transitionToWorld(
       this.transitionData.targetWorld,
       this.transitionData.spawnPoint,
-      this.transitionData.doorType
+      this.transitionData.doorType,
+      { x: this.x, y: this.y } // Pass door position
     );
   }
 

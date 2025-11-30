@@ -239,7 +239,7 @@ export class Game {
   async initializeMainHub() {
     console.log('Initializing main hub world');
     // Pass null to use spawn point from JSON config (which has mobile support)
-    this.level = await this.worldTransitionManager.transitionToMainHub(null);
+    this.level = await this.worldTransitionManager.loadWorld('jersey-shore', null);
   }
 
   // Create mystery boxes for main hub world

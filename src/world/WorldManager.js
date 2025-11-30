@@ -12,6 +12,7 @@ export class WorldManager {
     this.worlds = new Map();
     this.playerPositions = new Map();
     this.loadedAssets = new Map(); // Track loaded world assets
+    this.entryDoorPositions = new Map(); // Track which door was used to enter each world
 
     // Transition state
     this.isTransitioning = false;
@@ -43,11 +44,6 @@ export class WorldManager {
     return this.currentWorldId;
   }
 
-  // Check if currently in main hub
-  isInMainHub() {
-    return this.currentWorldId === 'jersey-shore';
-  }
-
   // Save current player position
   savePlayerPosition() {
     const player = this.game.player;
@@ -66,29 +62,29 @@ export class WorldManager {
     return this.playerPositions.get(worldId) || { x: 100, y: 550 };
   }
 
-  // Transition to main hub
-  async transitionToMainHub(spawnPosition) {
-    console.log('Loading main hub world (jersey-shore)');
+  // Unified method to load any world
+  async loadWorld(worldId, spawnPosition) {
+    console.log(`Loading world: ${worldId}`);
 
     // Clear initial Level on first load only
     this.clearInitialLevel();
 
-    // Clear current world if we're transitioning from another world
-    if (this.currentWorldId !== 'jersey-shore' && this.currentWorld) {
+    // Clear current world if we're transitioning from a different world
+    if (this.currentWorldId !== worldId && this.currentWorld) {
       this.clearCurrentWorld();
     }
 
-    // Load main hub as jersey-shore world using JSON system
+    // Load world using WorldLoader (JSON-driven)
     const WorldLoader = await import('./WorldLoader.js');
     this.currentWorld = await WorldLoader.WorldLoader.loadWorld(
-      'jersey-shore',
+      worldId,
       this.game.physics,
       this
     );
 
     // Use JSON spawn point if no position provided
     if (!spawnPosition && this.currentWorld.config.spawnPoint) {
-      const { isTouchDevice } = await import('@utils/responsive.js');
+      const { isTouchDevice } = await import('../utils/responsive.js');
       const sp = this.currentWorld.config.spawnPoint;
       const spawnY = isTouchDevice() && sp.mobileY ? sp.mobileY : sp.y;
       spawnPosition = { x: sp.x, y: spawnY };
@@ -103,7 +99,7 @@ export class WorldManager {
         const dimensions = this.currentWorld.getDimensions();
 
         // Import responsive utility for mobile/desktop detection
-        const { isMobile } = await import('@utils/responsive.js');
+        const { isMobile } = await import('../utils/responsive.js');
 
         // Position player based on device type
         let cameraX;
@@ -125,7 +121,7 @@ export class WorldManager {
       }
     }
 
-    // Update camera boundaries if camera exists
+    // Update camera boundaries
     if (this.game.camera) {
       const dimensions = this.currentWorld.getDimensions();
       this.game.camera.setBoundaries(
@@ -136,37 +132,8 @@ export class WorldManager {
       );
     }
 
-    console.log('Main hub loaded successfully');
+    console.log(`World ${worldId} loaded successfully`);
     return this.currentWorld;
-  }
-
-  // Transition to sub-world
-  async transitionToSubWorld(worldId, spawnPosition) {
-    console.log(`Loading sub-world: ${worldId}`);
-
-    // Clear current world content
-    this.clearCurrentWorld();
-
-    // Load world using WorldLoader (JSON-driven)
-    this.currentWorld = await WorldLoader.loadWorld(
-      worldId,
-      this.game.physics,
-      this
-    );
-
-    // Position player at spawn point
-    this.game.player.setPosition(spawnPosition.x, spawnPosition.y);
-
-    // Update camera boundaries for sub-world
-    const dimensions = this.currentWorld.getDimensions();
-    this.game.camera.setBoundaries(
-      0,
-      dimensions.width,
-      -200,
-      dimensions.groundLevel
-    );
-
-    console.log(`Sub-world ${worldId} loaded successfully`);
   }
 
   // Clear only the initial Level (not currentWorld)
@@ -225,66 +192,6 @@ export class WorldManager {
     }
   }
 
-  // Create entry doors in main hub
-  async createMainHubDoors() {
-    const { Door } = await import('../game/Door.js');
-
-    this.game.doors = this.game.doors || [];
-
-    // Create entry doors for each sub-world
-    const doorConfigs = [
-      {
-        worldId: 'vibe-coding',
-        position: { x: 800, y: 520 },
-        themeColor: '#00D4FF',
-        name: 'Vibe Coding',
-      },
-      {
-        worldId: 'healthcare',
-        position: { x: 1200, y: 520 },
-        themeColor: '#FF5722',
-        name: 'Healthcare',
-      },
-      {
-        worldId: 'georgia-tech',
-        position: { x: 1600, y: 520 },
-        themeColor: '#B3A369',
-        name: 'Georgia Tech',
-      },
-    ];
-
-    doorConfigs.forEach((config) => {
-      // Adjust spawn point for mobile - spawn higher to ensure visibility
-      const isMobileDevice = typeof navigator !== 'undefined' &&
-                            ('ontouchstart' in window || navigator.maxTouchPoints > 0);
-      const spawnY = isMobileDevice ? 350 : 550;
-
-      const door = new Door(config.position.x, config.position.y, this, {
-        targetWorld: config.worldId,
-        spawnPoint: { x: 100, y: spawnY },
-        doorType: 'entry',
-        themeColor: config.themeColor,
-        name: config.name,
-      });
-
-      this.game.doors.push(door);
-      this.game.physics.addBody(`door-entry-${config.worldId}`, door.body);
-    });
-
-    console.log(`Created ${doorConfigs.length} entry doors in main hub`);
-  }
-
-  // Get progression-based spawn point when returning from sub-world
-  getProgressionSpawnPoint(fromWorldId) {
-    // Return to a position further along the main world based on which world was completed
-    const spawnPoints = {
-      'vibe-coding': { x: 900, y: 550 }, // Just past the Vibe Coding door
-      healthcare: { x: 1300, y: 550 }, // Just past the Healthcare door
-      'georgia-tech': { x: 1700, y: 550 }, // Just past the Georgia Tech door
-    };
-
-    return spawnPoints[fromWorldId] || { x: 100, y: 550 };
-  }
 
   // Get current world instance
   getCurrentWorldInstance() {
@@ -442,7 +349,8 @@ export class WorldManager {
   async transitionToWorld(
     targetWorldId,
     spawnPoint = null,
-    doorType = 'entry'
+    doorType = 'entry',
+    doorPosition = null
   ) {
     if (this.isTransitioning) {
       console.log('Transition already in progress, ignoring');
@@ -458,24 +366,38 @@ export class WorldManager {
       // Save current player position
       this.savePlayerPosition();
 
+      // If entering a world via a door, save the door position for return
+      if (doorType === 'entry' && doorPosition) {
+        this.entryDoorPositions.set(targetWorldId, {
+          sourceWorld: this.currentWorldId,
+          doorX: doorPosition.x,
+          doorY: doorPosition.y,
+        });
+        console.log(`Saved entry door position for ${targetWorldId}:`, doorPosition);
+      }
+
       // Determine spawn position
       let newPosition = spawnPoint;
       if (!newPosition) {
         if (doorType === 'exit') {
-          newPosition = this.getProgressionSpawnPoint(this.currentWorldId);
+          // When exiting, spawn near the door that was used to enter
+          const entryDoor = this.entryDoorPositions.get(this.currentWorldId);
+          if (entryDoor && entryDoor.sourceWorld === targetWorldId) {
+            // Spawn 100px to the right of the entry door
+            newPosition = {
+              x: entryDoor.doorX + 100,
+              y: entryDoor.doorY,
+            };
+            console.log(`Spawning near entry door at:`, newPosition);
+          }
         } else if (doorType === 'url') {
           newPosition = this.getSavedPosition(targetWorldId);
-        } else {
-          newPosition = { x: 100, y: 550 };
         }
+        // If still no position, loadWorld will use the world's default spawn point
       }
 
-      // Handle world-specific transitions
-      if (targetWorldId === 'jersey-shore') {
-        await this.transitionToMainHub(newPosition);
-      } else {
-        await this.transitionToSubWorld(targetWorldId, newPosition);
-      }
+      // Load the target world (all worlds treated equally)
+      await this.loadWorld(targetWorldId, newPosition);
 
       // Update URL (except for initial load)
       if (doorType !== 'initial') {
