@@ -30,30 +30,16 @@ export default defineConfig({
     sourcemap: true,
     minify: 'terser',
 
-    // Code splitting for better performance
+    // Code splitting - game code is dynamically imported, so let Rollup
+    // handle the split naturally. Only group vendor libs together.
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Vendor chunk for third-party libraries
-          vendor: ['matter-js', 'gsap', 'howler'],
-
-          // Game engine chunk
-          game: [
-            'src/game/Game.js',
-            'src/game/Physics.js',
-            'src/game/Camera.js',
-            'src/game/InputHandler.js',
-            'src/game/Player.js',
-            'src/game/Platform.js',
-          ],
-
-          // Rendering chunk
-          rendering: [
-            'src/rendering/Audio.js',
-            'src/rendering/Particles.js',
-            'src/rendering/Background.js',
-            'src/rendering/UI.js',
-          ],
+        manualChunks(id) {
+          if (id.includes('node_modules/matter-js') ||
+              id.includes('node_modules/gsap') ||
+              id.includes('node_modules/howler')) {
+            return 'vendor';
+          }
         },
       },
     },

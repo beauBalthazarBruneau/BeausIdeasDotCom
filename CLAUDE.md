@@ -43,18 +43,25 @@ node automation/runners/test-runner.js cleanup                     # Clean old r
 
 ## Architecture Overview
 
+### Dual-Mode Site
+
+The site serves two modes from a single codebase:
+
+- **Portfolio (default)**: Static HTML portfolio at `/` — no JS framework, just HTML/CSS with Google Fonts (Fraunces, Dancing Script). Loads ~2.8KB of JS (only the URL param check).
+- **Game (`?dev=true`)**: Mario-style portfolio game dynamically imported only when `?dev=true` is set. Game code is code-split and not loaded for portfolio visitors.
+
+Key files for this setup:
+- `index.html` — Contains both `#portfolio` div (visible by default) and `#game-container` (hidden by default)
+- `style.css` — Portfolio styles as default, game styles scoped under `body.game-mode`
+- `src/main.js` — Checks `?dev=true`, conditionally shows game and dynamically imports `src/game/Game.js`
+
 ### Core Structure
 
-The codebase follows a modular architecture with clean separation of concerns:
-
-- **`src/core/`** - Core game engine (Game.js, Physics.js, Camera.js, InputHandler.js)
-- **`src/entities/`** - Game objects (Player.js, MysteryBox.js, Collectible.js, Door.js)
-- **`src/systems/`** - Game systems (AudioManager.js, ParticleSystem.js, Background.js, WorldTheme.js)
-- **`src/world/`** - Level design and world management (Level.js, MainHub.js, WorldTransitionManager.js)
-- **`src/ui/`** - User interface components (UI.js, ProjectModal.js)
-- **`src/managers/`** - Data management (ProjectData.js)
-- **`src/utils/`** - Utility functions (math.js, animation.js, storage.js)
-- **`src/constants/`** - Game constants and configuration
+- **`src/game/`** - Game engine (Game.js, Physics.js, Camera.js, InputHandler.js, Player.js, Platform.js, MysteryBox.js, Collectible.js, Door.js)
+- **`src/rendering/`** - Rendering systems (Audio.js, Particles.js, Background.js, UI.js, Modal.js, TouchControls.js, RotationPrompt.js)
+- **`src/world/`** - World management (WorldManager.js, WorldLoader.js)
+- **`src/data/`** - Data files (worlds.json, projects.json)
+- **`src/utils/`** - Utility functions (responsive.js, storage.js, math.js, animation.js)
 
 ### Key Systems
 
@@ -78,15 +85,11 @@ The project uses Vite path aliases for clean imports:
 
 ```javascript
 '@' → './src'
-'@core' → './src/core'
-'@entities' → './src/entities'
-'@systems' → './src/systems'
+'@game' → './src/game'
+'@rendering' → './src/rendering'
 '@world' → './src/world'
-'@ui' → './src/ui'
-'@managers' → './src/managers'
 '@data' → './src/data'
 '@utils' → './src/utils'
-'@constants' → './src/constants'
 ```
 
 ### Testing & Automation Architecture
@@ -173,7 +176,7 @@ const config = {
 
 ### Build Configuration
 
-- Code splitting into vendor, core, entities, and systems chunks
+- Dynamic import code splitting: game code only loaded when `?dev=true`, vendor chunk for third-party libs
 - Asset optimization with 4kb inline limit
 - Terser minification with source maps
 - ES2018 target for broad compatibility
