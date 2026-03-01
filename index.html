@@ -50,21 +50,123 @@
           </p>
         </div>
 
-        <!-- Education -->
-        <div class="education-container">
-          <h3>Education</h3>
-          <div class="education-card">
-            <h4>Georgia Institute of Technology</h4>
-            <p class="degree">Bachelor of Science in Biomedical Engineering & Certificate of Entrepreneurship</p>
-            <p class="gpa">GPA: 3.57</p>
-            <ul class="achievements">
-              <li>"Mr. Georgia Tech" Finalist (top 5 out of 2000+ senior male students)</li>
-              <li>Ran official @georgiatech social media accounts across Snapchat and Instagram</li>
-              <li>Member of Omicron Delta Kappa (ODK), a forum for campus leaders with GPAs greater than 3.5</li>
-            </ul>
+      </section>
+
+      <!-- Projects Section -->
+      <section id="projects" class="section">
+        <h2>Projects</h2>
+        <div class="carousel" id="projects-carousel">
+          <button class="carousel-arrow carousel-arrow--prev" aria-label="Previous project">&lsaquo;</button>
+          <div class="carousel-viewport">
+            <div class="carousel-track">
+              <div class="project-card carousel-slide">
+                <div class="project-info">
+                  <div class="project-header">
+                    <h3><a href="https://omaginelabs.com/om" target="_blank" rel="noopener noreferrer">Om Communication Coach</a></h3>
+                    <span class="project-period">2025 - Present</span>
+                  </div>
+                  <p class="project-tagline">AI-powered meeting analysis and coaching</p>
+                  <img class="project-image" src="/projects/om.png" alt="Om Communication Coach screenshot" />
+                  <p>Full-stack desktop application for AI-powered meeting analysis and communication coaching. Built Electron desktop app with React frontend that captures meeting audio via system audio routing. Developed AI analysis pipeline using Assembly.AI for transcription and Gemini for behavioral pattern analysis.</p>
+                </div>
+              </div>
+              <div class="project-card carousel-slide">
+                <div class="project-info">
+                  <div class="project-header">
+                    <h3><a href="https://goofyatl.com" target="_blank" rel="noopener noreferrer">GOOFY ATL</a></h3>
+                    <span class="project-period">Sep 2024 - Aug 2025</span>
+                  </div>
+                  <p class="project-tagline">Digital communities around physical locations</p>
+                  <img class="project-image" src="/projects/goofy.png" alt="GOOFY ATL screenshot" />
+                  <p>Niche social media iOS app focusing on creating digital communities around physical locations (skateparks). Created full stack iOS app with EC2 hosted Node.js API. Launched with event in Atlanta and scaled to 250 users in 2 months.</p>
+                </div>
+              </div>
+              <div class="project-card carousel-slide">
+                <div class="project-info">
+                  <div class="project-header">
+                    <h3><a href="https://moviepick.me" target="_blank" rel="noopener noreferrer">Movie Party</a></h3>
+                    <span class="project-period">Released Nov 2024</span>
+                  </div>
+                  <p class="project-tagline">Help friends pick a movie in under 5 minutes</p>
+                  <img class="project-image" src="/projects/movie-party.png" alt="Movie Party screenshot" />
+                  <p>Web app to help friends choose what movie to watch in less than 5 minutes. Built React frontend with Firebase for real-time sync and authentication. Implemented instant runoff voting algorithm to fairly aggregate group preferences.</p>
+                </div>
+              </div>
+              <div class="project-card carousel-slide">
+                <div class="project-info">
+                  <div class="project-header">
+                    <h3><a href="https://solitariorusso.com" target="_blank" rel="noopener noreferrer">Solitario Russo</a></h3>
+                    <span class="project-period">Released Nov 2024</span>
+                  </div>
+                  <p class="project-tagline">Draft optimization through economic theory</p>
+                  <img class="project-image" src="/projects/sacco.png" alt="Solitario Russo screenshot" />
+                  <p>Full stack web app to optimize fantasy football drafts based on economic theory of scarcity & opportunity cost.</p>
+                </div>
+              </div>
+              <div class="project-card carousel-slide">
+                <div class="project-info">
+                  <div class="project-header">
+                    <h3><a href="https://researchrevolution.com/tech-vendor-map/" target="_blank" rel="noopener noreferrer">Interactive Clinical Trial Technology Landscape</a></h3>
+                    <span class="project-period">2023 - 2025</span>
+                  </div>
+                  <p class="project-tagline">Mapping 900+ products in clinical trial technology</p>
+                  <img class="project-image" src="/projects/landscape.png" alt="Interactive Landscape screenshot" />
+                  <p>Cataloged and categorized over 250 vendors and 900+ products in clinical research technology. Created interactive map increasing traffic to marketing website by over 2.5x.</p>
+                </div>
+              </div>
+            </div>
           </div>
+          <button class="carousel-arrow carousel-arrow--next" aria-label="Next project">&rsaquo;</button>
+          <div class="carousel-dots" id="carousel-dots"></div>
         </div>
       </section>
+
+      <script>
+        (function() {
+          const track = document.querySelector('.carousel-track');
+          const slides = document.querySelectorAll('.carousel-slide');
+          const prevBtn = document.querySelector('.carousel-arrow--prev');
+          const nextBtn = document.querySelector('.carousel-arrow--next');
+          const dotsContainer = document.getElementById('carousel-dots');
+          const carousel = document.getElementById('projects-carousel');
+          let current = 0;
+          let autoTimer = null;
+          const total = slides.length;
+
+          // Create dots
+          slides.forEach(function(_, i) {
+            var dot = document.createElement('button');
+            dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', 'Go to project ' + (i + 1));
+            dot.addEventListener('click', function() { goTo(i); });
+            dotsContainer.appendChild(dot);
+          });
+
+          function goTo(index) {
+            current = ((index % total) + total) % total;
+            track.style.transform = 'translateX(-' + (current * 100) + '%)';
+            var dots = dotsContainer.querySelectorAll('.carousel-dot');
+            dots.forEach(function(d, i) {
+              d.classList.toggle('active', i === current);
+            });
+          }
+
+          function next() { goTo(current + 1); }
+          function prev() { goTo(current - 1); }
+
+          prevBtn.addEventListener('click', function() { prev(); resetTimer(); });
+          nextBtn.addEventListener('click', function() { next(); resetTimer(); });
+
+          function startTimer() { autoTimer = setInterval(next, 5000); }
+          function stopTimer() { clearInterval(autoTimer); }
+          function resetTimer() { stopTimer(); startTimer(); }
+
+          carousel.addEventListener('mouseenter', stopTimer);
+          carousel.addEventListener('mouseleave', startTimer);
+
+          startTimer();
+        })();
+      </script>
 
       <!-- Experience Section -->
       <div class="section-alt">
@@ -137,97 +239,18 @@
         </section>
       </div>
 
-      <!-- Projects Section -->
-      <section id="projects" class="section">
-        <h2>Technical Projects</h2>
-        <div class="projects-grid">
-          <div class="project-card">
-            <div class="project-info">
-              <div class="project-header">
-                <h3>Om Communication Coach</h3>
-                <span class="project-period">2025 - Present</span>
-              </div>
-              <p>Full-stack desktop application for AI-powered meeting analysis and communication coaching. Built Electron desktop app with React frontend that captures meeting audio via system audio routing. Developed AI analysis pipeline using Assembly.AI for transcription and Gemini for behavioral pattern analysis.</p>
-              <div class="project-tags">
-                <span class="tag">React</span>
-                <span class="tag">Electron</span>
-                <span class="tag">Node.js</span>
-                <span class="tag">Supabase</span>
-                <span class="tag">Gemini</span>
-                <span class="tag">Langfuse</span>
-                <span class="tag">FFmpeg</span>
-              </div>
-            </div>
-          </div>
-          <div class="project-card">
-            <div class="project-info">
-              <div class="project-header">
-                <h3>GOOFY ATL</h3>
-                <span class="project-period">Sep 2024 - Aug 2025</span>
-              </div>
-              <p>Niche social media iOS app focusing on creating digital communities around physical locations (skateparks). Created full stack iOS app with EC2 hosted Node.js API. Launched with event in Atlanta and scaled to 250 users in 2 months.</p>
-              <div class="project-tags">
-                <span class="tag">React Native</span>
-                <span class="tag">Node.js</span>
-                <span class="tag">Supabase</span>
-                <span class="tag">iOS</span>
-              </div>
-            </div>
-          </div>
-          <div class="project-card">
-            <div class="project-info">
-              <div class="project-header">
-                <h3>Movie Party</h3>
-                <span class="project-period">Released Nov 2024</span>
-              </div>
-              <p>Web app to help friends choose what movie to watch in less than 5 minutes. Built React frontend with Firebase for real-time sync and authentication. Implemented instant runoff voting algorithm to fairly aggregate group preferences.</p>
-              <div class="project-tags">
-                <span class="tag">React</span>
-                <span class="tag">Firebase</span>
-                <span class="tag">TMDB API</span>
-              </div>
-            </div>
-          </div>
-          <div class="project-card">
-            <div class="project-info">
-              <div class="project-header">
-                <h3>Sacco Fantasy Football Draft Assistant</h3>
-                <span class="project-period">Released Nov 2024</span>
-              </div>
-              <p>Full stack web app to optimize fantasy football drafts based on economic theory of scarcity & opportunity cost.</p>
-              <div class="project-tags">
-                <span class="tag">React</span>
-                <span class="tag">Supabase</span>
-              </div>
-            </div>
-          </div>
-          <div class="project-card">
-            <div class="project-info">
-              <div class="project-header">
-                <h3>Laymen's Lab Podcast</h3>
-                <span class="project-period">2024 - Present</span>
-              </div>
-              <p>Created and host a podcast series focused on young professionals in clinical research. Attracted 300% more subscribers compared to existing company podcast in the first month.</p>
-              <div class="project-tags">
-                <span class="tag">Content Creation</span>
-                <span class="tag">Audio Production</span>
-              </div>
-            </div>
-          </div>
-          <div class="project-card">
-            <div class="project-info">
-              <div class="project-header">
-                <h3>Interactive Clinical Trial Technology Landscape</h3>
-                <span class="project-period">2023 - 2025</span>
-              </div>
-              <p>Cataloged and categorized over 250 vendors and 900+ products in clinical research technology. Created interactive map increasing traffic to marketing website by over 2.5x.</p>
-              <div class="project-tags">
-                <span class="tag">Research</span>
-                <span class="tag">Data Visualization</span>
-                <span class="tag">Healthcare Tech</span>
-              </div>
-            </div>
-          </div>
+      <!-- Education Section -->
+      <section id="education" class="section">
+        <h2>Education</h2>
+        <div class="education-card">
+          <h4>Georgia Institute of Technology</h4>
+          <p class="degree">Bachelor of Science in Biomedical Engineering & Certificate of Entrepreneurship</p>
+          <p class="gpa">GPA: 3.57</p>
+          <ul class="achievements">
+            <li>"Mr. Georgia Tech" Finalist (top 5 out of 2000+ senior male students)</li>
+            <li>Ran official @georgiatech social media accounts across Snapchat and Instagram</li>
+            <li>Member of Omicron Delta Kappa (ODK), a forum for campus leaders with GPAs greater than 3.5</li>
+          </ul>
         </div>
       </section>
 
