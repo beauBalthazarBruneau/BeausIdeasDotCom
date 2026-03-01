@@ -30,21 +30,6 @@ export function getPlatformStyle(type, worldId) {
       victory: '#FFD700',
       default: '#8B7355',
     },
-    'vibe-coding': {
-      'tech-ground': '#2F4F4F',
-      floating: '#00D4FF',
-      default: '#708090',
-    },
-    healthcare: {
-      'medical-ground': '#E0E0E0',
-      'medical-floating': '#FF5722',
-      default: '#708090',
-    },
-    'georgia-tech': {
-      'academic-ground': '#B3A369',
-      'academic-floating': '#003057',
-      default: '#708090',
-    },
   };
 
   const worldStyles = styles[worldId] || {};

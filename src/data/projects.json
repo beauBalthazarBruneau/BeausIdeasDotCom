@@ -9,18 +9,10 @@
         {
           "id": "tutorial",
           "title": "Welcome to Beau's Portfolio!",
-          "content": "<p>While redesigning my portfolio, I struggled to imagine how to bridge content from <strong>so many different worlds</strong> onto a single website. As my career progresses, I don't want to stop sharing the content from my previous lives.</p><p>So I've created this <strong>retro platformer</strong> where you can explore my ideas and projects across my different lives and worlds.</p><h3>🎮 How to Play</h3><ul><li>Use <strong>ARROW KEYS</strong> or <strong>WASD</strong> to move</li><li>Press <strong>SPACE</strong> or <strong>UP ARROW</strong> to jump (double jump available!)</li><li>Hit <strong>mystery boxes from below</strong> by jumping underneath them</li><li>Collect the items that appear to learn about projects</li><li>Enter <strong>doors</strong> to explore different themed worlds</li></ul><blockquote><p><strong>🎯 Goal:</strong> Explore all the worlds and discover the full range of Beau's Ideas!</p></blockquote>",
+          "content": "<p>While redesigning my portfolio, I struggled to imagine how to bridge content from <strong>so many different worlds</strong> onto a single website. As my career progresses, I don't want to stop sharing the content from my previous lives.</p><p>So I've created this <strong>retro platformer</strong> where you can explore my ideas and projects across my different lives and worlds.</p><h3>🎮 How to Play</h3><ul><li>Use <strong>ARROW KEYS</strong> or <strong>WASD</strong> to move</li><li>Press <strong>SPACE</strong> or <strong>UP ARROW</strong> to jump (double jump available!)</li><li>Hit <strong>mystery boxes from below</strong> by jumping underneath them</li><li>Collect the items that appear to learn about projects</li></ul><blockquote><p><strong>🎯 Goal:</strong> Explore the level and discover all of Beau's Ideas!</p></blockquote>",
           "collectible": "white-sunglasses",
           "position": { "x": 200, "y": 430 }
-        }
-      ]
-    },
-    "Vibe Coding": {
-      "id": "vibe-coding",
-      "name": "Vibe Coding World",
-      "description": "Explore software development, automation, and technical innovation projects",
-      "theme_color": "#00D4FF",
-      "projects": [
+        },
         {
           "id": "slack-bot",
           "title": "Slack Bot",
@@ -48,15 +40,7 @@
           "content": "A comprehensive financial management platform designed specifically for savings and credit cooperatives (SACCOs).\n\nFinancial features:\n• Member account management\n• Loan processing and tracking\n• Savings account administration\n• Financial reporting and analytics\n• Mobile banking integration\n• Regulatory compliance tools\n\nBuilt to modernize and streamline SACCO operations while maintaining security and regulatory compliance.",
           "collectible": "football",
           "position": { "x": 780, "y": 430 }
-        }
-      ]
-    },
-    "healthcare": {
-      "id": "healthcare",
-      "name": "Healthcare World",
-      "description": "Medical technology and clinical research innovation platforms",
-      "theme_color": "#FF5722",
-      "projects": [
+        },
         {
           "id": "clinical-trial-tech",
           "title": "Clinical Trial Tech Landscape",
@@ -70,15 +54,7 @@
           "content": "An educational platform designed to break down complex topics into digestible, easy-to-understand content for everyone.\n\nEducational features:\n• Interactive learning modules\n• Visual explanations and animations\n• Progress tracking and achievements\n• Community discussion forums\n• Expert-reviewed content\n• Multilingual support\n\nBuilt to democratize education and make learning accessible regardless of background or experience level.",
           "collectible": "microphone",
           "position": { "x": 580, "y": 430 }
-        }
-      ]
-    },
-    "georgia-tech": {
-      "id": "georgia-tech",
-      "name": "Georgia Tech World",
-      "description": "Academic projects and research from Georgia Institute of Technology",
-      "theme_color": "#B3A369",
-      "projects": [
+        },
         {
           "id": "Diploma",
           "title": "Bachelor's degree of Biomedical Engineering",

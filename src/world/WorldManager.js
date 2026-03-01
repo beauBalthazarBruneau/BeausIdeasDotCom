@@ -1,7 +1,6 @@
-// World Transition Manager
-// Handles world state, transitions, and player position management
+// World Manager
+// Simplified single-world loader for jersey-shore level
 
-import { WorldManager as WorldDataManager } from './ProjectData.js';
 import { WorldLoader } from './WorldLoader.js';
 
 export class WorldManager {
@@ -9,29 +8,9 @@ export class WorldManager {
     this.game = game;
     this.currentWorldId = 'jersey-shore';
     this.currentWorld = null;
-    this.worlds = new Map();
-    this.playerPositions = new Map();
-    this.loadedAssets = new Map(); // Track loaded world assets
-    this.entryDoorPositions = new Map(); // Track which door was used to enter each world
-
-    // Transition state
-    this.isTransitioning = false;
-    this.transitionCallback = null;
-    this.initialLevelCleared = false; // Flag to prevent multiple clears
-
-    // Initialize main hub position tracking
-    this.playerPositions.set('jersey-shore', { x: 200, y: 350 });
-
-    // Initialize URL routing
-    this.initializeUrlRouting();
+    this.initialLevelCleared = false;
 
     console.log('WorldManager initialized');
-  }
-
-  // Register a world instance
-  registerWorld(worldId, worldInstance) {
-    this.worlds.set(worldId, worldInstance);
-    console.log(`Registered world: ${worldId}`);
   }
 
   // Get current world
@@ -44,39 +23,20 @@ export class WorldManager {
     return this.currentWorldId;
   }
 
-  // Save current player position
-  savePlayerPosition() {
-    const player = this.game.player;
-    this.playerPositions.set(this.currentWorldId, {
-      x: player.x,
-      y: player.y,
-    });
-    console.log(`Saved player position for ${this.currentWorldId}:`, {
-      x: player.x,
-      y: player.y,
-    });
+  // Get current world instance
+  getCurrentWorldInstance() {
+    return this.currentWorld;
   }
 
-  // Get saved position for a world
-  getSavedPosition(worldId) {
-    return this.playerPositions.get(worldId) || { x: 100, y: 550 };
-  }
-
-  // Unified method to load any world
+  // Load the jersey-shore world
   async loadWorld(worldId, spawnPosition) {
     console.log(`Loading world: ${worldId}`);
 
     // Clear initial Level on first load only
     this.clearInitialLevel();
 
-    // Clear current world if we're transitioning from a different world
-    if (this.currentWorldId !== worldId && this.currentWorld) {
-      this.clearCurrentWorld();
-    }
-
     // Load world using WorldLoader (JSON-driven)
-    const WorldLoader = await import('./WorldLoader.js');
-    this.currentWorld = await WorldLoader.WorldLoader.loadWorld(
+    this.currentWorld = await WorldLoader.loadWorld(
       worldId,
       this.game.physics,
       this
@@ -112,7 +72,7 @@ export class WorldManager {
         }
 
         // Position platform bottom at bottom of screen
-        const cameraY = dimensions.groundLevel - this.game.canvas.height + 60; // +60 for platform height
+        const cameraY = dimensions.groundLevel - this.game.canvas.height + 60;
 
         this.game.camera.x = cameraX;
         this.game.camera.y = cameraY;
@@ -147,7 +107,6 @@ export class WorldManager {
       if (this.game.level.destroy) {
         this.game.level.destroy();
       } else {
-        // Manually clear Level platforms if no destroy method
         if (this.game.level.platforms) {
           this.game.level.platforms.forEach((platform, id) => {
             this.game.physics.removeBody(id);
@@ -163,11 +122,9 @@ export class WorldManager {
     }
   }
 
-  // Clear current world (remove physics bodies, checkpoints, etc.)
+  // Clear current world (remove physics bodies, mystery boxes, etc.)
   clearCurrentWorld() {
-    // Clear the currentWorld if it exists
     if (this.currentWorld) {
-      // Clear physics bodies
       if (this.currentWorld.destroy) {
         this.currentWorld.destroy();
       }
@@ -180,253 +137,16 @@ export class WorldManager {
       }
     });
     this.game.mysteryBoxes = [];
-
-    // Clear doors
-    if (this.game.doors) {
-      this.game.doors.forEach((door) => {
-        if (door.body) {
-          this.game.physics.removeBody(`door-${door.x}-${door.y}`);
-        }
-      });
-      this.game.doors = [];
-    }
   }
 
-
-  // Get current world instance
-  getCurrentWorldInstance() {
-    return this.currentWorld;
-  }
-
-  // Handle door collision detection
-  checkDoorCollisions(player) {
-    if (!this.game.doors || this.isTransitioning) return;
-
-    this.game.doors.forEach((door) => {
-      // Check proximity for hover effects
-      door.checkPlayerProximity(player);
-
-      // Check actual collision
-      const playerBounds = {
-        x: player.x - 16,
-        y: player.y - 16,
-        width: 32,
-        height: 32,
-      };
-
-      const doorBounds = {
-        x: door.x,
-        y: door.y,
-        width: door.width,
-        height: door.height,
-      };
-
-      if (this.isColliding(playerBounds, doorBounds)) {
-        door.onPlayerCollision(player);
-      }
-    });
-  }
-
-  // Simple collision detection helper
-  isColliding(rect1, rect2) {
-    return (
-      rect1.x < rect2.x + rect2.width &&
-      rect1.x + rect1.width > rect2.x &&
-      rect1.y < rect2.y + rect2.height &&
-      rect1.y + rect1.height > rect2.y
-    );
-  }
-
-  // Clear all cached worlds (useful for resets)
+  // Clear all worlds (useful for resets)
   clearAllWorlds() {
     console.log('Clearing all cached worlds');
-    this.worlds.clear();
-    this.playerPositions.clear();
-    // Reset to main hub defaults
-    this.playerPositions.set('jersey-shore', { x: 200, y: 350 });
-  }
-
-  // Initialize URL-based routing
-  initializeUrlRouting() {
-    // Listen for URL changes (back/forward navigation)
-    window.addEventListener('popstate', (event) => {
-      if (event.state && event.state.worldId) {
-        this.transitionToWorldFromUrl(
-          event.state.worldId,
-          event.state.position
-        );
-      }
-    });
-
-    // Check initial URL for world parameter
-    this.checkInitialUrl();
-  }
-
-  // Check URL parameters on page load
-  checkInitialUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const worldParam = urlParams.get('world');
-    const x = parseFloat(urlParams.get('x')) || null;
-    const y = parseFloat(urlParams.get('y')) || null;
-
-    if (worldParam && this.isValidWorldId(worldParam)) {
-      console.log(`Loading world from URL: ${worldParam}`);
-      const position = x !== null && y !== null ? { x, y } : null;
-      // Delay to allow game initialization
-      setTimeout(() => {
-        this.transitionToWorldFromUrl(worldParam, position);
-      }, 100);
-    }
-  }
-
-  // Validate world ID
-  isValidWorldId(worldId) {
-    return ['jersey-shore', 'vibe-coding', 'healthcare', 'georgia-tech'].includes(
-      worldId
-    );
-  }
-
-  // Transition from URL (no door interaction)
-  async transitionToWorldFromUrl(worldId, position = null) {
-    if (this.currentWorldId === worldId) {
-      return; // Already in target world
-    }
-
-    await this.transitionToWorld(worldId, position, 'url');
-  }
-
-  // Update URL when world changes
-  updateUrl(worldId, position = null) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('world', worldId);
-
-    if (position) {
-      url.searchParams.set('x', Math.round(position.x).toString());
-      url.searchParams.set('y', Math.round(position.y).toString());
-    } else {
-      url.searchParams.delete('x');
-      url.searchParams.delete('y');
-    }
-
-    // Update browser history
-    window.history.pushState(
-      { worldId, position },
-      `Portfolio Game - ${this.getWorldDisplayName(worldId)}`,
-      url.toString()
-    );
-
-    // Update page title
-    document.title = `Beau's Portfolio - ${this.getWorldDisplayName(worldId)}`;
-  }
-
-  // Get display name for world
-  getWorldDisplayName(worldId) {
-    const names = {
-      'jersey-shore': 'Jersey Shore Hub',
-      'vibe-coding': 'Vibe Coding World',
-      healthcare: 'Healthcare World',
-      'georgia-tech': 'Georgia Tech World',
-    };
-    return names[worldId] || 'Unknown World';
-  }
-
-  // Preload world assets for better performance (now simplified with WorldLoader)
-  async preloadWorldAssets(worldId) {
-    // WorldLoader handles loading directly from JSON
-    // No need to preload individual world class modules anymore
-    console.log(`WorldLoader will handle ${worldId} dynamically`);
-    return null;
-  }
-
-  // Unload unused world assets to free memory
-  unloadWorldAssets(worldId) {
-    // With WorldLoader, memory management is simpler
-    // No cached class modules to unload
-    console.log(`WorldLoader automatically manages memory for ${worldId}`);
-  }
-
-  // Enhanced transition method with URL updates
-  async transitionToWorld(
-    targetWorldId,
-    spawnPoint = null,
-    doorType = 'entry',
-    doorPosition = null
-  ) {
-    if (this.isTransitioning) {
-      console.log('Transition already in progress, ignoring');
-      return;
-    }
-
-    console.log(
-      `Transitioning from ${this.currentWorldId} to ${targetWorldId}`
-    );
-    this.isTransitioning = true;
-
-    try {
-      // Save current player position
-      this.savePlayerPosition();
-
-      // If entering a world via a door, save the door position for return
-      if (doorType === 'entry' && doorPosition) {
-        this.entryDoorPositions.set(targetWorldId, {
-          sourceWorld: this.currentWorldId,
-          doorX: doorPosition.x,
-          doorY: doorPosition.y,
-        });
-        console.log(`Saved entry door position for ${targetWorldId}:`, doorPosition);
-      }
-
-      // Determine spawn position
-      let newPosition = spawnPoint;
-      if (!newPosition) {
-        if (doorType === 'exit') {
-          // When exiting, spawn near the door that was used to enter
-          const entryDoor = this.entryDoorPositions.get(this.currentWorldId);
-          if (entryDoor && entryDoor.sourceWorld === targetWorldId) {
-            // Spawn 100px to the right of the entry door
-            newPosition = {
-              x: entryDoor.doorX + 100,
-              y: entryDoor.doorY,
-            };
-            console.log(`Spawning near entry door at:`, newPosition);
-          }
-        } else if (doorType === 'url') {
-          newPosition = this.getSavedPosition(targetWorldId);
-        }
-        // If still no position, loadWorld will use the world's default spawn point
-      }
-
-      // Load the target world (all worlds treated equally)
-      await this.loadWorld(targetWorldId, newPosition);
-
-      // Update URL (except for initial load)
-      if (doorType !== 'initial') {
-        this.updateUrl(targetWorldId, newPosition);
-      }
-
-      // Unload previous world assets for memory management
-      const previousWorldId = this.currentWorldId;
-      this.currentWorldId = targetWorldId;
-
-      // Delay unloading to avoid issues during transition
-      setTimeout(() => {
-        this.unloadWorldAssets(previousWorldId);
-      }, 1000);
-    } catch (error) {
-      console.error('Error during world transition:', error);
-    } finally {
-      this.isTransitioning = false;
-    }
+    this.clearCurrentWorld();
   }
 
   // Cleanup
   destroy() {
     this.clearCurrentWorld();
-    this.worlds.clear();
-    this.playerPositions.clear();
-    this.loadedAssets.clear();
-
-    // Remove URL event listeners
-    window.removeEventListener('popstate', this.handlePopState);
   }
 }

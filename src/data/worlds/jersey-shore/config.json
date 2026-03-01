@@ -158,7 +158,7 @@
   "mysteryBoxes": {
     "enabled": true,
     "startX": 300,
-    "spacing": 200,
+    "spacing": 300,
     "y": 400
   },
   "decorations": [
@@ -167,31 +167,5 @@
     { "type": "flag", "x": 3350, "y": 470 },
     { "type": "tree", "x": 3150, "y": 590 },
     { "type": "tree", "x": 3450, "y": 590 }
-  ],
-  "doors": {
-    "vibe-coding": {
-      "x": 1000,
-      "y": 480,
-      "targetWorld": "vibe-coding",
-      "doorType": "entry",
-      "themeColor": "#00D4FF",
-      "name": "Vibe Coding"
-    },
-    "healthcare": {
-      "x": 1400,
-      "y": 480,
-      "targetWorld": "healthcare",
-      "doorType": "entry",
-      "themeColor": "#FF5722",
-      "name": "Healthcare"
-    },
-    "georgia-tech": {
-      "x": 1800,
-      "y": 480,
-      "targetWorld": "georgia-tech",
-      "doorType": "entry",
-      "themeColor": "#B3A369",
-      "name": "Georgia Tech"
-    }
-  }
+  ]
 }

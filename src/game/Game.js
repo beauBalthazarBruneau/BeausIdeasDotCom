@@ -8,11 +8,7 @@ import { Particles, Particle } from '../rendering/Particles.js';
 import { WorldManager as WorldTransitionManager } from '../world/WorldManager.js';
 // import { Background } from '../rendering/Background.js'; // Replaced by theme system
 import { Audio } from '../rendering/Audio.js';
-import { MysteryBox } from './MysteryBox.js';
-import { Collectible } from './Collectible.js';
 import {
-  ProjectManager,
-  WorldManager,
   MysteryBoxStateManager,
 } from '../world/ProjectData.js';
 import { UI } from '../rendering/UI.js';
@@ -53,9 +49,8 @@ export class Game {
     this.camera = new Camera(canvas);
     this.particleSystem = new Particles();
 
-    // Initialize world transition system
+    // Initialize world manager
     this.worldTransitionManager = new WorldTransitionManager(this);
-    this.doors = []; // Array to track doors in current world
 
     // Level has been replaced by JSON-based WorldLoader system
     // this.level will be set by WorldTransitionManager during initialization
@@ -87,7 +82,6 @@ export class Game {
     // Initialize mystery box system
     this.mysteryBoxStateManager = new MysteryBoxStateManager();
     this.mysteryBoxes = [];
-    this.createMysteryBoxes();
 
     // Initialize UI system
     this.ui = new UI(canvas, this.audioManager, this.mysteryBoxStateManager);
@@ -242,44 +236,6 @@ export class Game {
     this.level = await this.worldTransitionManager.loadWorld('jersey-shore', null);
   }
 
-  // Create mystery boxes for main hub world
-  createMysteryBoxes() {
-    console.log('Creating mystery boxes for main hub world');
-
-    // Get main hub world projects from JSON data
-    const mainWorld = WorldManager.getWorldById('main');
-    if (!mainWorld || !mainWorld.projects) {
-      console.warn('No main world or projects found');
-      return;
-    }
-
-    // Create mystery box for each project in the main world
-    mainWorld.projects.forEach((project) => {
-      const mysteryBox = new MysteryBox(
-        project.position.x,
-        project.position.y,
-        this,
-        {
-          project: project,
-          audioManager: this.audioManager,
-        }
-      );
-
-      // Check if mystery box has been interacted with
-      const savedState = this.mysteryBoxStateManager.getState(project.id);
-      if (savedState !== 'inactive') {
-        mysteryBox.setState(savedState);
-      }
-
-      this.mysteryBoxes.push(mysteryBox);
-      console.log(`Created mystery box for project: ${project.title}`);
-    });
-
-    console.log(
-      `Created ${mainWorld.projects.length} mystery boxes for main hub world`
-    );
-  }
-
   gameLoop(currentTime) {
     // Calculate delta time
     this.deltaTime = currentTime - this.lastTime;
@@ -328,11 +284,6 @@ export class Game {
 
     // Draw mystery boxes
     this.mysteryBoxes.forEach((mysteryBox) => mysteryBox.draw(this.ctx));
-
-    // Draw doors
-    if (this.doors && this.doors.length > 0) {
-      this.doors.forEach((door) => door.draw(this.ctx));
-    }
 
     // Draw particles behind player
     this.particleSystem.draw(this.ctx);
@@ -677,14 +628,6 @@ export class Game {
       }
     });
 
-    // Update doors
-    if (this.doors && this.doors.length > 0) {
-      this.doors.forEach((door) => door.update(deltaTime));
-    }
-
-    // Check for door collisions (world transitions)
-    this.worldTransitionManager.checkDoorCollisions(this.player);
-
     // Check for death (falling off the world)
     this.checkPlayerDeath();
 
@@ -814,11 +757,8 @@ export class Game {
       mysteryBox.currentColor = mysteryBox.baseColor;
     });
 
-    // Clear all cached worlds and reset world manager
+    // Reset world and reload
     this.worldTransitionManager.clearAllWorlds();
-
-    // Return to main hub
-    this.worldTransitionManager.currentWorldId = 'jersey-shore';
     this.initializeMainHub();
 
     // Show feedback
